@@ -10,9 +10,6 @@ env:
   IMAGE_NAME: payment-api
   IMAGE_TAG: ${{ github.sha }}
   IMAGE_URI: ${{ secrets.GKE_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/payment-repo/payment-api:${{ github.sha }}
-  POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-  POSTGRES_DB_URL: ${{ secrets.POSTGRES_DB_URL }}
 
 jobs:
   build:
@@ -81,6 +78,14 @@ jobs:
           cluster_name: ${{ secrets.GKE_CLUSTER_NAME }}
           location: ${{ secrets.GKE_LOCATION }}
           project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      # ✅ PostgreSQL Secret 생성
+      - name: Create PostgreSQL Secret
+        run: |
+          kubectl create secret generic postgres-secret \
+            --from-literal=POSTGRES_DB_URL=${{ secrets.POSTGRES_DB_URL }} \
+            --from-literal=POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
+            --from-literal=POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
 
       # ✅ payment-api 서비스 및 디플로이먼트
       - name: Create/Update payment-api Service
