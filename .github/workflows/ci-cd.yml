@@ -13,6 +13,7 @@ env:
 
 jobs:
   build:
+    environment: payment-system-env
     name: Build & Push Image
     runs-on: ubuntu-latest
     permissions:
@@ -37,6 +38,12 @@ jobs:
         with:
           project_id: ${{ env.PROJECT_ID }}
 
+      - name: Debug GCP_SA_KEY injection
+        run: |
+          echo "Length of credentials: ${#GCP_SA_KEY}"
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+
       - name: Authenticate to Google Cloud
         id: auth
         uses: google-github-actions/auth@v2
@@ -60,12 +67,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Debug GCP_SA_KEY injection
-        run: |
-          echo "Length of credentials: ${#GCP_SA_KEY}"
-        env:
-          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
