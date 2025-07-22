@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: payment-api
-          image: gcr.io/${GCP_PROJECT_ID}/payment-api:latest
+          image: asia-northeast3-docker.pkg.dev/${GCP_PROJECT_ID}/payment-repo/payment-api:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
