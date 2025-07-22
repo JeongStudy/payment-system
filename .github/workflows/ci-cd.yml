@@ -1,4 +1,4 @@
-name: CI-CD (GKE)
+name: CI-CD (GKE with Artifact Registry)
 
 on:
   workflow_dispatch:
@@ -7,9 +7,11 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  LOCATION: ${{ secrets.GKE_LOCATION }}       # REGION 대체
+  REPO_NAME: payment-repo                     # AR 리포지토리명
   IMAGE_NAME: payment-api
   IMAGE_TAG: ${{ github.sha }}
-  IMAGE_URI: gcr.io/${{ secrets.GCP_PROJECT_ID }}/payment-api:${{ github.sha }}
+  IMAGE_URI: ${{ secrets.GKE_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/payment-repo/payment-api:${{ github.sha }}
 
 jobs:
   build:
@@ -38,20 +40,14 @@ jobs:
         with:
           project_id: ${{ env.PROJECT_ID }}
 
-      - name: Debug GCP_SA_KEY injection
-        run: |
-          echo "Length of credentials: ${#GCP_SA_KEY}"
-        env:
-          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
-
       - name: Authenticate to Google Cloud
         id: auth
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: Configure Docker for Artifact Registry / GCR
-        run: gcloud auth configure-docker --quiet
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.LOCATION }}-docker.pkg.dev --quiet
 
       - name: Build Docker image
         run: docker build -t ${{ env.IMAGE_URI }} .
