@@ -10,6 +10,9 @@ env:
   IMAGE_NAME: payment-api
   IMAGE_TAG: ${{ github.sha }}
   IMAGE_URI: ${{ secrets.GKE_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/payment-repo/payment-api:${{ github.sha }}
+  POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+  POSTGRES_DB_URL: ${{ secrets.POSTGRES_DB_URL }}
 
 jobs:
   build:
