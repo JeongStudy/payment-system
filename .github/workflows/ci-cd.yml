@@ -7,8 +7,8 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  LOCATION: ${{ secrets.GKE_LOCATION }}       # REGION 대체
-  REPO_NAME: payment-repo                     # AR 리포지토리명
+  LOCATION: ${{ secrets.GKE_LOCATION }}
+  REPO_NAME: payment-repo
   IMAGE_NAME: payment-api
   IMAGE_TAG: ${{ github.sha }}
   IMAGE_URI: ${{ secrets.GKE_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/payment-repo/payment-api:${{ github.sha }}
@@ -81,17 +81,48 @@ jobs:
           location: ${{ secrets.GKE_LOCATION }}
           project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-      # 1. 최초에는 항상 apply! (없으면 생성, 있으면 변경)
-      - name: Create/Update Deployment (최초 자동 service)
-        run: kubectl apply -f k8s/service.yml
+      # ✅ PostgreSQL Secret 생성 (최초 1회)
+      - name: Create PostgreSQL Secret (only if not exists)
+        run: |
+          if ! kubectl get secret postgres-secret &> /dev/null; then
+            echo "🔐 Creating postgres-secret..."
+            kubectl create secret generic postgres-secret \
+              --from-literal=POSTGRES_DB=${{ secrets.POSTGRES_DB }} \
+              --from-literal=POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
+              --from-literal=POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          else
+            echo "✅ PostgreSQL Secret already exists. Skipping."
+          fi
 
-      - name: Create/Update Deployment (최초 자동 deployment)
-        run: kubectl apply -f k8s/deployment.yml
+      # ✅ PostgreSQL Service 배포 (최초 1회)
+      - name: Deploy PostgreSQL Service (only if not exists)
+        run: |
+          if ! kubectl get service postgres-service &> /dev/null; then
+            echo "🔧 Creating postgres-service..."
+            kubectl apply -f k8s/postgresql-service.yml
+          else
+            echo "✅ PostgreSQL Service already exists. Skipping."
+          fi
 
-      # 2. set image로 최신 이미지 롤링 업데이트 (있을 때만 동작)
+      # ✅ PostgreSQL Deployment 배포 (최초 1회)
+      - name: Deploy PostgreSQL Deployment (only if not exists)
+        run: |
+          if ! kubectl get deployment postgres &> /dev/null; then
+            echo "📦 Creating postgres deployment..."
+            kubectl apply -f k8s/postgresql-deployment.yml
+          else
+            echo "✅ PostgreSQL Deployment already exists. Skipping."
+          fi
+
+      # ✅ payment-api 서비스 및 디플로이먼트
+      - name: Create/Update payment-api Service
+        run: kubectl apply -f k8s/payment-service.yml
+
+      - name: Create/Update payment-api Deployment
+        run: kubectl apply -f k8s/payment-deployment.yml
+
       - name: Rolling update image
         run: kubectl set image deployment/payment-api payment-api=${{ env.IMAGE_URI }} --record
 
       - name: Wait for rollout to finish
         run: kubectl rollout status deployment/payment-api --timeout=120s
-
