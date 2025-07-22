@@ -2,8 +2,6 @@ name: CI-CD (GKE with Artifact Registry)
 
 on:
   workflow_dispatch:
-#  push:
-#    branches: ["main"]
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
@@ -80,39 +78,6 @@ jobs:
           cluster_name: ${{ secrets.GKE_CLUSTER_NAME }}
           location: ${{ secrets.GKE_LOCATION }}
           project_id: ${{ secrets.GCP_PROJECT_ID }}
-
-      # ✅ PostgreSQL Secret 생성 (최초 1회)
-      - name: Create PostgreSQL Secret (only if not exists)
-        run: |
-          if ! kubectl get secret postgres-secret &> /dev/null; then
-            echo "🔐 Creating postgres-secret..."
-            kubectl create secret generic postgres-secret \
-              --from-literal=POSTGRES_DB=${{ secrets.POSTGRES_DB }} \
-              --from-literal=POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
-              --from-literal=POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-          else
-            echo "✅ PostgreSQL Secret already exists. Skipping."
-          fi
-
-      # ✅ PostgreSQL Service 배포 (최초 1회)
-      - name: Deploy PostgreSQL Service (only if not exists)
-        run: |
-          if ! kubectl get service postgres-service &> /dev/null; then
-            echo "🔧 Creating postgres-service..."
-            kubectl apply -f k8s/postgresql-service.yml
-          else
-            echo "✅ PostgreSQL Service already exists. Skipping."
-          fi
-
-      # ✅ PostgreSQL Deployment 배포 (최초 1회)
-      - name: Deploy PostgreSQL Deployment (only if not exists)
-        run: |
-          if ! kubectl get deployment postgres &> /dev/null; then
-            echo "📦 Creating postgres deployment..."
-            kubectl apply -f k8s/postgresql-deployment.yml
-          else
-            echo "✅ PostgreSQL Deployment already exists. Skipping."
-          fi
 
       # ✅ payment-api 서비스 및 디플로이먼트
       - name: Create/Update payment-api Service

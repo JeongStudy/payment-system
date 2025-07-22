@@ -1,0 +1,50 @@
+name: Init PostgreSQL (GKE)
+
+on:
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  LOCATION: ${{ secrets.GKE_LOCATION }}
+
+jobs:
+  init-psql:
+    name: Deploy PostgreSQL (Once)
+    runs-on: ubuntu-latest
+    environment: payment-system-env
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: Get GKE credentials
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ secrets.GKE_CLUSTER_NAME }}
+          location: ${{ secrets.GKE_LOCATION }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      # ✅ PostgreSQL Secret 생성
+      - name: Create PostgreSQL Secret
+        run: |
+          kubectl create secret generic postgres-secret \
+            --from-literal=POSTGRES_DB=${{ secrets.POSTGRES_DB }} \
+            --from-literal=POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
+            --from-literal=POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+
+      # ✅ PostgreSQL Service 배포
+      - name: Deploy PostgreSQL Service
+        run: kubectl apply -f k8s/postgresql-service.yml
+
+      # ✅ PostgreSQL Deployment 배포
+      - name: Deploy PostgreSQL Deployment
+        run: kubectl apply -f k8s/postgresql-deployment.yml
