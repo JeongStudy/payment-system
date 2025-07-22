@@ -81,8 +81,17 @@ jobs:
           location: ${{ secrets.GKE_LOCATION }}
           project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-      - name: Update Kubernetes Deployment image
+      # 1. 최초에는 항상 apply! (없으면 생성, 있으면 변경)
+      - name: Create/Update Deployment (최초 자동 service)
+        run: kubectl apply -f k8s/service.yaml
+
+      - name: Create/Update Deployment (최초 자동 deployment)
+        run: kubectl apply -f k8s/deployment.yaml
+
+      # 2. set image로 최신 이미지 롤링 업데이트 (있을 때만 동작)
+      - name: Rolling update image
         run: kubectl set image deployment/payment-api payment-api=${{ env.IMAGE_URI }} --record
 
       - name: Wait for rollout to finish
         run: kubectl rollout status deployment/payment-api
+
