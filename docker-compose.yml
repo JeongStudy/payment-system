@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: payment-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: payment
+      POSTGRES_USER: manager
+      POSTGRES_PASSWORD: manager0
+      TZ: Asia/Seoul
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+    restart: unless-stopped
