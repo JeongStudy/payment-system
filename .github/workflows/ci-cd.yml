@@ -79,14 +79,6 @@ jobs:
           location: ${{ secrets.GKE_LOCATION }}
           project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-      # ✅ PostgreSQL Secret 생성
-      - name: Create PostgreSQL Secret
-        run: |
-          kubectl create secret generic postgres-secret \
-            --from-literal=POSTGRES_DB_URL=${{ secrets.POSTGRES_DB_URL }} \
-            --from-literal=POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
-            --from-literal=POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-
       # ✅ payment-api 서비스 및 디플로이먼트
       - name: Create/Update payment-api Service
         run: kubectl apply -f k8s/payment-service.yml
