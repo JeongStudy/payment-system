@@ -83,10 +83,10 @@ jobs:
 
       # 1. 최초에는 항상 apply! (없으면 생성, 있으면 변경)
       - name: Create/Update Deployment (최초 자동 service)
-        run: kubectl apply -f k8s/service.yaml
+        run: kubectl apply -f k8s/service.yml
 
       - name: Create/Update Deployment (최초 자동 deployment)
-        run: kubectl apply -f k8s/deployment.yaml
+        run: kubectl apply -f k8s/deployment.yml
 
       # 2. set image로 최신 이미지 롤링 업데이트 (있을 때만 동작)
       - name: Rolling update image
