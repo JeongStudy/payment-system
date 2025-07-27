@@ -1,6 +1,8 @@
 -- 1. 스키마가 없으면 생성
 CREATE SCHEMA IF NOT EXISTS payment;
 
+SET search_path TO payment;
+
 -- 2. manager 계정에 payment 스키마에 대한 모든 권한 부여 (이미 있으면 아무 일도 없음)
 GRANT ALL ON SCHEMA payment TO manager;
 
