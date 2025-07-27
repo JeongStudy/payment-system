@@ -1,3 +1,5 @@
+CREATE SCHEMA IF NOT EXISTS payment;
+
 create table if not exists payment.payment_user
 (
     id                integer generated always as identity
