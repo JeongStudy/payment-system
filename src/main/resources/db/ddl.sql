@@ -68,7 +68,7 @@ comment on column payment.payment_user_card.billing_key_status is '결제 수단
 comment on column payment.payment_user_card.is_deleted is '결제 수단 카드 삭제 여부';
 comment on column payment.payment_user_card.created_timestamp is '결제 수단 카드 생성 시간';
 comment on column payment.payment_user_card.updated_timestamp is '결제 수단 카드 수정 시간';
-alter table payment.payment_user_card owner to postgres;
+alter table payment.payment_user_card owner to manager;
 
 create table if not exists payment.payment_user_point
 (
@@ -100,7 +100,7 @@ comment on constraint free_point_more_than_zero on payment.payment_user_point is
 comment on column payment.payment_user_point.created_timestamp is '포인트 지갑 생성시간';
 comment on column payment.payment_user_point.updated_timestamp is '포인트 지갑 수정시간';
 comment on column payment.payment_user_point.is_deleted is '사용자 포인트 지갑 삭제 여부';
-alter table payment.payment_user_point owner to postgres;
+alter table payment.payment_user_point owner to manager;
 
 create table if not exists payment.payment
 (
@@ -154,7 +154,7 @@ comment on column payment.payment.created_timestamp is '결제 생성시간';
 comment on column payment.payment.updated_timestamp is '결제 수정시간';
 comment on column payment.payment.idempotency_key is '결제 멱등성 키(클라이언트 전달)';
 comment on column payment.payment.transcation_id is '결제 트랜잭션 고유번호';
-alter table payment.payment owner to postgres;
+alter table payment.payment owner to manager;
 
 create table if not exists payment.payment_detail
 (
@@ -184,7 +184,7 @@ comment on column payment.payment_detail.payment_detail_result_code is '각 결�
 comment on column payment.payment_detail.created_timestamp is '결제 상세 생성시간';
 comment on column payment.payment_detail.updated_timestamp is '결제 상세 수정시간';
 comment on column payment.payment_detail.is_deleted is '결제 상세 삭제 여부';
-alter table payment.payment_detail owner to postgres;
+alter table payment.payment_detail owner to manager;
 
 create table if not exists payment.payment_history
 (
@@ -222,7 +222,7 @@ comment on column payment.payment_history.external_response is '결제 상태 �
 comment on column payment.payment_history.transcation_id is '결제 트랜잭션 고유번호';
 comment on column payment.payment_history.created_timestamp is '결제 이력 생성 시간';
 comment on column payment.payment_history.updated_timestamp is '결제 이력 수정 시간';
-alter table payment.payment_history owner to postgres;
+alter table payment.payment_history owner to manager;
 
 create table if not exists payment.payment_user_point_history
 (
@@ -265,4 +265,4 @@ comment on column payment.payment_user_point_history.point_group_key is '포인�
 comment on column payment.payment_user_point_history.changed_by is '포인트 액션 이행자(SYSTEM, ADMIN)';
 comment on column payment.payment_user_point_history.created_timestamp is '포인트 액션 이력 생성 시간';
 comment on column payment.payment_user_point_history.updated_timestamp is '포인트 액션 이력 수정 시간';
-alter table payment.payment_user_point_history owner to postgres;
+alter table payment.payment_user_point_history owner to manager;
