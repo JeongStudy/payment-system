@@ -1,5 +1,5 @@
 -- example 테이블이 없으면 생성
-CREATE TABLE IF NOT EXISTS example (
+CREATE TABLE IF NOT EXISTS payment.example (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL
 );
