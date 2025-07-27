@@ -1,9 +1,26 @@
 spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${POSTGRES_DB_URL}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    defer-datasource-initialization: false
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        default_schema: payment
+        format_sql: true
+        jdbc.time_zone: Asia/Seoul
   sql:
     init:
       mode: always
       schema-locations: classpath:db/ddl.sql,classpath:db/init.sql
-  jpa:
-    hibernate:
-      ddl-auto: create
-    defer-datasource-initialization: true
+  timezone: Asia/Seoul
+
+logging:
+  level:
+    root: INFO
