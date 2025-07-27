@@ -28,7 +28,7 @@ comment on column payment.payment_user.created_timestamp is '사용자 생성시
 comment on column payment.payment_user.updated_timestamp is '사용자 수정시간';
 comment on column payment.payment_user.email is '결제 사용자 이메일(아이디)';
 comment on column payment.payment_user.password is '결제 사용자 비밀번호';
-alter table payment.payment_user owner to postgres;
+alter table payment.payment_user owner to manager;
 
 create table if not exists payment.payment_user_card
 (
