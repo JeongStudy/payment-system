@@ -1,0 +1,64 @@
+name: Init Kafka (GKE)
+
+on:
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  LOCATION: ${{ secrets.GKE_LOCATION }}
+
+jobs:
+  init-kafka:
+    name: Deploy Kafka/Zookeeper (Once)
+    runs-on: ubuntu-latest
+    environment: payment-system-env
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: Get GKE credentials
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ secrets.GKE_CLUSTER_NAME }}
+          location: ${{ secrets.GKE_LOCATION }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      # ✅ Kafka URL Secret 생성
+      - name: Create Kafka Secret
+        run: |
+          kubectl create secret generic kafka-secret \
+            --from-literal=KAFKA_URL=${{ secrets.KAFKA_URL }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      # ✅ Zookeeper Service/Deployment
+      - name: Deploy Zookeeper Service
+        run: kubectl apply -f k8s/zookeeper-service.yaml
+      - name: Deploy Zookeeper Deployment
+        run: kubectl apply -f k8s/zookeeper-deployment.yaml
+
+      # ✅ Kafka Service/Deployment
+      - name: Deploy Kafka Service
+        run: kubectl apply -f k8s/kafka-service.yaml
+      - name: Deploy Kafka Deployment
+        run: kubectl apply -f k8s/kafka-deployment.yaml
+
+      # ✅ Kafka Topic 초기화 (토픽 생성)
+      - name: Create Kafka Topic [payment]
+        run: |
+          KAFKA_POD=$(kubectl get pods -l app=kafka -o jsonpath="{.items[0].metadata.name}")
+          kubectl exec -i $KAFKA_POD -- \
+            kafka-topics.sh --bootstrap-server kafka:9092 \
+            --create --if-not-exists \
+            --topic payment \
+            --partitions 2 \
+            --replication-factor 1

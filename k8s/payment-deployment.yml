@@ -38,6 +38,11 @@ spec:
                 secretKeyRef:
                   name: postgres-secret
                   key: POSTGRES_PASSWORD
+            - name: KAFKA_URL
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-secret
+                  key: KAFKA_URL
           resources:
             requests:
               memory: "512Mi"

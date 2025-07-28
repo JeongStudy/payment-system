@@ -20,7 +20,28 @@ spring:
       mode: always
       schema-locations: classpath:db/ddl.sql,classpath:db/init.sql
   timezone: Asia/Seoul
-
+  kafka:
+    bootstrap-servers: ${KAFKA_URL}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        enable.idempotence: true
+        acks: all
+        retries: 3
+        max.in.flight.requests.per.connection: 5
+    consumer:
+      group-id: local-group
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      heartbeat-interval-ms: 3000
+      session-timeout-ms: 30000
+      max-poll-interval-ms: 300000
+      properties:
+        spring.json.trusted.packages: '*'
+    jmx:
+      enabled: false
 logging:
   level:
     root: INFO
