@@ -169,6 +169,10 @@ gradle-app.setting
 
 # End of https://www.toptal.com/developers/gitignore/api/java,gradle,intellij
 
+# intellij .idea
 ./.idea
-
 /.idea/
+
+# Kafka/Zookeeper 데이터 볼륨
+kafka_data/
+zookeeper_data/
