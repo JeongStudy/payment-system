@@ -17,29 +17,27 @@ create table if not exists payment.payment_user
     id                integer generated always as identity
         constraint payment_user_pk
             primary key,
-    full_name         varchar(50)                               not null,
+    email             varchar(200)                              not null
+        constraint payment_user_email_unique_key
+            unique,
+    password          varchar(300)                              not null,
     last_name         varchar(50)                               not null,
     first_name        varchar(50)                               not null,
     is_deleted        varchar(1) default 'F'::character varying not null,
     created_timestamp timestamp  default now()                  not null,
-    updated_timestamp timestamp  default now()                  not null,
-    email             varchar(200)                              not null
-        constraint payment_user_email_unique_key
-            unique,
-    password          varchar(300)                              not null
+    updated_timestamp timestamp  default now()                  not null
 );
 
 comment on table payment.payment_user is '결제 유저';
 comment on column payment.payment_user.id is '결제 사용자 고유번호';
 comment on constraint payment_user_pk on payment.payment_user is '결제 사용자 기본키';
-comment on column payment.payment_user.full_name is '사용자 이름(전체)';
 comment on column payment.payment_user.last_name is '사용자 성';
 comment on column payment.payment_user.first_name is '사용자 이름';
 comment on column payment.payment_user.is_deleted is '사용자 삭제 여부';
-comment on column payment.payment_user.created_timestamp is '사용자 생성시간';
-comment on column payment.payment_user.updated_timestamp is '사용자 수정시간';
 comment on column payment.payment_user.email is '결제 사용자 이메일(아이디)';
 comment on column payment.payment_user.password is '결제 사용자 비밀번호';
+comment on column payment.payment_user.created_timestamp is '사용자 생성시간';
+comment on column payment.payment_user.updated_timestamp is '사용자 수정시간';
 alter table payment.payment_user owner to manager;
 
 create table if not exists payment.payment_user_card
@@ -52,7 +50,7 @@ create table if not exists payment.payment_user_card
             references payment.payment_user,
     card_number_masked varchar(4)                                not null,
     card_company       varchar(50)                               not null,
-    card_type          varchar(20),
+    card_type          varchar(20)                               not null,
     expiration_year    varchar(4)                                not null,
     expiration_month   varchar(2)                                not null,
     pg_company         varchar(30)                               not null,
@@ -96,9 +94,9 @@ create table if not exists payment.payment_user_point
     free_point        integer    default 0     not null
         constraint free_point_more_than_zero
             check (free_point >= 0),
+    is_deleted        varchar(1) default 'F'::character varying,
     created_timestamp timestamp  default now() not null,
-    updated_timestamp timestamp  default now() not null,
-    is_deleted        varchar(1) default 'F'::character varying
+    updated_timestamp timestamp  default now() not null
 );
 
 comment on table payment.payment_user_point is '결제 사용자 포인트';
@@ -109,9 +107,9 @@ comment on column payment.payment_user_point.paid_point is '결제 사용자 유
 comment on constraint paid_point_more_than_zero on payment.payment_user_point is '유상포인트 0 이상 체크';
 comment on column payment.payment_user_point.free_point is '결제 사용자 무상 포인트';
 comment on constraint free_point_more_than_zero on payment.payment_user_point is '무상포인트 0 이상 체크';
+comment on column payment.payment_user_point.is_deleted is '사용자 포인트 지갑 삭제 여부';
 comment on column payment.payment_user_point.created_timestamp is '포인트 지갑 생성시간';
 comment on column payment.payment_user_point.updated_timestamp is '포인트 지갑 수정시간';
-comment on column payment.payment_user_point.is_deleted is '사용자 포인트 지갑 삭제 여부';
 alter table payment.payment_user_point owner to manager;
 
 create table if not exists payment.payment
@@ -125,9 +123,9 @@ create table if not exists payment.payment
     reference_id        integer,
     reference_type      varchar(20),
     payment_method_type varchar(30)                               not null,
-    payment_method_id   integer,
+    payment_method_id   integer                                   not null,
     payment_type        varchar(30)                               not null,
-    amount              integer                                   not null,
+    total_amount              integer                             not null,
     payment_result_code varchar(2)                                not null,
     requested_timestamp timestamp  default now()                  not null,
     approved_timestamp  timestamp,
@@ -136,11 +134,11 @@ create table if not exists payment.payment
     external_payment_id varchar(200),
     error_code          varchar(20),
     error_message       varchar(300),
+    idempotency_key     varchar(100)                              not null,
+    transaction_id      varchar(100)                              not null,
     is_deleted          varchar(1) default 'F'::character varying not null,
     created_timestamp   timestamp  default now()                  not null,
-    updated_timestamp   timestamp  default now()                  not null,
-    idempotency_key     varchar(100)                              not null,
-    transcation_id      varchar(100)                              not null
+    updated_timestamp   timestamp  default now()                  not null
 );
 
 comment on table payment.payment is '결제 테이블';
@@ -152,7 +150,7 @@ comment on column payment.payment.reference_type is '결제 대상 유형(ORDER/
 comment on column payment.payment.payment_method_type is '결제 수단(CARD, ACCOUNT, EASYPAY)';
 comment on column payment.payment.payment_method_id is '결제 수단 고유 번호';
 comment on column payment.payment.payment_type is '결제 유형(NORMAL, SUBCRIPTION, SPLIT)';
-comment on column payment.payment.amount is '결제 금액';
+comment on column payment.payment.total_amount is '결제 금액';
 comment on column payment.payment.payment_result_code is '결제 상태 코드(00: 결제 대기, 11: 결제 요청, 22: 결제 완료, 33: 결제 실패, 44: 결제취소';
 comment on column payment.payment.requested_timestamp is '결제 요청 시간';
 comment on column payment.payment.approved_timestamp is '결제 승인 시간';
@@ -161,11 +159,12 @@ comment on column payment.payment.failed_timestamp is '결제 실패 시간';
 comment on column payment.payment.external_payment_id is '외부 결제사(PG사 등)에서 관리하는 결제의 고유 식별자';
 comment on column payment.payment.error_code is '결제 실패 PG 에러 코드';
 comment on column payment.payment.error_message is '결제 실패 PG 에러 메시지';
+comment on column payment.payment.idempotency_key is '결제 멱등성 키(클라이언트 전달)';
+comment on column payment.payment.transaction_id is '결제 트랜잭션 고유번호';
 comment on column payment.payment.is_deleted is '결제 삭제 여부';
 comment on column payment.payment.created_timestamp is '결제 생성시간';
 comment on column payment.payment.updated_timestamp is '결제 수정시간';
-comment on column payment.payment.idempotency_key is '결제 멱등성 키(클라이언트 전달)';
-comment on column payment.payment.transcation_id is '결제 트랜잭션 고유번호';
+
 alter table payment.payment owner to manager;
 
 create table if not exists payment.payment_detail
@@ -180,9 +179,9 @@ create table if not exists payment.payment_detail
     item_type                  integer,
     amount                     integer                                   not null,
     payment_detail_result_code varchar(2)                                not null,
+    is_deleted                 varchar(1) default 'F'::character varying not null,
     created_timestamp          timestamp  default now()                  not null,
-    updated_timestamp          timestamp  default now()                  not null,
-    is_deleted                 varchar(1) default 'F'::character varying not null
+    updated_timestamp          timestamp  default now()                  not null
 );
 
 comment on table payment.payment_detail is '결제 상세 행위(여러 결제 수단 부분 취소/복합 결제)';
@@ -214,7 +213,7 @@ create table if not exists payment.payment_history
     prev_data         jsonb,
     new_data          jsonb                   not null,
     external_response jsonb,
-    transcation_id    varchar(100)            not null,
+    transaction_id    varchar(100)            not null,
     created_timestamp timestamp default now() not null,
     updated_timestamp timestamp default now() not null
 );
@@ -231,7 +230,7 @@ comment on column payment.payment_history.changed_reason is '결제 상태 변�
 comment on column payment.payment_history.prev_data is '상태 변경 전의 결제 데이터(스냅샷)';
 comment on column payment.payment_history.new_data is '상태 변경 후의 결제 데이터(스냅샷)';
 comment on column payment.payment_history.external_response is '결제 상태 변경 시 외부 시스템 원본 응답값( PG사, 포인트/쿠폰 API)';
-comment on column payment.payment_history.transcation_id is '결제 트랜잭션 고유번호';
+comment on column payment.payment_history.transaction_id is '결제 트랜잭션 고유번호';
 comment on column payment.payment_history.created_timestamp is '결제 이력 생성 시간';
 comment on column payment.payment_history.updated_timestamp is '결제 이력 수정 시간';
 alter table payment.payment_history owner to manager;
