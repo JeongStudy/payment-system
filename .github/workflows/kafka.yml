@@ -51,14 +51,3 @@ jobs:
         run: kubectl apply -f k8s/kafka-service.yaml
       - name: Deploy Kafka Deployment
         run: kubectl apply -f k8s/kafka-deployment.yaml
-
-      # ✅ Kafka Topic 초기화 (토픽 생성)
-      - name: Create Kafka Topic [payment]
-        run: |
-          KAFKA_POD=$(kubectl get pods -l app=kafka -o jsonpath="{.items[0].metadata.name}")
-          kubectl exec -i $KAFKA_POD -- \
-            kafka-topics.sh --bootstrap-server kafka:9092 \
-            --create --if-not-exists \
-            --topic payment \
-            --partitions 2 \
-            --replication-factor 1
