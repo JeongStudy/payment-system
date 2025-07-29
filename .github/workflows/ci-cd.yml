@@ -4,8 +4,9 @@ on:
   workflow_dispatch:
 
 env:
-  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  LOCATION: ${{ secrets.GKE_LOCATION }}
+  GKE_CLUSTER_NAME: ${{ secrets.GKE_CLUSTER_NAME }}
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GKE_LOCATION: ${{ secrets.GKE_LOCATION }}
   REPO_NAME: payment-repo
   IMAGE_NAME: payment-api
   IMAGE_TAG: ${{ github.sha }}
@@ -36,7 +37,7 @@ jobs:
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
-          project_id: ${{ env.PROJECT_ID }}
+          project_id: ${{ env.GCP_PROJECT_ID }}
 
       - name: Authenticate to Google Cloud
         id: auth
@@ -45,7 +46,7 @@ jobs:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - name: Configure Docker for Artifact Registry
-        run: gcloud auth configure-docker ${{ env.LOCATION }}-docker.pkg.dev --quiet
+        run: gcloud auth configure-docker ${{ env.GKE_LOCATION }}-docker.pkg.dev --quiet
 
       - name: Build Docker image
         run: docker build -t ${{ env.IMAGE_URI }} .
@@ -70,14 +71,14 @@ jobs:
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
-          project_id: ${{ env.PROJECT_ID }}
+          project_id: ${{ env.GCP_PROJECT_ID }}
 
       - name: Get GKE credentials
         uses: google-github-actions/get-gke-credentials@v2
         with:
-          cluster_name: ${{ secrets.GKE_CLUSTER_NAME }}
-          location: ${{ secrets.GKE_LOCATION }}
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          cluster_name: ${{ env.GKE_CLUSTER_NAME }}
+          location: ${{ env.GKE_LOCATION }}
+          project_id: ${{ env.GCP_PROJECT_ID }}
 
       # ✅ payment-api 서비스 및 디플로이먼트
       - name: Create/Update payment-api Service

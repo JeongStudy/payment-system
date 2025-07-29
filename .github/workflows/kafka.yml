@@ -4,8 +4,10 @@ on:
   workflow_dispatch:
 
 env:
-  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  LOCATION: ${{ secrets.GKE_LOCATION }}
+  GKE_CLUSTER_NAME: ${{ secrets.GKE_CLUSTER_NAME }}
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GKE_LOCATION: ${{ secrets.GKE_LOCATION }}
+  KAFKA_URL: ${{ secrets.KAFKA_URL }}
 
 jobs:
   init-kafka:
@@ -24,20 +26,20 @@ jobs:
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
-          project_id: ${{ env.PROJECT_ID }}
+          project_id: ${{ env.GCP_PROJECT_ID }}
 
       - name: Get GKE credentials
         uses: google-github-actions/get-gke-credentials@v2
         with:
-          cluster_name: ${{ secrets.GKE_CLUSTER_NAME }}
-          location: ${{ secrets.GKE_LOCATION }}
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          cluster_name: ${{ env.GKE_CLUSTER_NAME }}
+          location: ${{ env.GKE_LOCATION }}
+          project_id: ${{ env.GCP_PROJECT_ID }}
 
       # ✅ Kafka URL Secret 생성
       - name: Create Kafka Secret
         run: |
           kubectl create secret generic kafka-secret \
-            --from-literal=KAFKA_URL=${{ secrets.KAFKA_URL }} \
+            --from-literal=KAFKA_URL=${{ env.KAFKA_URL }} \
             --dry-run=client -o yaml | kubectl apply -f -
 
       # ✅ Zookeeper Service/Deployment
