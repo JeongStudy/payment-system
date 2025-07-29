@@ -4,6 +4,8 @@ metadata:
   name: kafka-service
 spec:
   ports:
-    - port: 9092
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
   selector:
     app: kafka
