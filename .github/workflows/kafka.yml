@@ -8,6 +8,7 @@ env:
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GKE_LOCATION: ${{ secrets.GKE_LOCATION }}
   KAFKA_URL: ${{ secrets.KAFKA_URL }}
+  ZOOKEEPER_URL: ${{ secrets.ZOOKEEPER_URL }}
 
 jobs:
   init-kafka:
@@ -39,7 +40,9 @@ jobs:
       - name: Create Kafka Secret
         run: |
           kubectl create secret generic kafka-secret \
+            --from-literal=KAFKA_CFG_ADVERTISED_LISTENERS="PLAINTEXT://${{ env.KAFKA_URL }}" \
             --from-literal=KAFKA_URL=${{ env.KAFKA_URL }} \
+            --from-literal=ZOOKEEPER_URL=${{ env.ZOOKEEPER_URL }} \
             --dry-run=client -o yaml | kubectl apply -f -
 
       # ✅ Zookeeper Service/Deployment
