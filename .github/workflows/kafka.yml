@@ -40,7 +40,7 @@ jobs:
         run: |
           kubectl create secret generic kafka-secret \
             --from-literal=KAFKA_URL=${{ env.KAFKA_URL }} \
-            --dry-run=client -o yml | kubectl apply -f -
+            --dry-run=client -o yaml | kubectl apply -f -
 
       # ✅ Zookeeper Service/Deployment
       - name: Deploy Zookeeper Service
