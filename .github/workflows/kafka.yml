@@ -40,16 +40,16 @@ jobs:
         run: |
           kubectl create secret generic kafka-secret \
             --from-literal=KAFKA_URL=${{ env.KAFKA_URL }} \
-            --dry-run=client -o yaml | kubectl apply -f -
+            --dry-run=client -o yml | kubectl apply -f -
 
       # ✅ Zookeeper Service/Deployment
       - name: Deploy Zookeeper Service
-        run: kubectl apply -f k8s/zookeeper-service.yaml
+        run: kubectl apply -f k8s/zookeeper-service.yml
       - name: Deploy Zookeeper Deployment
-        run: kubectl apply -f k8s/zookeeper-deployment.yaml
+        run: kubectl apply -f k8s/zookeeper-deployment.yml
 
       # ✅ Kafka Service/Deployment
       - name: Deploy Kafka Service
-        run: kubectl apply -f k8s/kafka-service.yaml
+        run: kubectl apply -f k8s/kafka-service.yml
       - name: Deploy Kafka Deployment
-        run: kubectl apply -f k8s/kafka-deployment.yaml
+        run: kubectl apply -f k8s/kafka-deployment.yml
