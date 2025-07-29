@@ -17,9 +17,6 @@ jobs:
     environment: payment-system-env
     name: Build & Push Image
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -32,7 +29,7 @@ jobs:
           cache: gradle
 
       - name: Build with Gradle
-        run: ./gradlew clean build -x test --no-daemon
+        run: ./gradlew clean build test --no-daemon
 
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
