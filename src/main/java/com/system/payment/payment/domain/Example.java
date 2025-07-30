@@ -1,4 +1,4 @@
-package com.system.payment.domain.entity;
+package com.system.payment.payment.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
