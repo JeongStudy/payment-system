@@ -1,4 +1,4 @@
-package com.system.payment.payment.model.response;
+package com.system.payment.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
