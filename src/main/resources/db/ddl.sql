@@ -23,6 +23,7 @@ create table if not exists payment.payment_user
     password          varchar(300)                              not null,
     last_name         varchar(50)                               not null,
     first_name        varchar(50)                               not null,
+    phone_number      varchar(11)                                 not null,
     is_deleted        varchar(1) default 'F'::character varying not null,
     created_timestamp timestamp  default now()                  not null,
     updated_timestamp timestamp  default now()                  not null
@@ -31,11 +32,12 @@ create table if not exists payment.payment_user
 comment on table payment.payment_user is '결제 유저';
 comment on column payment.payment_user.id is '결제 사용자 고유번호';
 comment on constraint payment_user_pk on payment.payment_user is '결제 사용자 기본키';
-comment on column payment.payment_user.last_name is '사용자 성';
-comment on column payment.payment_user.first_name is '사용자 이름';
-comment on column payment.payment_user.is_deleted is '사용자 삭제 여부';
 comment on column payment.payment_user.email is '결제 사용자 이메일(아이디)';
 comment on column payment.payment_user.password is '결제 사용자 비밀번호';
+comment on column payment.payment_user.last_name is '사용자 성';
+comment on column payment.payment_user.first_name is '사용자 이름';
+comment on column payment.payment_user.phone_number is '사용자 휴대폰 번호';
+comment on column payment.payment_user.is_deleted is '사용자 삭제 여부';
 comment on column payment.payment_user.created_timestamp is '사용자 생성시간';
 comment on column payment.payment_user.updated_timestamp is '사용자 수정시간';
 alter table payment.payment_user owner to manager;
