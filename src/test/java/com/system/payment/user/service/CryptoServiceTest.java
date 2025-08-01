@@ -1,8 +1,11 @@
 package com.system.payment.user.service;
 
 import com.system.payment.user.domain.jaebin.AesKey;
+import com.system.payment.user.domain.jaebin.RsaKeyPair;
 import com.system.payment.user.model.reponse.AesKeyResponse;
+import com.system.payment.user.model.reponse.RsaKeyResponse;
 import com.system.payment.user.repository.AesKeyRepository;
+import com.system.payment.user.repository.RsaKeyPairRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +28,9 @@ class CryptoServiceTest {
 	@Mock
 	private AesKeyRepository aesKeyRepository;
 
+	@Mock
+	private RsaKeyPairRepository rsaKeyPairRepository;
+
 	@InjectMocks
 	private CryptoService cryptoService;
 
@@ -46,5 +52,20 @@ class CryptoServiceTest {
 		verify(aesKeyRepository).save(org.mockito.ArgumentMatchers.any(AesKey.class));
 
 		logger.info("");
+	}
+
+
+	@Test
+	@DisplayName("RSA 키 발급 단위 테스트 - 성공")
+	void generateRsaKey_success() throws Exception {
+		// when
+		RsaKeyResponse response = cryptoService.generateRsaKey();
+
+		// then
+		assertThat(response).isNotNull();
+		assertThat(response.getPublicKey()).isNotBlank();
+		verify(rsaKeyPairRepository).save(org.mockito.ArgumentMatchers.any(RsaKeyPair.class));
+
+		logger.info("RSA 공개키: {}", response.getPublicKey());
 	}
 }

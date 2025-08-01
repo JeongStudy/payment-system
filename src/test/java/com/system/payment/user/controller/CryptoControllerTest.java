@@ -42,4 +42,16 @@ class CryptoControllerTest {
 		logger.info(resultActions.andReturn().getResponse().getContentAsString());
 		logger.info("");
 	}
+
+	@Test
+	@DisplayName("RSA 키 발급 성공 테스트")
+	void generateRsaKey_success() throws Exception {
+		final ResultActions resultActions = mockMvc.perform(post("/api/payment/crypto/rsa")
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.status").value(200))
+				.andExpect(jsonPath("$.message").value("Success"));
+
+		logger.info(resultActions.andReturn().getResponse().getContentAsString());
+	}
 }

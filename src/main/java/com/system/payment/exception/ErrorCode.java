@@ -10,6 +10,7 @@ import lombok.Getter;
 @JsonFormat(shape = JsonFormat.Shape.STRING)
 public enum ErrorCode {
     BAD_REQUEST_PARAM(4000, "Bad Request Parameter"),
+    RSA_KEY_GENERATION_FAIL(5001, "An internal server error occurred during RSA key generation."),
     SERVER_NULL_POINTER_ERROR(5000, "Null Pointer Error"),
     SERVER_ERROR(5000, "Server Error"),
 
