@@ -307,10 +307,10 @@ alter table payment.rsa_key_pair add constraint rsa_key_pair_pk_2 unique (public
 
 create table if not exists payment.aes_key
 (
-    id                integer
+    id                integer generated always as identity
         constraint aes_key_pk
             primary key,
-    aes_key           integer,
+    aes_key           varchar(200),           not null,
     expired_timestamp timestamp               not null,
     created_timestamp timestamp default now() not null
 );

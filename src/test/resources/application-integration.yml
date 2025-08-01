@@ -5,6 +5,7 @@ spring:
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
   jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
     defer-datasource-initialization: false
@@ -15,10 +16,6 @@ spring:
         default_schema: payment
         format_sql: true
         jdbc.time_zone: Asia/Seoul
-  sql:
-    init:
-      mode: always
-      schema-locations: classpath:db/ddl.sql,classpath:db/init.sql
   timezone: Asia/Seoul
   kafka:
     bootstrap-servers: ${KAFKA_URL}

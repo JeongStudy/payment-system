@@ -1,0 +1,3 @@
+### AES 대칭키 발급 (성공 예시)
+POST http://localhost:8080/api/payment/crypto/aes
+Content-Type: application/json
