@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface AesKeyRepository extends JpaRepository<AesKey, Integer> {
     boolean existsByAesKey(String aesKey);
-	Optional<AesKey> findByIdAndExpiredTimestampAfter(Integer id, LocalDateTime now);
+	Optional<AesKey> findByAesKey(String aesKey);
 }
