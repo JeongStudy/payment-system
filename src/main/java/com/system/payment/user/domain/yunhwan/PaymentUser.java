@@ -27,4 +27,7 @@ public class PaymentUser extends BaseEntity {
 
     @Column(length = 50, nullable = false)
     private String firstName;
+
+    @Column(length = 11, nullable = false)
+    private String phoneNumber;
 }
