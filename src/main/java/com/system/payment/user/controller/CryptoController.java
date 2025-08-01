@@ -1,6 +1,7 @@
 package com.system.payment.user.controller;
 
 import com.system.payment.user.model.reponse.AesKeyResponse;
+import com.system.payment.user.model.reponse.RsaKeyResponse;
 import com.system.payment.user.service.CryptoService;
 import com.system.payment.util.Response;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,17 @@ public class CryptoController {
 				.data(aesKey)
 				.build();
 
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/rsa")
+	public ResponseEntity<Response<RsaKeyResponse>> generateRsaKey(){
+		RsaKeyResponse rsaKey = cryptoService.generateRsaKey();
+		Response<RsaKeyResponse> response = Response.<RsaKeyResponse>builder()
+				.status(200)
+				.message("Success")
+				.data(rsaKey)
+				.build();
 		return ResponseEntity.ok(response);
 	}
 }

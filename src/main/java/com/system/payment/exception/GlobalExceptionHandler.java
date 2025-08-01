@@ -49,6 +49,19 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.badRequest().body(response);
 	}
 
+	@ExceptionHandler(RsaKeyGenerateException.class)
+	public ResponseEntity<Response<Void>> handleRsaKeyGenerateException(RsaKeyGenerateException e) {
+		log.error("RsaKeyGenerateException 발생", e);
+		ErrorCode errorCode = e.getErrorCode();
+
+		Response<Void> response = Response.<Void>builder()
+				.status(errorCode.getStatus())
+				.message(errorCode.getMessage())
+				.build();
+
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	}
+
 	// NullPointerException만 따로 분리
 	@ExceptionHandler(NullPointerException.class)
 	public ResponseEntity<Response<Void>> handleNullPointerException(NullPointerException e) {
