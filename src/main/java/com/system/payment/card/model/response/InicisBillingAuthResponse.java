@@ -13,7 +13,7 @@ public class InicisBillingAuthResponse implements PGAuthParamsResponse {
     private final String mid;
     private final String oid;
     private final String price;
-    private final String timestamp;
+    private final Long timestamp;
     private final String useChkfake;
     private final String signature;
     private final String verification;
