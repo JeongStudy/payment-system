@@ -1,6 +1,7 @@
 package com.system.payment.common.domain.yunhwan;
 
 import jakarta.persistence.EntityListeners;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean isDeleted = false;
 
