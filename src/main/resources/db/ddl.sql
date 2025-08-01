@@ -279,3 +279,49 @@ comment on column payment.payment_user_point_history.changed_by is '포인트 �
 comment on column payment.payment_user_point_history.created_timestamp is '포인트 액션 이력 생성 시간';
 comment on column payment.payment_user_point_history.updated_timestamp is '포인트 액션 이력 수정 시간';
 alter table payment.payment_user_point_history owner to manager;
+
+create table if not exists payment.rsa_key_pair
+(
+    id                integer generated always as identity
+        constraint rsa_key_pair_pk
+            primary key,
+    public_key        text                    not null,
+    private_key       text                    not null
+        constraint rsa_key_pair_pk_3
+            unique,
+    expired_timestamp timestamp               not null,
+    created_timestamp timestamp default now() not null
+);
+
+comment on table payment.rsa_key_pair is 'RSA 키쌍 테이블로 저장';
+comment on column payment.rsa_key_pair.id is 'rsa 키 고유 번호';
+comment on column payment.rsa_key_pair.public_key is 'rsa Base64 인코딩된 공개키';
+comment on column payment.rsa_key_pair.private_key is 'rsa Base64 인코딩된 개인키';
+comment on column payment.rsa_key_pair.expired_timestamp is 'rsa 키 만료 시간';
+comment on column payment.rsa_key_pair.created_timestamp is 'rsa 키 생성시간';
+
+alter table payment.rsa_key_pair owner to manager;
+
+create index rsa_key_pair_public_key_index on payment.rsa_key_pair (public_key);
+alter table payment.rsa_key_pair add constraint rsa_key_pair_pk_2 unique (public_key);
+
+create table if not exists payment.aes_key
+(
+    id                integer
+        constraint aes_key_pk
+            primary key,
+    aes_key           integer,
+    expired_timestamp timestamp               not null,
+    created_timestamp timestamp default now() not null
+);
+
+comment on column payment.aes_key.id is 'aes_key 고유 번호';
+comment on column payment.aes_key.aes_key is 'AES 키로 사용하는 UUID 문자열';
+comment on column payment.aes_key.expired_timestamp is 'aek key 만료 시간';
+comment on column payment.aes_key.created_timestamp is 'aek key 생성 시간';
+
+alter table payment.aes_key owner to manager;
+
+create index aes_key_aes_key_index on payment.aes_key (aes_key);
+alter table payment.aes_key add constraint aes_key_pk_2 unique (aes_key);
+
