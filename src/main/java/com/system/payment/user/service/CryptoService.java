@@ -1,7 +1,7 @@
 package com.system.payment.user.service;
 
 import com.system.payment.exception.ErrorCode;
-import com.system.payment.exception.RsaKeyGenerateException;
+import com.system.payment.exception.CryptoException;
 import com.system.payment.user.domain.jaebin.AesKey;
 import com.system.payment.user.domain.jaebin.RsaKeyPair;
 import com.system.payment.user.model.reponse.AesKeyResponse;
@@ -44,7 +44,7 @@ public class CryptoService {
 		try {
 			keyGen = KeyPairGenerator.getInstance("RSA");
 		} catch (NoSuchAlgorithmException e) {
-			throw new RsaKeyGenerateException(ErrorCode.RSA_KEY_GENERATION_FAIL);
+			throw new CryptoException(ErrorCode.RSA_KEY_GENERATION_FAIL);
 		}
 		keyGen.initialize(2048);
 		KeyPair pair = keyGen.generateKeyPair();

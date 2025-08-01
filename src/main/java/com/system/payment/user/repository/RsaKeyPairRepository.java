@@ -8,5 +8,5 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface RsaKeyPairRepository extends JpaRepository<RsaKeyPair, Integer> {
-    Optional<RsaKeyPair> findByIdAndExpiredTimestampAfter(Integer id, LocalDateTime now);
+    Optional<RsaKeyPair> findByPublicKey(String publicKey);
 }

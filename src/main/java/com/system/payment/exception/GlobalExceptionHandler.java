@@ -14,9 +14,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice(basePackages = {"com.system.payment"})
 public class GlobalExceptionHandler {
 
-	// 커스텀 비즈니스 예외 처리
-    @ExceptionHandler(PaymentServerException.class)
-    public ResponseEntity<Response<Void>> handlePaymentServerException(PaymentServerException e) {
+    @ExceptionHandler(PaymentServerBadRequestException.class)
+    public ResponseEntity<Response<Void>> handlePaymentServerBadRequestException(PaymentServerBadRequestException e) {
         ErrorCode errorCode = e.getErrorCode();
         Response<Void> response = Response.<Void>builder()
             .status(errorCode.getStatus())
@@ -25,7 +24,26 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-	// validation 실패 (RequestBody DTO @Valid 등)
+    @ExceptionHandler(PaymentServerNotFoundException.class)
+    public ResponseEntity<Response<Void>> handlePaymentServerNotFoundException(PaymentServerNotFoundException e) {
+        ErrorCode errorCode = e.getErrorCode();
+        Response<Void> response = Response.<Void>builder()
+            .status(errorCode.getStatus())
+            .message(errorCode.getMessage())
+            .build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(PaymentServerConflictException.class)
+    public ResponseEntity<Response<Void>> handlePaymentServerConflictException(PaymentServerConflictException e) {
+        ErrorCode errorCode = e.getErrorCode();
+        Response<Void> response = Response.<Void>builder()
+            .status(errorCode.getStatus())
+            .message(errorCode.getMessage())
+            .build();
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<Response<Void>> handleValidationExceptions(MethodArgumentNotValidException e) {
 		BindingResult bindingResult = e.getBindingResult();
@@ -37,7 +55,6 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.badRequest().body(response);
 	}
 
-	// validation 실패 (Form 등)
 	@ExceptionHandler(BindException.class)
 	public ResponseEntity<Response<Void>> handleBindException(BindException e) {
 		BindingResult bindingResult = e.getBindingResult();
@@ -49,9 +66,9 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.badRequest().body(response);
 	}
 
-	@ExceptionHandler(RsaKeyGenerateException.class)
-	public ResponseEntity<Response<Void>> handleRsaKeyGenerateException(RsaKeyGenerateException e) {
-		log.error("RsaKeyGenerateException 발생", e);
+	@ExceptionHandler(CryptoException.class)
+	public ResponseEntity<Response<Void>> handleRsaKeyGenerateException(CryptoException e) {
+		log.error("CryptoException 발생", e);
 		ErrorCode errorCode = e.getErrorCode();
 
 		Response<Void> response = Response.<Void>builder()
@@ -62,7 +79,6 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	}
 
-	// NullPointerException만 따로 분리
 	@ExceptionHandler(NullPointerException.class)
 	public ResponseEntity<Response<Void>> handleNullPointerException(NullPointerException e) {
 		log.error("NullPointerException 발생", e);
@@ -73,7 +89,6 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	}
 
-	// 그 외의 모든 Exception 처리
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Response<Void>> handleGeneralException(Exception e) {
 		log.error("서버 내부 일반 오류 발생", e);

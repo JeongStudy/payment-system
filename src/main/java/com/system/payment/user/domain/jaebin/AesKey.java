@@ -1,5 +1,7 @@
 package com.system.payment.user.domain.jaebin;
 
+import com.system.payment.exception.ErrorCode;
+import com.system.payment.exception.PaymentServerBadRequestException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,7 +22,7 @@ public class AesKey {
 	private Integer id;
 
 	@Column(name = "aes_key", nullable = false, unique = true)
-	private String aesKey; // UUID 문자열
+	private String aesKey;
 
 	@Column(name = "created_timestamp", nullable = false, updatable = false)
 	private LocalDateTime createdTimestamp;
@@ -28,7 +30,7 @@ public class AesKey {
 	@Column(name = "expired_timestamp", nullable = false)
 	private LocalDateTime expiredTimestamp;
 
-	public AesKey(String aesKey, LocalDateTime createdTimestamp, LocalDateTime expiredTimestamp) { // 도메인 생성자
+	public AesKey(String aesKey, LocalDateTime createdTimestamp, LocalDateTime expiredTimestamp) {
 		this.aesKey = aesKey;
 		this.createdTimestamp = createdTimestamp;
 		this.expiredTimestamp = expiredTimestamp;
@@ -42,5 +44,11 @@ public class AesKey {
 				now,
 				now.plus(ttl)
 		);
+	}
+
+		public void validateNotExpired() {
+		if (this.expiredTimestamp.isBefore(LocalDateTime.now())) {
+			throw new PaymentServerBadRequestException(ErrorCode.INVALID_AES_KEY);
+		}
 	}
 }

@@ -1,5 +1,7 @@
 package com.system.payment.user.domain.jaebin;
 
+import com.system.payment.exception.ErrorCode;
+import com.system.payment.exception.PaymentServerBadRequestException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -30,7 +32,7 @@ public class RsaKeyPair {
     @Column(name = "created_timestamp", nullable = false)
     private LocalDateTime createdTimestamp = LocalDateTime.now();
 
-	public RsaKeyPair(String publicKey, String privateKey, LocalDateTime createdTimestamp, LocalDateTime expiredTimestamp) { // 도메인 생성자
+	public RsaKeyPair(String publicKey, String privateKey, LocalDateTime createdTimestamp, LocalDateTime expiredTimestamp) {
 		this.publicKey = publicKey;
 		this.privateKey = privateKey;
 		this.createdTimestamp = createdTimestamp;
@@ -47,5 +49,11 @@ public class RsaKeyPair {
 				now,
 				now.plus(ttl)
 		);
-    }
+	}
+
+	public void validateNotExpired() {
+		if (this.expiredTimestamp.isBefore(LocalDateTime.now())) {
+			throw new PaymentServerBadRequestException(ErrorCode.INVALID_RSA_KEY);
+		}
+	}
 }
