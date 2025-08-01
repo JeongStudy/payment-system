@@ -1,0 +1,25 @@
+### 비즈니스 예외 테스트
+GET http://localhost:8080/api/payment/test/business-error
+Content-Type: application/json
+
+###
+
+### 파라미터 검증 실패 테스트
+POST http://localhost:8080/api/payment/test/validation-error
+Content-Type: application/json
+
+{
+  "name": ""
+}
+
+###
+
+### NullPointerException 테스트
+GET http://localhost:8080/api/payment/test/null-pointer
+Content-Type: application/json
+
+###
+
+### 일반 Exception 테스트
+GET http://localhost:8080/api/payment/test/general-exception
+Content-Type: application/json
