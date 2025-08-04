@@ -1,5 +1,6 @@
 package com.system.payment.card.model.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.AllArgsConstructor;
@@ -14,9 +15,10 @@ public class InicisBillingAuthResponse implements PGAuthParamsResponse {
     private final String oid;
     private final String price;
     private final Long timestamp;
-    private final String useChkfake;
+    private final String use_chkfake;
     private final String signature;
     private final String verification;
+    @JsonProperty("mKey")
     private final String mKey;
     private final String offerPeriod;
     private final String charset;

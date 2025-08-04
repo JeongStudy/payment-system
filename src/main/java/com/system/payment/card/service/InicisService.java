@@ -13,14 +13,14 @@ public class InicisService {
 
     // 데모 테스트 고정 파라미터
     private String mid = "INIBillTst";
-    private String oid = "DemoTest_1754028023130";
+    private String oid = "DemoTest_" + System.currentTimeMillis();
     private String price = "1000";
-    private Long timestamp = 1754028821750L;
-    private String returnUrl = "localhost:3000/inicis/return";
-    private String closeUrl = "localhost:3000/inicis/close";
-    private String signKey = "SU5JQklMTFRzdERlbW9LZXlmb3JUZXN0";
+    private long timestamp = System.currentTimeMillis();
+    private String returnUrl = "https://1f3e6edfba04.ngrok-free.app/api/payment/cards/inicis/return";
+    private String closeUrl = "https://1f3e6edfba04.ngrok-free.app/card/return";
+    private String signKey = "SU5JTElURV9UUklQTEVERVNfS0VZU1RS";
     private String version = "1.0";
-    private String gopaymethod = "";
+    private String gopaymethod = "CARD";
     private String useChkfake = "Y";
     private String currency = "WON";
     private String charset = "UTF-8";
@@ -44,7 +44,7 @@ public class InicisService {
                 .oid(oid)
                 .price(price)
                 .timestamp(timestamp)
-                .useChkfake(useChkfake)
+                .use_chkfake(useChkfake)
                 .signature(signature)
                 .verification(verification)
                 .mKey(mKey)
