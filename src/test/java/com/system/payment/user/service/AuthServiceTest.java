@@ -5,8 +5,6 @@ import com.system.payment.exception.ErrorCode;
 import com.system.payment.user.domain.jaebin.AesKey;
 import com.system.payment.user.domain.jaebin.PaymentUser;
 import com.system.payment.user.domain.jaebin.RsaKeyPair;
-import com.system.payment.user.model.reponse.AesKeyResponse;
-import com.system.payment.user.model.reponse.RsaKeyResponse;
 import com.system.payment.user.model.request.SignUpRequest;
 import com.system.payment.user.repository.AesKeyRepository;
 import com.system.payment.user.repository.PaymentUserRepository;
@@ -21,19 +19,22 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
@@ -72,7 +73,7 @@ class AuthServiceTest {
 		KeyPair pair = keyGen.generateKeyPair();
 		String publicKey = Base64.getEncoder().encodeToString(pair.getPublic().getEncoded());
 		String privateKey = Base64.getEncoder().encodeToString(pair.getPrivate().getEncoded());
-		// region
+		// endregion
 
 		// region aes generate
 		String aesKeyStr;
@@ -80,7 +81,15 @@ class AuthServiceTest {
 			aesKeyStr = UUID.randomUUID().toString();
 		} while (aesKeyRepository.existsByAesKey(aesKeyStr));
 		AesKey aesKey = AesKey.create(aesKeyStr);
-		// region
+		// endregion
+
+		// region aes generate
+//		AesKeyResponse aesKeyRes = cryptoService.generateAesKey();
+		// endregion
+
+//		// region rsa generate
+//		RsaKeyResponse rsaKeyRes = cryptoService.generateRsaKey();
+//		// endregion
 
 		String encAesKey = RsaKeyCryptoUtil.encryptAesKeyWithRsaPublicKey(aesKeyStr, publicKey);
 		String password = "manager0";
@@ -97,19 +106,25 @@ class AuthServiceTest {
 				.phoneNumber("01025861111")
 				.build();
 
-
-		AesKey aesKeyEntity = mock(AesKey.class);
-//		given(aesKeyRepository.findByAesKey(aesKeyStr)).willReturn(Optional.of(aesKeyEntity));
-
 		String decryptedAesKey = RsaKeyCryptoUtil.decryptEncryptedAesKeyWithRsaPrivateKey(encAesKey, privateKey);
 		assert decryptedAesKey.equals(aesKeyStr);
 
 		String decryptedPassword = AesKeyCryptoUtil.decryptPasswordWithAesKey(encPassword, aesKeyStr);
 		assert decryptedPassword.equals(password);
 
-//		assertThatNoException().isThrownBy(() -> authService.signUp(request));
+		// region given-when-then
+		// given
+		given(aesKeyRepository.findByAesKey(anyString())).willReturn(Optional.of(AesKey.create(aesKeyStr)));
+		given(rsaKeyPairRepository.findByPublicKey(publicKey)).willReturn(Optional.of(RsaKeyPair.create(publicKey, privateKey)));
+		given(paymentUserRepository.existsByEmail(anyString())).willReturn(false);
+		given(passwordEncoder.encode(anyString())).willReturn("bcrypt-hash");
 
-//		verify(paymentUserRepository).save(any(PaymentUser.class));
+		// when
+		authService.signUp(request);
+
+		// then
+		verify(paymentUserRepository, times(1)).save(any(PaymentUser.class));
+		//endregion
 
 		logger.info("");
 	}
