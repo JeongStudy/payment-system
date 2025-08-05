@@ -10,8 +10,9 @@ import lombok.Getter;
 @JsonFormat(shape = JsonFormat.Shape.STRING)
 public enum ErrorCode {
     BAD_REQUEST_PARAM(4000, "Bad Request Parameter"),
+    UNAUTHORIZED(4000, "Unauthorized"),
     SERVER_ERROR(5000, "Server Error"),
-    SERVER_NULL_POINTER_ERROR(5001, "Null Pointer Error"),
+    SERVER_NULL_POINTER_ERROR(5001, "Server Null Pointer Error"),
     RSA_KEY_GENERATION_FAIL(5002, "An internal server error occurred during RSA key generation."),
     FAILED_TO_DECRYPT_AES_KEY_WITH_RSA_KEY(5003, "Failed to decrypt AES key with RSA Key."),
     FAILED_TO_ENCRYPT_AES_KEY_WITH_RSA_KEY(5003, "Failed to encrypt AES key with RSA Key."),
@@ -24,7 +25,10 @@ public enum ErrorCode {
     INVALID_RSA_KEY(1002, "RSA 키가 유효하지 않거나 만료되었습니다."),
     AES_KEY_NOT_FOUND(1002, "AES 키가 존재하지 않습니다."),
     INVALID_AES_KEY(1003, "AES 키가 유효하지 않거나 만료되었습니다."),
-    DUPLICATE_EMAIL(1004, "이미 존재하는 이메일입니다.");
+    DUPLICATE_EMAIL(1004, "이미 존재하는 이메일입니다."),
+    USER_ID_NOT_EXIST(1005, "사용자 ID가 존재하지 않습니다."),
+    INVALID_PASSWORD(1006, "ID나 비밀번호가 틀렸습니다.")
+    ;
 
     private final int status;
     private final String message;
