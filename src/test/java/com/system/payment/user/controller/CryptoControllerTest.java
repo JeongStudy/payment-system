@@ -19,7 +19,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("integration")
+@ActiveProfiles("test")
+//@ActiveProfiles("integration")
 class CryptoControllerTest {
 
 	@Autowired
@@ -36,9 +37,9 @@ class CryptoControllerTest {
 
 		final ResultActions resultActions = mockMvc.perform(post("/api/payment/crypto/aes")
 						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.status").value(200))
-				.andExpect(jsonPath("$.message").value("Success"));
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.status").value(2003))
+				.andExpect(jsonPath("$.message").value("AES Key가 생성되었습니다."));
 		logger.info(resultActions.andReturn().getResponse().getContentAsString());
 		logger.info("");
 	}
@@ -48,9 +49,9 @@ class CryptoControllerTest {
 	void generateRsaKey_success() throws Exception {
 		final ResultActions resultActions = mockMvc.perform(post("/api/payment/crypto/rsa")
 						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.status").value(200))
-				.andExpect(jsonPath("$.message").value("Success"));
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.status").value(2002))
+				.andExpect(jsonPath("$.message").value("RSA Key가 생성되었습니다."));
 
 		logger.info(resultActions.andReturn().getResponse().getContentAsString());
 	}
