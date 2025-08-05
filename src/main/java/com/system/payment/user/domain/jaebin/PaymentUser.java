@@ -33,7 +33,7 @@ public class PaymentUser extends BaseTimeEntity{
     @Column(name = "is_deleted", length = 1)
     private String isDeleted = "F";
 
-    public PaymentUser(String email, String encodedPassword, String firstName, String lastName, String phoneNumber) {
+    private PaymentUser(String email, String encodedPassword, String firstName, String lastName, String phoneNumber) {
 		this.email = email;
         this.password = encodedPassword;
         this.firstName = firstName;

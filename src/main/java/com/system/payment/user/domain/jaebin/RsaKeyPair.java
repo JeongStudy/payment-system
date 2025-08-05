@@ -32,7 +32,7 @@ public class RsaKeyPair {
     @Column(name = "created_timestamp", nullable = false)
     private LocalDateTime createdTimestamp = LocalDateTime.now();
 
-	public RsaKeyPair(String publicKey, String privateKey, LocalDateTime createdTimestamp, LocalDateTime expiredTimestamp) {
+	private RsaKeyPair(String publicKey, String privateKey, LocalDateTime createdTimestamp, LocalDateTime expiredTimestamp) {
 		this.publicKey = publicKey;
 		this.privateKey = privateKey;
 		this.createdTimestamp = createdTimestamp;

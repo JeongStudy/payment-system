@@ -29,7 +29,7 @@ public class AesKey {
 	@Column(name = "expired_timestamp", nullable = false)
 	private LocalDateTime expiredTimestamp;
 
-	public AesKey(String aesKey, LocalDateTime createdTimestamp, LocalDateTime expiredTimestamp) {
+	private AesKey(String aesKey, LocalDateTime createdTimestamp, LocalDateTime expiredTimestamp) {
 		this.aesKey = aesKey;
 		this.createdTimestamp = createdTimestamp;
 		this.expiredTimestamp = expiredTimestamp;
