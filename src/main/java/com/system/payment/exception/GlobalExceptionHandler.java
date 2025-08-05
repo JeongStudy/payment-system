@@ -14,35 +14,45 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice(basePackages = {"com.system.payment"})
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(PaymentServerBadRequestException.class)
-    public ResponseEntity<Response<Void>> handlePaymentServerBadRequestException(PaymentServerBadRequestException e) {
-        ErrorCode errorCode = e.getErrorCode();
-        Response<Void> response = Response.<Void>builder()
-            .status(errorCode.getStatus())
-            .message(errorCode.getMessage())
-            .build();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-    }
+	@ExceptionHandler(PaymentServerUnauthorizedException.class)
+	public ResponseEntity<Response<Void>> handlePaymentServerUnauthorizedException(PaymentServerUnauthorizedException e) {
+		ErrorCode errorCode = e.getErrorCode();
+		Response<Void> response = Response.<Void>builder()
+				.status(errorCode.getStatus())
+				.message(errorCode.getMessage())
+				.build();
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+	}
 
-    @ExceptionHandler(PaymentServerNotFoundException.class)
-    public ResponseEntity<Response<Void>> handlePaymentServerNotFoundException(PaymentServerNotFoundException e) {
-        ErrorCode errorCode = e.getErrorCode();
-        Response<Void> response = Response.<Void>builder()
-            .status(errorCode.getStatus())
-            .message(errorCode.getMessage())
-            .build();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-    }
+	@ExceptionHandler(PaymentServerBadRequestException.class)
+	public ResponseEntity<Response<Void>> handlePaymentServerBadRequestException(PaymentServerBadRequestException e) {
+		ErrorCode errorCode = e.getErrorCode();
+		Response<Void> response = Response.<Void>builder()
+				.status(errorCode.getStatus())
+				.message(errorCode.getMessage())
+				.build();
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+	}
 
-    @ExceptionHandler(PaymentServerConflictException.class)
-    public ResponseEntity<Response<Void>> handlePaymentServerConflictException(PaymentServerConflictException e) {
-        ErrorCode errorCode = e.getErrorCode();
-        Response<Void> response = Response.<Void>builder()
-            .status(errorCode.getStatus())
-            .message(errorCode.getMessage())
-            .build();
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-    }
+	@ExceptionHandler(PaymentServerNotFoundException.class)
+	public ResponseEntity<Response<Void>> handlePaymentServerNotFoundException(PaymentServerNotFoundException e) {
+		ErrorCode errorCode = e.getErrorCode();
+		Response<Void> response = Response.<Void>builder()
+				.status(errorCode.getStatus())
+				.message(errorCode.getMessage())
+				.build();
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+	}
+
+	@ExceptionHandler(PaymentServerConflictException.class)
+	public ResponseEntity<Response<Void>> handlePaymentServerConflictException(PaymentServerConflictException e) {
+		ErrorCode errorCode = e.getErrorCode();
+		Response<Void> response = Response.<Void>builder()
+				.status(errorCode.getStatus())
+				.message(errorCode.getMessage())
+				.build();
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<Response<Void>> handleValidationExceptions(MethodArgumentNotValidException e) {
