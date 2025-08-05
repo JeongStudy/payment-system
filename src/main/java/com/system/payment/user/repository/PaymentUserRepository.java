@@ -7,6 +7,7 @@ import java.util.Optional;
 
 public interface PaymentUserRepository extends JpaRepository<PaymentUser, Integer> {
 	Optional<PaymentUser> findByEmail(String email);
+	Optional<PaymentUser> findByIdAndEmail(Integer id, String email);
 
 	boolean existsByEmail(String email);
 }
