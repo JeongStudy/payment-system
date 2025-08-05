@@ -1,8 +1,8 @@
 package com.system.payment.payment.controller;
 
 import com.system.payment.payment.model.response.ExampleResponse;
-import com.system.payment.util.Response;
 import com.system.payment.payment.service.ExampleService;
+import com.system.payment.util.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
