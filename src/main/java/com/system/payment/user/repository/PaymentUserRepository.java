@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface PaymentUserRepository extends JpaRepository<PaymentUser, Long> {
+public interface PaymentUserRepository extends JpaRepository<PaymentUser, Integer> {
 	Optional<PaymentUser> findByEmail(String email);
 
 	boolean existsByEmail(String email);
