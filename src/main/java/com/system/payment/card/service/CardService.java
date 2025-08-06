@@ -1,8 +1,11 @@
 package com.system.payment.card.service;
 
 import com.system.payment.card.model.request.CardAuthRequest;
+import com.system.payment.card.model.request.InicisRequest;
 import com.system.payment.card.model.response.InicisBillingAuthResponse;
+import com.system.payment.card.model.response.InicisBillingKeyResponse;
 import com.system.payment.card.model.response.PGAuthParamsResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,4 +29,7 @@ public class CardService {
         throw new IllegalArgumentException("지원하지 않는 PG사");
     }
 
+    public InicisBillingKeyResponse getInicisBillingKey(InicisRequest request) {
+        return inicisService.createBillingKey(request);
+    }
 }

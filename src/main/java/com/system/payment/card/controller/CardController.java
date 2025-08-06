@@ -1,6 +1,8 @@
 package com.system.payment.card.controller;
 
 import com.system.payment.card.model.request.CardAuthRequest;
+import com.system.payment.card.model.request.InicisRequest;
+import com.system.payment.card.model.response.InicisBillingKeyResponse;
 import com.system.payment.card.model.response.PGAuthParamsResponse;
 import com.system.payment.card.service.CardService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,15 +30,15 @@ public class CardController {
     }
 
     @PostMapping("/inicis/return")
-    public void handleInicisReturn(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // 이니시스가 넘겨주는 파라미터 받기
-        String resultCode = request.getParameter("resultCode");
-        String authToken = request.getParameter("authToken");
-        // ... 기타 처리, DB저장 등
-        log.info(resultCode);
-        log.info(authToken);
+    public void handleInicisReturn(@ModelAttribute InicisRequest request, HttpServletResponse response) throws IOException {
+//        log.info(request.toString());
+
+        InicisBillingKeyResponse billingKeyResponse = cardService.getInicisBillingKey(request);
+
+        log.info(billingKeyResponse.toString());
 
         // 처리 후 프론트로 이동
-//        response.sendRedirect("/card/return?resultCode=" + resultCode + "&authToken=" + authToken);
+//        String url = "https://9892b382ce09.ngrok-free.app/card/return?resultCode=" + resultCode + "&authToken=" + authToken;
+//        response.sendRedirect(url);
     }
 }
