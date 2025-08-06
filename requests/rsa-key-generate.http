@@ -1,0 +1,3 @@
+### RSA Key 발급 요청
+POST http://localhost:8080/api/payment/crypto/rsa
+Content-Type: application/json
