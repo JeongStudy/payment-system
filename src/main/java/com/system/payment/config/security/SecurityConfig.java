@@ -48,7 +48,8 @@ public class SecurityConfig {
 								"/api/auth/login",
 								"/api/auth/signup",
 								"/api/payment/health-check",
-								"/api/payment/test/*").permitAll()
+								"/api/payment/test/*",
+								"/api/payment/cards/inicis/return").permitAll()
 						.anyRequest().authenticated()
 				)
 				.sessionManagement(session -> session

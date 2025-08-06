@@ -21,22 +21,25 @@ public class PaymentUserCard extends BaseEntity {
     @JoinColumn(nullable = false)
     private PaymentUser user;
 
-    @Column(length = 4, nullable = false)
+    @Column(length = 200, nullable = false, unique = true)
+    private String oid;
+
+    @Column(length = 4)
     private String cardNumberMasked;
 
-    @Column(length = 50, nullable = false)
+    @Column(length = 50)
     private String cardCompany;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 20)
     private String cardType;
 
-    @Column(length = 4, nullable = false)
+    @Column(length = 4)
     private String expirationYear;
 
-    @Column(length = 2, nullable = false)
+    @Column(length = 2)
     private String expirationMonth;
 
-    @Column(length = 30, nullable = false)
+    @Column(length = 30)
     private String pgCompany;
 
     @Column(length = 20, nullable = false)
