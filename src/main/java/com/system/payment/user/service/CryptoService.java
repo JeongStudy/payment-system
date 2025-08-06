@@ -2,8 +2,8 @@ package com.system.payment.user.service;
 
 import com.system.payment.exception.CryptoException;
 import com.system.payment.exception.ErrorCode;
-import com.system.payment.user.domain.jaebin.AesKey;
-import com.system.payment.user.domain.jaebin.RsaKeyPair;
+import com.system.payment.user.domain.AesKey;
+import com.system.payment.user.domain.RsaKeyPair;
 import com.system.payment.user.model.reponse.AesKeyResponse;
 import com.system.payment.user.model.reponse.RsaKeyResponse;
 import com.system.payment.user.repository.AesKeyRepository;

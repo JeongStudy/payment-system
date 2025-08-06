@@ -1,6 +1,6 @@
 package com.system.payment.user.repository;
 
-import com.system.payment.user.domain.jaebin.AesKey;
+import com.system.payment.user.domain.AesKey;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

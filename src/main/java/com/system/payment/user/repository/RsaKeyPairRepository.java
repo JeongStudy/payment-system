@@ -1,6 +1,6 @@
 package com.system.payment.user.repository;
 
-import com.system.payment.user.domain.jaebin.RsaKeyPair;
+import com.system.payment.user.domain.RsaKeyPair;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

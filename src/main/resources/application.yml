@@ -6,7 +6,7 @@ spring:
     password: ${POSTGRES_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     defer-datasource-initialization: false
     show-sql: true
     open-in-view: false
@@ -18,7 +18,7 @@ spring:
   sql:
     init:
       mode: always
-      schema-locations: classpath:db/ddl.sql,classpath:db/init.sql
+      schema-locations: classpath:db/schema.sql
   timezone: Asia/Seoul
   kafka:
     bootstrap-servers: ${KAFKA_URL}

@@ -1,7 +1,7 @@
-package com.system.payment.card.domain.yunhwan;
+package com.system.payment.card.domain;
 
-import com.system.payment.common.domain.yunhwan.BaseEntity;
-import com.system.payment.user.domain.yunhwan.PaymentUser;
+import com.system.payment.common.domain.BaseEntity;
+import com.system.payment.user.domain.PaymentUser;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

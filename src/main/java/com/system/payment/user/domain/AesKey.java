@@ -1,4 +1,4 @@
-package com.system.payment.user.domain.jaebin;
+package com.system.payment.user.domain;
 
 import com.system.payment.exception.ErrorCode;
 import com.system.payment.exception.PaymentServerBadRequestException;
