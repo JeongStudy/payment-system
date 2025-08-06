@@ -43,6 +43,10 @@ public class AuthService {
 
 	@Transactional
 	public void signUp(SignUpRequest request) {
+		if (paymentUserRepository.existsByEmail(request.getEmail())) {
+			throw new PaymentServerConflictException(ErrorCode.DUPLICATE_EMAIL);
+		}
+
 		final RsaKeyPair rsaKeyPair = rsaKeyPairRepository.findByPublicKey(request.getPublicKey())
 				.orElseThrow(() -> new PaymentServerNotFoundException(ErrorCode.RSA_KEY_NOT_FOUND));
 		rsaKeyPair.validateNotExpired();
@@ -55,10 +59,6 @@ public class AuthService {
 
 		final String decryptedPassword = AesKeyCryptoUtil.decryptPasswordWithAesKey(request.getEncPassword(), aesKey.getAesKey());
 		final String hashedPassword = passwordEncoder.encode(decryptedPassword);
-
-		if (paymentUserRepository.existsByEmail(request.getEmail())) {
-			throw new PaymentServerConflictException(ErrorCode.DUPLICATE_EMAIL);
-		}
 
 		PaymentUser user = PaymentUser.create(request.getEmail(), hashedPassword, request.getFirstName(), request.getLastName(), request.getPhoneNumber());
 
