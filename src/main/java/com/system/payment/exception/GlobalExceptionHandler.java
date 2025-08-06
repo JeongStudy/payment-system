@@ -65,6 +65,7 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.badRequest().body(response);
 	}
 
+	// validation 실패 (Form 등)
 	@ExceptionHandler(BindException.class)
 	public ResponseEntity<Response<Void>> handleBindException(BindException e) {
 		BindingResult bindingResult = e.getBindingResult();
@@ -89,6 +90,18 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	}
 
+	// IllegalArgumentException 처리 (직접 throw 등)
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<Response<Void>> handleIllegalArgument(IllegalArgumentException e) {
+		log.error("IllegalArgumentException 발생", e);
+		Response<Void> response = Response.<Void>builder()
+				.status(ErrorCode.BAD_REQUEST_PARAM.getStatus())
+				.message(e.getMessage())
+				.build();
+		return ResponseEntity.badRequest().body(response);
+	}
+
+	// NullPointerException만 따로 분리
 	@ExceptionHandler(NullPointerException.class)
 	public ResponseEntity<Response<Void>> handleNullPointerException(NullPointerException e) {
 		log.error("NullPointerException 발생", e);
