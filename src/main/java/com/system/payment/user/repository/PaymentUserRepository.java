@@ -1,6 +1,6 @@
 package com.system.payment.user.repository;
 
-import com.system.payment.user.domain.jaebin.PaymentUser;
+import com.system.payment.user.domain.PaymentUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

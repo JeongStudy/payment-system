@@ -2,9 +2,9 @@ package com.system.payment.user.service;
 
 import com.system.payment.exception.CryptoException;
 import com.system.payment.exception.ErrorCode;
-import com.system.payment.user.domain.jaebin.AesKey;
-import com.system.payment.user.domain.jaebin.PaymentUser;
-import com.system.payment.user.domain.jaebin.RsaKeyPair;
+import com.system.payment.user.domain.AesKey;
+import com.system.payment.user.domain.PaymentUser;
+import com.system.payment.user.domain.RsaKeyPair;
 import com.system.payment.user.model.reponse.LoginResponse;
 import com.system.payment.user.model.request.LoginRequest;
 import com.system.payment.user.model.request.SignUpRequest;

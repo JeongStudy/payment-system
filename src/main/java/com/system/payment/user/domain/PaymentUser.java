@@ -1,5 +1,6 @@
-package com.system.payment.user.domain.jaebin;
+package com.system.payment.user.domain;
 
+import com.system.payment.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -9,29 +10,26 @@ import lombok.NoArgsConstructor;
 @Table(name = "payment_user")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class PaymentUser extends BaseTimeEntity{
+public class PaymentUser extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, unique = true, length = 200)
+   @Column(length = 200, nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false, length = 300)
+    @Column(length = 300, nullable = false)
     private String password;
 
-    @Column(name = "first_name", length = 50)
-    private String firstName;
-
-    @Column(name = "last_name", length = 50)
+    @Column(length = 50, nullable = false)
     private String lastName;
 
-    @Column(name = "phone_number", length = 11)
-    private String phoneNumber;
+    @Column(length = 50, nullable = false)
+    private String firstName;
 
-    @Column(name = "is_deleted", length = 1)
-    private String isDeleted = "F";
+    @Column(length = 11, nullable = false)
+    private String phoneNumber;
 
     private PaymentUser(String email, String encodedPassword, String firstName, String lastName, String phoneNumber) {
 		this.email = email;
