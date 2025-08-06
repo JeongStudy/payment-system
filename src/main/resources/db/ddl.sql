@@ -285,7 +285,9 @@ create table if not exists payment.rsa_key_pair
     id                integer generated always as identity
         constraint rsa_key_pair_pk
             primary key,
-    public_key        text                    not null,
+    public_key        text                    not null
+        constraint rsa_key_pair_pk_2
+            unique,
     private_key       text                    not null
         constraint rsa_key_pair_pk_3
             unique,
@@ -301,16 +303,16 @@ comment on column payment.rsa_key_pair.expired_timestamp is 'rsa 키 만료 시�
 comment on column payment.rsa_key_pair.created_timestamp is 'rsa 키 생성시간';
 
 alter table payment.rsa_key_pair owner to manager;
+create index if NOT EXISTS rsa_key_pair_public_key_index on payment.rsa_key_pair (public_key);
 
-create index rsa_key_pair_public_key_index on payment.rsa_key_pair (public_key);
-alter table payment.rsa_key_pair add constraint rsa_key_pair_pk_2 unique (public_key);
-
-create table if not exists payment.aes_key
+create table if not EXISTS payment.aes_key
 (
-    id                integer
+    id                integer generated always as identity
         constraint aes_key_pk
             primary key,
-    aes_key           integer,
+    aes_key           varchar(200)            not null
+    constraint aes_key_pk_2
+            unique,
     expired_timestamp timestamp               not null,
     created_timestamp timestamp default now() not null
 );
@@ -321,7 +323,5 @@ comment on column payment.aes_key.expired_timestamp is 'aek key 만료 시간';
 comment on column payment.aes_key.created_timestamp is 'aek key 생성 시간';
 
 alter table payment.aes_key owner to manager;
-
-create index aes_key_aes_key_index on payment.aes_key (aes_key);
-alter table payment.aes_key add constraint aes_key_pk_2 unique (aes_key);
+create index if NOT EXISTS aes_key_aes_key_index on payment.aes_key (aes_key);
 
