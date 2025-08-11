@@ -1,6 +1,6 @@
-package com.system.payment.payment.repository;
+package com.system.payment.example.repository;
 
-import com.system.payment.payment.domain.Example;
+import com.system.payment.example.domain.Example;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ExampleRepository extends JpaRepository<Example, Long> {
