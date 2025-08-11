@@ -1,7 +1,7 @@
-package com.system.payment.payment.controller;
+package com.system.payment.example.controller;
 
-import com.system.payment.payment.model.response.ExampleResponse;
-import com.system.payment.payment.service.ExampleService;
+import com.system.payment.example.model.response.ExampleResponse;
+import com.system.payment.example.service.ExampleService;
 import com.system.payment.util.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

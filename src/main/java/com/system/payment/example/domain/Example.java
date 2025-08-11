@@ -1,4 +1,4 @@
-package com.system.payment.payment.domain;
+package com.system.payment.example.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

@@ -1,6 +1,6 @@
-package com.system.payment.payment.model.response;
+package com.system.payment.example.model.response;
 
-import com.system.payment.payment.domain.Example;
+import com.system.payment.example.domain.Example;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
