@@ -2,18 +2,16 @@ package com.system.payment.payment.domain;
 
 import com.system.payment.common.domain.BaseEntity;
 import com.system.payment.payment.domain.converter.PaymentResultCodeConverter;
-import com.system.payment.user.domain.PaymentUser;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.sql.Ref;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import static java.time.LocalDateTime.now;
 
 @Entity
 @Table(name = "payment", schema = "payment")
@@ -77,16 +75,60 @@ public class Payment extends BaseEntity {
 	@OrderBy("id ASC")
 	private final List<PaymentDetail> details = new ArrayList<>();
 
-//	public PaymentDetail addDetail(Integer itemId, ItemType itemType, Integer amount) {
-//		PaymentDetail detail = PaymentDetail.builder()
-//        .payment(this)
-//        .itemRef(ItemRef.of(itemId, itemType))
-//        .amount(amount)
-//        .paymentDetailResultCode(PaymentResultCode.WAITING) // 컨버터가 "00" 저장
-//        .build();
-//		this.details.add(detail);
-//    	return detail;
-//	}
+	private Payment(PaymentUserRef userRef,
+					ReferenceRef referenceRef,
+					PaymentMethodRef methodRef,
+					PaymentType paymentType,
+					int totalAmount,
+					PaymentResultCode paymentResultCode,
+					String idempotencyKey,
+					String transactionId,
+					LocalDateTime requestedTimestamp) {
+		this.userRef = userRef;
+		this.referenceRef = referenceRef;
+		this.methodRef = methodRef;
+		this.paymentType = paymentType;
+		this.totalAmount = totalAmount;
+		this.paymentResultCode = paymentResultCode;
+		this.idempotencyKey = idempotencyKey;
+		this.transactionId = transactionId;
+		this.requestedTimestamp = requestedTimestamp;
+	}
+
+
+	public static Payment create(PaymentUserRef userRef,
+								 ReferenceRef referenceRef,     // 필요 없으면 null 허용
+								 PaymentMethodRef methodRef,
+								 PaymentType paymentType,
+								 int totalAmount,
+								 String idempotencyKey,
+								 String transactionId) {
+
+		// 최소 불변식 체크 (필요 시 더 추가)
+		Objects.requireNonNull(userRef, "userRef");
+		Objects.requireNonNull(methodRef, "methodRef");
+		Objects.requireNonNull(paymentType, "paymentType");
+		if (totalAmount <= 0) throw new IllegalArgumentException("totalAmount must be > 0");
+		Objects.requireNonNull(idempotencyKey, "idempotencyKey");
+		Objects.requireNonNull(transactionId, "transactionId");
+
+		PaymentResultCode paymentResultCode = PaymentResultCode.WAITING;
+
+		LocalDateTime requestedTimestamp = LocalDateTime.now();
+
+		return new Payment(userRef, referenceRef, methodRef, paymentType, totalAmount, paymentResultCode, idempotencyKey, transactionId, requestedTimestamp);
+	}
+
+	public PaymentDetail addDetail(Integer itemId, ItemType itemType, Integer amount) {
+		PaymentDetail detail = PaymentDetail.builder()
+        .payment(this)
+        .itemRef(ItemRef.of(itemId, itemType))
+        .amount(amount)
+        .paymentDetailResultCode(PaymentResultCode.WAITING) // 컨버터가 "00" 저장
+        .build();
+		this.details.add(detail);
+    	return detail;
+	}
 //
 //	public void removeDetail(PaymentDetail detail) {
 //		this.details.remove(detail); // orphanRemoval=true → 자동 삭제
