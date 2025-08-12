@@ -2,12 +2,17 @@ package com.system.payment.user.service;
 
 import com.system.payment.exception.CryptoException;
 import com.system.payment.exception.ErrorCode;
+import com.system.payment.exception.PaymentServerNotFoundException;
 import com.system.payment.user.domain.AesKey;
 import com.system.payment.user.domain.RsaKeyPair;
 import com.system.payment.user.model.reponse.AesKeyResponse;
 import com.system.payment.user.model.reponse.RsaKeyResponse;
 import com.system.payment.user.repository.AesKeyRepository;
+import com.system.payment.user.repository.PaymentUserRepository;
 import com.system.payment.user.repository.RsaKeyPairRepository;
+import com.system.payment.util.AesKeyCryptoUtil;
+import com.system.payment.util.JwtUtil;
+import com.system.payment.util.RsaKeyCryptoUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,12 +24,15 @@ import java.util.Base64;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class CryptoService {
 
 	private final AesKeyRepository aesKeyRepository;
 	private final RsaKeyPairRepository rsaKeyPairRepository;
 
+	public CryptoService(AesKeyRepository aesKeyRepository, RsaKeyPairRepository rsaKeyPairRepository) {
+		this.aesKeyRepository = aesKeyRepository;
+		this.rsaKeyPairRepository = rsaKeyPairRepository;
+	}
 
 	@Transactional
 	public AesKeyResponse generateAesKey() {
@@ -47,6 +55,7 @@ public class CryptoService {
 		} catch (NoSuchAlgorithmException e) {
 			throw new CryptoException(ErrorCode.RSA_KEY_GENERATION_FAIL);
 		}
+
 		keyGen.initialize(2048);
 		KeyPair pair = keyGen.generateKeyPair();
 
@@ -60,5 +69,23 @@ public class CryptoService {
 
 	}
 
+	@Transactional
+    public AesKey resolveValidAesKey(String rsaPublicKey, String encAesKey) {
+        RsaKeyPair rsaKeyPair = rsaKeyPairRepository.findByPublicKey(rsaPublicKey)
+                .orElseThrow(() -> new PaymentServerNotFoundException(ErrorCode.RSA_KEY_NOT_FOUND));
+        rsaKeyPair.validateNotExpired();
 
+        String aesKeyPlain = RsaKeyCryptoUtil
+                .decryptEncryptedAesKeyWithRsaPrivateKey(encAesKey, rsaKeyPair.getPrivateKey());
+
+        AesKey aesKey = aesKeyRepository.findByAesKey(aesKeyPlain)
+                .orElseThrow(() -> new PaymentServerNotFoundException(ErrorCode.AES_KEY_NOT_FOUND));
+        aesKey.validateNotExpired();
+
+        return aesKey;
+    }
+
+    public String decryptPasswordWithAes(String encPassword, String aesKeyPlain) {
+        return AesKeyCryptoUtil.decryptPasswordWithAesKey(encPassword, aesKeyPlain);
+    }
 }

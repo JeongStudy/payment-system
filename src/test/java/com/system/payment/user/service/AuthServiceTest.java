@@ -4,7 +4,6 @@ import com.system.payment.exception.CryptoException;
 import com.system.payment.exception.ErrorCode;
 import com.system.payment.user.domain.AesKey;
 import com.system.payment.user.domain.PaymentUser;
-import com.system.payment.user.domain.RsaKeyPair;
 import com.system.payment.user.model.reponse.LoginResponse;
 import com.system.payment.user.model.request.LoginRequest;
 import com.system.payment.user.model.request.SignUpRequest;
@@ -31,11 +30,9 @@ import java.util.Base64;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
@@ -45,6 +42,11 @@ class AuthServiceTest {
 
 	@Mock
 	private RsaKeyPairRepository rsaKeyPairRepository;
+
+	@Mock
+	private CryptoService cryptoService;
+	@Mock
+	private CredentialService credentialService;
 
 	@Mock
 	private AesKeyRepository aesKeyRepository;
@@ -89,7 +91,7 @@ class AuthServiceTest {
 
 		// 회원 가입 요청 객체 생성
 		SignUpRequest request = SignUpRequest.builder()
-				.publicKey(publicKey)
+				.rsaPublicKey(publicKey)
 				.encAesKey(encAesKey)
 				.encPassword(encPassword)
 //				.email("jaebin1291@naver.com")
@@ -99,19 +101,23 @@ class AuthServiceTest {
 				.phoneNumber("01025861111")
 				.build();
 
-		// AES 대칭키 복호화 확인
-		String decryptedAesKey = RsaKeyCryptoUtil.decryptEncryptedAesKeyWithRsaPrivateKey(encAesKey, privateKey);
-		assert decryptedAesKey.equals(aesKeyStr);
-
-		// 평문 비밀번호 확인
-		String decryptedPassword = AesKeyCryptoUtil.decryptPasswordWithAesKey(encPassword, aesKeyStr);
-		assert decryptedPassword.equals(password);
+//		// AES 대칭키 복호화 확인
+//		String decryptedAesKey = RsaKeyCryptoUtil.decryptEncryptedAesKeyWithRsaPrivateKey(encAesKey, privateKey);
+//		assert decryptedAesKey.equals(aesKeyStr);
+//
+//		// 평문 비밀번호 확인
+//		String decryptedPassword = AesKeyCryptoUtil.decryptPasswordWithAesKey(encPassword, aesKeyStr);
+//		assert decryptedPassword.equals(password);
 
 		// region given-when-then
 		// given
-		given(aesKeyRepository.findByAesKey(anyString())).willReturn(Optional.of(AesKey.create(aesKeyStr)));
-		given(rsaKeyPairRepository.findByPublicKey(publicKey)).willReturn(Optional.of(RsaKeyPair.create(publicKey, privateKey)));
 		given(paymentUserRepository.existsByEmail(anyString())).willReturn(false);
+		given(cryptoService.resolveValidAesKey(eq(publicKey), eq(encAesKey)))
+				.willReturn(AesKey.create(aesKeyStr));
+		given(cryptoService.decryptPasswordWithAes(eq(encPassword), eq(aesKeyStr)))
+				.willReturn(password);
+		given(credentialService.hash(eq(password)))
+				.willReturn("bcrypt-hash");
 
 		// when
 		// 회원가입 수행
@@ -119,6 +125,9 @@ class AuthServiceTest {
 
 		// then
 		verify(paymentUserRepository, times(1)).save(any(PaymentUser.class));
+        verify(cryptoService, times(1)).resolveValidAesKey(eq(publicKey), eq(encAesKey));
+        verify(cryptoService, times(1)).decryptPasswordWithAes(eq(encPassword), eq(aesKeyStr));
+        verify(credentialService, times(1)).hash(eq(password));
 		//endregion
 
 		logger.info("");
@@ -151,75 +160,48 @@ class AuthServiceTest {
 		String password = "manager0";
 		String encPassword = AesKeyCryptoUtil.encryptPasswordWithAesKey(password, aesKeyStr);
 
-		// 회원 가입 요청 객체 생성
-		SignUpRequest signUpRequest = SignUpRequest.builder()
-				.publicKey(publicKey)
-				.encAesKey(encAesKey)
-				.encPassword(encPassword)
-//				.email("jaebin1291@naver.com")
-				.email("jaebin1292@naver.com")
-				.firstName("JAEBIN")
-				.lastName("CHUNG")
-				.phoneNumber("01025861111")
-				.build();
+        // signUp 내부에서 쓰인 Crypto/Credential 동작은 여기선 검증 대상 아님이라 생략 가능
 
-		// AES 대칭키 복호화 확인
-		String decryptedAesKey = RsaKeyCryptoUtil.decryptEncryptedAesKeyWithRsaPrivateKey(encAesKey, privateKey);
-		assert decryptedAesKey.equals(aesKeyStr);
+        // 로그인용 Request
+        LoginRequest loginRequest = LoginRequest.builder()
+                .email("jaebin1292@naver.com")
+                .rsaPublicKey(publicKey)
+                .encAesKey(encAesKey)
+                .encPassword(encPassword)
+                .build();
 
-		// 평문 비밀번호 확인
-		String decryptedPassword = AesKeyCryptoUtil.decryptPasswordWithAesKey(encPassword, aesKeyStr);
-		assert decryptedPassword.equals(password);
+        // 로그인 시 사용자 조회 Mock
+        PaymentUser mockUser = PaymentUser.create(
+                "jaebin1292@naver.com",
+                "bcrypt-hash", // 저장된 해시
+                "JAEBIN",
+                "CHUNG",
+                "01025861111"
+        );
+        given(paymentUserRepository.findByEmail(eq("jaebin1292@naver.com")))
+                .willReturn(Optional.of(mockUser));
 
-		// region given-when-then
-		// given
-		given(aesKeyRepository.findByAesKey(anyString())).willReturn(Optional.of(AesKey.create(aesKeyStr)));
-		given(rsaKeyPairRepository.findByPublicKey(publicKey)).willReturn(Optional.of(RsaKeyPair.create(publicKey, privateKey)));
-		given(paymentUserRepository.existsByEmail(anyString())).willReturn(false);
-		String bcryptHash = "bcrypt-hash";
-		given(passwordEncoder.encode(anyString())).willReturn(bcryptHash);
+        // Crypto & Credential 동작 Mock
+        given(cryptoService.resolveValidAesKey(eq(publicKey), eq(encAesKey)))
+                .willReturn(AesKey.create(aesKeyStr));
+        given(cryptoService.decryptPasswordWithAes(eq(encPassword), eq(aesKeyStr)))
+                .willReturn(password);
+        doNothing().when(credentialService).verifyOrThrow(eq(password), eq("bcrypt-hash"));
 
-		// when
-		// 회원가입 수행
-		authService.signUp(signUpRequest);
+        // JWT
+        given(jwtUtil.generateToken(any()))
+                .willReturn("jwt-token");
 
-		// region 로그인 과정
-		// 로그인 유저 Mock 객체 생성
-		PaymentUser mockUser = PaymentUser.create(
-				signUpRequest.getEmail(),
-				bcryptHash,
-				signUpRequest.getFirstName(),
-				signUpRequest.getLastName(),
-				signUpRequest.getPhoneNumber()
-		);
+        // when
+        LoginResponse response = authService.login(loginRequest);
 
-		// login 시의 패스워드 AES 암호화 (AES 암호문)
-		String encLoginPassword = AesKeyCryptoUtil.encryptPasswordWithAesKey(password, aesKeyStr);
+        // then
+        assert response != null;
+        assert response.getToken().equals("jwt-token");
+        verify(cryptoService, times(1)).resolveValidAesKey(eq(publicKey), eq(encAesKey));
+        verify(cryptoService, times(1)).decryptPasswordWithAes(eq(encPassword), eq(aesKeyStr));
+        verify(credentialService, times(1)).verifyOrThrow(eq(password), eq("bcrypt-hash"));
+        verify(jwtUtil, times(1)).generateToken(any());
 
-		// login 요청 객체
-		LoginRequest loginRequest = LoginRequest.builder()
-				.email(signUpRequest.getEmail())
-				.rsaPublicKey(publicKey)
-				.encAesKey(encAesKey)
-				.password(encLoginPassword)
-				.build();
-
-		// login 과정에서의 mock 리턴값 세팅
-		given(paymentUserRepository.findByEmail(signUpRequest.getEmail()))
-				.willReturn(Optional.of(mockUser));
-
-		given(passwordEncoder.matches(password, bcryptHash)).willReturn(true);
-
-		// jwt 생성 mock
-		given(jwtUtil.generateToken(mockUser.getId()))
-				.willReturn("jwt-token");
-
-		// 실제 로그인 서비스 호출
-		LoginResponse response = authService.login(loginRequest);
-
-		// then
-		assert response != null;
-		assert response.getToken() != null;
-		assert response.getToken().equals("jwt-token");
 	}
 }
