@@ -8,6 +8,7 @@ import com.system.payment.user.domain.PaymentUser;
 import com.system.payment.user.model.reponse.UserResponse;
 import com.system.payment.user.repository.PaymentUserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
@@ -19,6 +20,7 @@ public class UserService {
 		this.paymentUserRepository = paymentUserRepository;
 	}
 
+	@Transactional
 	public PaymentUser findUser() {
 		Integer userId = authUserProvider.getUserId();
 		if(userId == null) throw new PaymentServerUnauthorizedException(ErrorCode.UNAUTHORIZED);
