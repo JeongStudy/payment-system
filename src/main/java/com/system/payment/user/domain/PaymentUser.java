@@ -5,9 +5,11 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "payment_user", schema = "payment")
+@SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class PaymentUser extends BaseEntity {
