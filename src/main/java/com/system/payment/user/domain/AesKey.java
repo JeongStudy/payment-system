@@ -45,7 +45,7 @@ public class AesKey {
 		);
 	}
 
-		public void validateNotExpired() {
+	public void validateNotExpired() {
 		if (this.expiredTimestamp.isBefore(LocalDateTime.now())) {
 			throw new PaymentServerBadRequestException(ErrorCode.INVALID_AES_KEY);
 		}
