@@ -36,7 +36,7 @@ public class CryptoService {
 		AesKey aesKey = AesKey.create(aesKeyStr);
 		aesKeyRepository.save(aesKey);
 
-		return new AesKeyResponse(aesKey.getAesKey());
+		return AesKeyResponse.from(aesKey);
 	}
 
 	@Transactional
@@ -56,7 +56,7 @@ public class CryptoService {
 		RsaKeyPair rsaKeyPair = RsaKeyPair.create(publicKey, privateKey);
 		rsaKeyPairRepository.save(rsaKeyPair);
 
-		return new RsaKeyResponse(rsaKeyPair.getPublicKey());
+		return RsaKeyResponse.from(rsaKeyPair);
 
 	}
 
