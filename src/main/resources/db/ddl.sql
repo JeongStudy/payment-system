@@ -113,7 +113,7 @@ create table if not exists payment.payment
     payment_method_type varchar(30)                               not null,
     payment_method_id   integer                                   not null,
     payment_type        varchar(30)                               not null,
-    total_amount              integer                             not null,
+    total_amount        integer                                   not null,
     payment_result_code varchar(2)                                not null,
     requested_timestamp timestamp  default now()                  not null,
     approved_timestamp  timestamp,
@@ -137,7 +137,7 @@ comment on column payment.payment.reference_id is '결제 대상 고유번호(�
 comment on column payment.payment.reference_type is '결제 대상 유형(ORDER/LICENSE/MEMBERSHIP/BILL/LECTURE)';
 comment on column payment.payment.payment_method_type is '결제 수단(CARD, ACCOUNT, EASYPAY)';
 comment on column payment.payment.payment_method_id is '결제 수단 고유 번호';
-comment on column payment.payment.payment_type is '결제 유형(NORMAL, SUBCRIPTION, SPLIT)';
+comment on column payment.payment.payment_type is '결제 유형(NORMAL, SUBSCRIPTION, SPLIT)';
 comment on column payment.payment.total_amount is '결제 금액';
 comment on column payment.payment.payment_result_code is '결제 상태 코드(00: 결제 대기, 11: 결제 요청, 22: 결제 완료, 33: 결제 실패, 44: 결제취소';
 comment on column payment.payment.requested_timestamp is '결제 요청 시간';
@@ -164,7 +164,7 @@ create table if not exists payment.payment_detail
         constraint payment_detail_payment_id_fk
             references payment.payment,
     item_id                    integer,
-    item_type                  integer,
+    item_type                  varchar(100),
     amount                     integer                                   not null,
     payment_detail_result_code varchar(2)                                not null,
     is_deleted                 varchar(1) default 'F'::character varying not null,
