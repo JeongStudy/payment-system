@@ -21,4 +21,10 @@ public class ReferenceRef {
 
 	@Column
 	private Integer referenceId;
+
+	public static ReferenceRef of(ReferenceType referenceType, Integer referenceId) {
+        return ReferenceRef.builder()
+                .referenceType(referenceType)
+                .referenceId(referenceId).build();
+    }
 }
