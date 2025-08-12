@@ -85,9 +85,8 @@ public class AuthService {
 
 		String plainPassword = AesKeyCryptoUtil.decryptPasswordWithAesKey(request.getPassword(), aesKey);
 
-		if (!passwordEncoder.matches(plainPassword, user.getPassword())) {
+		if (!passwordEncoder.matches(plainPassword, user.getPassword()))
 			throw new PaymentServerUnauthorizedException(ErrorCode.INVALID_PASSWORD);
-		}
 
 		String jwtToken = jwtUtil.generateToken(user.getId());
 
