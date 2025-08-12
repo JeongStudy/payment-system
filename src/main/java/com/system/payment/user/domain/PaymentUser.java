@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "payment_user")
+@Table(name = "payment_user", schema = "payment")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class PaymentUser extends BaseEntity {
