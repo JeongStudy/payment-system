@@ -14,6 +14,7 @@ public enum SuccessCode {
     RAS_KEY_CREATED(2002, "RSA Key가 생성되었습니다."),
     AES_KEY_CREATED(2003, "AES Key가 생성되었습니다."),
     USER_LOGIN_SUCCESS(2004, "로그인이 완료되었습니다."),
+    PAYMENT_REQUESTS_SUCCESS(2005, "결제 요청이 완료되었습니다."),
     ;
 
     private final int status;
