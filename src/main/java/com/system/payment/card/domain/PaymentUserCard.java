@@ -39,8 +39,9 @@ public class PaymentUserCard extends BaseEntity {
     @Column(length = 2)
     private String expirationMonth;
 
+    @Enumerated(EnumType.STRING)
     @Column(length = 30)
-    private String pgCompany;
+    private PgCompany pgCompany;
 
     @Column(length = 20)
     private String pgCompanyCode;
@@ -62,8 +63,8 @@ public class PaymentUserCard extends BaseEntity {
         this.cardNumberMasked = cardNumberMasked;
         this.cardType = cardType;
         this.cardCompany = cardCode;
-        this.pgCompany = "INICIS";
-        this.pgCompanyCode = "INICIS";
+        this.pgCompany = PgCompany.INICIS;
+        this.pgCompanyCode = PgCompany.INICIS.getCode();
         this.billingKey = billingKey;
         this.billingKeyStatus = billingKeyStatus;
         this.expirationYear = null;
