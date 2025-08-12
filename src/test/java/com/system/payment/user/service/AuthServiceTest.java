@@ -16,6 +16,7 @@ import com.system.payment.util.RsaKeyCryptoUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -37,7 +38,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 
-	@Mock
+	@Mock(answer = Answers.CALLS_REAL_METHODS)
 	private PaymentUserRepository paymentUserRepository;
 
 	@Mock
