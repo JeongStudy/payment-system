@@ -47,8 +47,7 @@ public class AuthService {
 
 	@Transactional
 	public LoginResponse login(LoginRequest request) {
-		PaymentUser user = paymentUserRepository.findByEmail(request.getEmail())
-				.orElseThrow(() -> new PaymentServerNotFoundException(ErrorCode.USER_NOT_EXIST));
+		PaymentUser user = paymentUserRepository.getByEmailOrThrow(request.getEmail());
 		final AesKey aesKey = cryptoService.resolveValidAesKey(request.getRsaPublicKey(), request.getEncAesKey());
 
 		final String decryptedPassword = cryptoService.decryptPasswordWithAes(request.getEncPassword(), aesKey.getAesKey());

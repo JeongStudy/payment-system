@@ -1,5 +1,7 @@
 package com.system.payment.user.repository;
 
+import com.system.payment.exception.ErrorCode;
+import com.system.payment.exception.PaymentServerNotFoundException;
 import com.system.payment.user.domain.PaymentUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -9,4 +11,14 @@ public interface PaymentUserRepository extends JpaRepository<PaymentUser, Intege
 	Optional<PaymentUser> findByEmail(String email);
 
 	boolean existsByEmail(String email);
+
+	default PaymentUser getByIdOrThrow(Integer userId) {
+		return findById(userId)
+				.orElseThrow(() -> new PaymentServerNotFoundException(ErrorCode.USER_NOT_EXIST));
+	}
+
+	default PaymentUser getByEmailOrThrow(String email) {
+		return findByEmail(email)
+				.orElseThrow(() -> new PaymentServerNotFoundException(ErrorCode.USER_NOT_EXIST));
+	}
 }
