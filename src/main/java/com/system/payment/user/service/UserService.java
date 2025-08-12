@@ -26,7 +26,8 @@ public class UserService {
 				.orElseThrow(() -> new PaymentServerNotFoundException(ErrorCode.USER_NOT_EXIST));
 	}
 
-	public UserResponse getUser(){
+	public UserResponse getUser() {
 		final PaymentUser paymentUser = findUser();
-		return new UserResponse(paymentUser.getEmail(), paymentUser.getFirstName(), paymentUser.getLastName(), paymentUser.getPhoneNumber());	}
+		return UserResponse.from(paymentUser);
+	}
 }
