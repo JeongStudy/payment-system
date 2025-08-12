@@ -21,4 +21,10 @@ public class PaymentMethodRef {
 
   @Column(nullable=false)
   private Integer paymentMethodId;
+
+   public static PaymentMethodRef of(PaymentMethodType paymentMethodType, Integer paymentUserCardId) {
+        return PaymentMethodRef.builder()
+                .paymentMethodType(paymentMethodType)
+                .paymentMethodId(paymentUserCardId).build();
+    }
 }
