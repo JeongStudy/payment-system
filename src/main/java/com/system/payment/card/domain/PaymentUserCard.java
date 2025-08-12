@@ -24,7 +24,7 @@ public class PaymentUserCard extends BaseEntity {
     @Column(length = 200, nullable = false, unique = true)
     private String oid;
 
-    @Column(length = 4)
+    @Column(length = 20)
     private String cardNumberMasked;
 
     @Column(length = 50)
@@ -42,12 +42,31 @@ public class PaymentUserCard extends BaseEntity {
     @Column(length = 30)
     private String pgCompany;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 20)
     private String pgCompanyCode;
 
-    @Column(length = 200, nullable = false)
+    @Column(length = 200)
     private String billingKey;
 
+    @Enumerated(EnumType.STRING)
     @Column(length = 20, nullable = false)
-    private String billingKeyStatus;
+    private BillingKeyStatus billingKeyStatus;
+
+    public void updateInicisCard(
+            String cardNumberMasked, String cardType, String cardCode,
+            String billingKey, BillingKeyStatus billingKeyStatus
+    ) {
+        if (this.billingKeyStatus != BillingKeyStatus.PENDING) {
+            throw new IllegalStateException("PENDING 상태에서만 발급 완료 전환 가능");
+        }
+        this.cardNumberMasked = cardNumberMasked;
+        this.cardType = cardType;
+        this.cardCompany = cardCode;
+        this.pgCompany = "INICIS";
+        this.pgCompanyCode = "INICIS";
+        this.billingKey = billingKey;
+        this.billingKeyStatus = billingKeyStatus;
+        this.expirationYear = null;
+        this.expirationMonth = null;
+    }
 }
