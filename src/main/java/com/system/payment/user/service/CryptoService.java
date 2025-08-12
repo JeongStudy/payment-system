@@ -71,16 +71,14 @@ public class CryptoService {
 
 	@Transactional
     public AesKey resolveValidAesKey(String rsaPublicKey, String encAesKey) {
-        RsaKeyPair rsaKeyPair = rsaKeyPairRepository.findByPublicKey(rsaPublicKey)
-                .orElseThrow(() -> new PaymentServerNotFoundException(ErrorCode.RSA_KEY_NOT_FOUND));
+        RsaKeyPair rsaKeyPair = rsaKeyPairRepository.getByPublicKeyOrThrow(rsaPublicKey);
         rsaKeyPair.validateNotExpired();
 
         String aesKeyPlain = RsaKeyCryptoUtil
                 .decryptEncryptedAesKeyWithRsaPrivateKey(encAesKey, rsaKeyPair.getPrivateKey());
 
-        AesKey aesKey = aesKeyRepository.findByAesKey(aesKeyPlain)
-                .orElseThrow(() -> new PaymentServerNotFoundException(ErrorCode.AES_KEY_NOT_FOUND));
-        aesKey.validateNotExpired();
+        AesKey aesKey = aesKeyRepository.getByAesKeyOrThrow(aesKeyPlain);
+		aesKey.validateNotExpired();
 
         return aesKey;
     }

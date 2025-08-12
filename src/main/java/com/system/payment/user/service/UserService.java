@@ -22,8 +22,7 @@ public class UserService {
 	public PaymentUser findUser() {
 		Integer userId = authUserProvider.getUserId();
 		if(userId == null) throw new PaymentServerUnauthorizedException(ErrorCode.UNAUTHORIZED);
-		return paymentUserRepository.findById(userId)
-				.orElseThrow(() -> new PaymentServerNotFoundException(ErrorCode.USER_NOT_EXIST));
+		return paymentUserRepository.getByIdOrThrow(userId);
 	}
 
 	public UserResponse getUser() {
