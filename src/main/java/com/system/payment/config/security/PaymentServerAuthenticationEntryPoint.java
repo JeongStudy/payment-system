@@ -3,6 +3,7 @@ package com.system.payment.config.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.system.payment.exception.ErrorCode;
 import com.system.payment.util.Response;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;
@@ -15,7 +16,7 @@ import java.io.IOException;
 public class PaymentServerAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
-						 AuthenticationException authException) throws IOException {
+						 AuthenticationException authException) throws IOException, JwtException {
         Response<Void> errorResponse = Response.<Void>builder()
             .status(ErrorCode.UNAUTHORIZED.getStatus())
             .message(ErrorCode.UNAUTHORIZED.getMessage())
