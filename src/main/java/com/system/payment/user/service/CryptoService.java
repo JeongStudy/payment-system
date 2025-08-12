@@ -39,6 +39,7 @@ public class CryptoService {
 		return new AesKeyResponse(aesKey.getAesKey());
 	}
 
+	@Transactional
 	public RsaKeyResponse generateRsaKey() {
 		KeyPairGenerator keyGen = null;
 		try {
@@ -58,5 +59,6 @@ public class CryptoService {
 		return new RsaKeyResponse(rsaKeyPair.getPublicKey());
 
 	}
+
 
 }
