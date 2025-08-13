@@ -2,6 +2,7 @@ package com.system.payment.payment.domain;
 
 import com.system.payment.common.domain.BaseEntity;
 import com.system.payment.payment.domain.converter.PaymentResultCodeConverter;
+import com.system.payment.user.domain.PaymentUser;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -44,7 +45,7 @@ public class Payment extends BaseEntity {
 	@Column(nullable = false, length = 2)
 	private PaymentResultCode paymentResultCode;
 
-	@Column(nullable = false)
+	@Column
 	private LocalDateTime requestedTimestamp;
 
 	@Column
