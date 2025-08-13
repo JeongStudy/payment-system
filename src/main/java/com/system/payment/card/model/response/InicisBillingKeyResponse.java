@@ -25,6 +25,8 @@ public class InicisBillingKeyResponse {
     @JsonProperty("CARD_Num")
     private String CARD_Num;
 
+    private String authSignature;
+
     private String tid;
 
     @JsonProperty("EventCode")
