@@ -7,13 +7,18 @@ import com.system.payment.card.model.request.CardAuthRequest;
 import com.system.payment.card.model.request.InicisRequest;
 import com.system.payment.card.model.response.InicisBillingKeyResponse;
 import com.system.payment.card.model.response.PGAuthParamsResponse;
+import com.system.payment.card.model.response.PaymentUserCardResponse;
 import com.system.payment.card.repository.PaymentUserCardRepository;
 import com.system.payment.user.domain.PaymentUser;
 import com.system.payment.user.repository.PaymentUserRepository;
 import com.system.payment.util.IdGeneratorUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +28,16 @@ public class CardService {
     private final PaymentUserRepository paymentUserRepository;
     private final PaymentUserCardRepository paymentUserCardRepository;
     private final IdGeneratorUtil idGeneratorUtil;
+
+    @Transactional(readOnly = true)
+    public List<PaymentUserCardResponse> getActiveCards(Integer userId) {
+        List<PaymentUserCard> cards =
+                paymentUserCardRepository.findByUser_IdAndIsDeletedFalseAndBillingKeyStatus(
+                        userId, BillingKeyStatus.ACTIVE,
+                        Sort.by(Sort.Direction.DESC, "createdTimestamp")
+                );
+        return PaymentUserCardResponse.from(cards);
+    }
 
     /**
      * user, oid를 기준으로 billingKeyStatus를 PENDING으로 유저 카드 테이블 저장

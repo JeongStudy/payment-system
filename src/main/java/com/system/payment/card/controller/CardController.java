@@ -5,6 +5,7 @@ import com.system.payment.card.model.request.CardAuthRequest;
 import com.system.payment.card.model.request.InicisRequest;
 import com.system.payment.card.model.response.InicisBillingKeyResponse;
 import com.system.payment.card.model.response.PGAuthParamsResponse;
+import com.system.payment.card.model.response.PaymentUserCardResponse;
 import com.system.payment.card.service.CardService;
 import com.system.payment.provider.AuthUserProvider;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/payment/cards")
@@ -26,6 +28,12 @@ public class CardController {
     private final CardService cardService;
 
     private final AuthUserProvider authUserProvider;
+
+    @GetMapping("/active")
+    public List<PaymentUserCardResponse> getActiveCards() {
+        Integer userId = authUserProvider.getUserId();
+        return cardService.getActiveCards(userId);
+    }
 
     @PostMapping("/auth")
     public ResponseEntity<PGAuthParamsResponse> getBillingAuthParams(@RequestBody CardAuthRequest request) {
