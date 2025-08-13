@@ -11,8 +11,8 @@ import java.util.Optional;
 public interface RsaKeyPairRepository extends JpaRepository<RsaKeyPair, Integer> {
     Optional<RsaKeyPair> findByPublicKey(String publicKey);
 
-    default RsaKeyPair getByPublicKeyOrThrow(String PublicKey) {
-		return findByPublicKey(PublicKey)
+    default RsaKeyPair getByPublicKeyOrThrow(String publicKey) {
+		return findByPublicKey(publicKey)
 				.orElseThrow(() -> new PaymentServerNotFoundException(ErrorCode.RSA_KEY_NOT_FOUND));
 	}
 }
