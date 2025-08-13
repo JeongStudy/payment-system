@@ -20,13 +20,13 @@ public class AesKey {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(name = "aes_key", nullable = false, unique = true)
+	@Column(length = 200, nullable = false, unique = true)
 	private String aesKey;
 
-	@Column(name = "created_timestamp", nullable = false, updatable = false)
+	@Column(nullable = false, updatable = false)
 	private LocalDateTime createdTimestamp;
 
-	@Column(name = "expired_timestamp", nullable = false)
+	@Column(nullable = false)
 	private LocalDateTime expiredTimestamp;
 
 	private AesKey(String aesKey, LocalDateTime createdTimestamp, LocalDateTime expiredTimestamp) {
@@ -45,7 +45,7 @@ public class AesKey {
 		);
 	}
 
-		public void validateNotExpired() {
+	public void validateNotExpired() {
 		if (this.expiredTimestamp.isBefore(LocalDateTime.now())) {
 			throw new PaymentServerBadRequestException(ErrorCode.INVALID_AES_KEY);
 		}

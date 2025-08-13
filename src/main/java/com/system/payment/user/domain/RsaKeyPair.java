@@ -16,21 +16,22 @@ import java.time.LocalDateTime;
 @Getter
 public class RsaKeyPair {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
 
-    @Column(name = "public_key", nullable = false, unique = true, columnDefinition = "text")
-    private String publicKey;
+	@Column(nullable = false, unique = true, columnDefinition = "text")
+	private String publicKey;
 
-    @Column(name = "private_key", nullable = false, unique = true, columnDefinition = "text")
-    private String privateKey;
+	@Column(nullable = false, unique = true, columnDefinition = "text")
+	private String privateKey;
 
-    @Column(name = "expired_timestamp", nullable = false)
-    private LocalDateTime expiredTimestamp;
+	@Column(nullable = false, updatable = false)
+	private LocalDateTime createdTimestamp = LocalDateTime.now();
 
-    @Column(name = "created_timestamp", nullable = false)
-    private LocalDateTime createdTimestamp = LocalDateTime.now();
+	@Column(nullable = false)
+	private LocalDateTime expiredTimestamp;
+
 
 	private RsaKeyPair(String publicKey, String privateKey, LocalDateTime createdTimestamp, LocalDateTime expiredTimestamp) {
 		this.publicKey = publicKey;
@@ -40,10 +41,10 @@ public class RsaKeyPair {
 	}
 
 	public static RsaKeyPair create(String publicKey, String privateKey) {
-        LocalDateTime now = LocalDateTime.now();
+		LocalDateTime now = LocalDateTime.now();
 		Duration ttl = Duration.ofMinutes(3);
 
-        return new RsaKeyPair(
+		return new RsaKeyPair(
 				publicKey,
 				privateKey,
 				now,

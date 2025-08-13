@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class SignUpRequest {
 
 	@NotBlank
-	private String publicKey;
+	private String rsaPublicKey;
 
 	@NotBlank
 	private String encAesKey;
