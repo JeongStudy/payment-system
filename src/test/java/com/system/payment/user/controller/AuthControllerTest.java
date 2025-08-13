@@ -21,14 +21,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -101,7 +99,7 @@ class AuthControllerTest {
 				.firstName(firstName)
 				.lastName(lastName)
 				.phoneNumber(phoneNumber)
-				.publicKey(publicKey)
+				.rsaPublicKey(publicKey)
 				.encAesKey(encAesKey)
 				.encPassword(encPassword)
 				.build();
@@ -149,7 +147,7 @@ class AuthControllerTest {
 		// 6. 로그인 요청 DTO 생성
 		LoginRequest request = LoginRequest.builder()
 				.email(email)
-				.password(encPassword)
+				.encPassword(encPassword)
 				.encAesKey(encAesKey)
 				.rsaPublicKey(publicKey)
 				.build();
@@ -158,7 +156,7 @@ class AuthControllerTest {
 		MvcResult loginResult = mockMvc.perform(post("/api/auth/login")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(request)))
-				.andExpect(status().isCreated())
+				.andExpect(status().isOk())
 				.andReturn();
 
 		// 8. 응답 헤더에서 토큰 확인
