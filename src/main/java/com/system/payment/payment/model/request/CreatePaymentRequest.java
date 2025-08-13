@@ -15,6 +15,10 @@ public class CreatePaymentRequest {
 	@NotNull
 	private final String serviceOrderId;
 
+	private final Integer pointId;
+
+	private final Integer couponId;
+
 	@NotBlank
 	private final String productName;
 
