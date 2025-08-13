@@ -1,6 +1,6 @@
 package com.system.payment.payment.service;
 
-import com.system.payment.payment.model.request.InicisBillingApproval;
+import com.system.payment.payment.model.dto.InicisBillingApproval;
 import com.system.payment.user.domain.PaymentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;

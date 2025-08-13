@@ -6,7 +6,7 @@ import com.system.payment.exception.ErrorCode;
 import com.system.payment.exception.PaymentServerNotFoundException;
 import com.system.payment.payment.domain.*;
 import com.system.payment.payment.model.request.CreatePaymentRequest;
-import com.system.payment.payment.model.request.InicisBillingApproval;
+import com.system.payment.payment.model.dto.InicisBillingApproval;
 import com.system.payment.payment.model.response.CreatePaymentResponse;
 import com.system.payment.payment.repository.PaymentHistoryRepository;
 import com.system.payment.payment.repository.PaymentRepository;
