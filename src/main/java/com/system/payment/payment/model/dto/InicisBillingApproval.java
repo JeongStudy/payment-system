@@ -1,6 +1,6 @@
-package com.system.payment.payment.model.request;
+package com.system.payment.payment.model.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import com.system.payment.payment.model.request.CreatePaymentRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
