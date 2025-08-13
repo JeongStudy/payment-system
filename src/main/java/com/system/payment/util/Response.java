@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
@@ -21,6 +24,45 @@ public class Response<T> {
 	private String message;
 	private T data;
 	private List<Error> errors;
+
+	public static <T> ResponseEntity<Response<T>> ok(SuccessCode code) {
+		Response<T> response = Response.<T>builder()
+				.status(code.getStatus())
+				.message(code.getMessage()).build();
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+
+	public static <T> ResponseEntity<Response<T>> ok(T data, SuccessCode code) {
+		Response<T> response = Response.<T>builder()
+				.status(code.getStatus())
+				.message(code.getMessage())
+				.data(data).build();
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+
+	public static <T> ResponseEntity<Response<T>> ok(T data, SuccessCode code, HttpHeaders httpHeaders) {
+		Response<T> response = Response.<T>builder()
+				.status(code.getStatus())
+				.message(code.getMessage())
+				.data(data).build();
+		return ResponseEntity.status(HttpStatus.OK).headers(httpHeaders).body(response);
+	}
+
+	public static <T> ResponseEntity<Response<T>> created(SuccessCode code) {
+		Response<T> response = Response.<T>builder()
+				.status(code.getStatus())
+				.message(code.getMessage()).build();
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+	}
+
+	public static <T> ResponseEntity<Response<T>> created(T data, SuccessCode code) {
+		Response<T> response = Response.<T>builder()
+				.status(code.getStatus())
+				.message(code.getMessage())
+				.data(data).build();
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+	}
+
 
 	@Getter
 	@NoArgsConstructor

@@ -4,7 +4,6 @@ import com.system.payment.config.security.PaymentServerAuthenticationEntryPoint;
 import com.system.payment.user.model.SimpleUserDetails;
 import com.system.payment.util.JwtUtil;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.io.DecodingException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -55,14 +54,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 			filterChain.doFilter(request, response);
 		} catch (AuthenticationException ex) {
-			paymentServerAuthenticationEntryPoint.commence(request, response, ex);
+			logger.error("AuthenticationException : Unauthorized");
+			paymentServerAuthenticationEntryPoint
+					.commence(request, response, ex);
 		} catch (Exception ex) {
-			logger.error("Invalid or expired token");
-			paymentServerAuthenticationEntryPoint.commence(
-            request,
-            response,
-            new AuthenticationCredentialsNotFoundException("Invalid or expired token", ex)
-        );
+			logger.error("Exception : Invalid or expired token");
+			paymentServerAuthenticationEntryPoint
+					.commence(request, response, new AuthenticationCredentialsNotFoundException("Invalid or expired token", ex));
 		}
 	}
 }
