@@ -16,7 +16,7 @@ import java.io.IOException;
 public class PaymentServerAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
-						 AuthenticationException authException) throws IOException, JwtException {
+						 AuthenticationException authException) throws IOException {
         Response<Void> errorResponse = Response.<Void>builder()
             .status(ErrorCode.UNAUTHORIZED.getStatus())
             .message(ErrorCode.UNAUTHORIZED.getMessage())
