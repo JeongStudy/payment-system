@@ -42,8 +42,8 @@ public class InicisService {
     // 데모 테스트 고정 파라미터
     private String mid = "INIBillTst";
     private String price = "0";
-    private String returnUrl = "https://7a3af19f4d4c.ngrok-free.app/api/payment/cards/inicis/return";
-    private String closeUrl = "https://7a3af19f4d4c.ngrok-free.app/card/return";
+    private String returnUrl = "https://c5af73f84ead.ngrok-free.app/api/payment/cards/inicis/return";
+    private String closeUrl = "https://c5af73f84ead.ngrok-free.app/card/return";
     private String signKey = "SU5JTElURV9UUklQTEVERVNfS0VZU1RS";
     private String version = "1.0";
     private String gopaymethod = "CARD";
