@@ -20,9 +20,9 @@ public class ReferenceRef {
 	private ReferenceType referenceType;
 
 	@Column
-	private Integer referenceId;
+	private String referenceId;
 
-	public static ReferenceRef of(ReferenceType referenceType, Integer referenceId) {
+	public static ReferenceRef of(ReferenceType referenceType, String referenceId) {
         return ReferenceRef.builder()
                 .referenceType(referenceType)
                 .referenceId(referenceId).build();

@@ -13,7 +13,7 @@ public class CreatePaymentRequest {
 	private final Integer paymentUserCardId;
 
 	@NotNull
-	private final Integer orderId;
+	private final String serviceOrderId;
 
 	@NotBlank
 	private final String productName;

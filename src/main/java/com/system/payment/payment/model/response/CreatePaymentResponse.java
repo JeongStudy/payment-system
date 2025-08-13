@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class CreatePaymentResponse {
-	private Integer oid;
-	private Integer pid;
+	private String serviceOrderId;
+	private Integer paymentId;
 
 }
