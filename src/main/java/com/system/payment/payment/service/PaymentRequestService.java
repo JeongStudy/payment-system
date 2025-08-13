@@ -68,7 +68,7 @@ public class PaymentRequestService {
 		// 4) Payment/Detail/History 생성 (상태=대기 "00")
 		Payment payment = Payment.create(
 				PaymentUserRef.of(paymentUser.getId()),
-				ReferenceRef.of(ReferenceType.ORDER, request.getOrderId()),
+				ReferenceRef.of(ReferenceType.ORDER, request.getServiceOrderId()),
 				PaymentMethodRef.of(PaymentMethodType.CARD, paymentUserCard.getId()),
 				PaymentType.NORMAL,
 				request.getAmount(),
@@ -97,6 +97,7 @@ public class PaymentRequestService {
 
 		paymentHistoryRepository.save(history);
 
+
 		// 6) 커밋 후 결제요청 이벤트 전송 (미전달 시 상태 "00" 유지 → 모니터링 가능)
 		InicisBillingApproval inicisBillingApproval = InicisBillingApproval.builder()
 				.build();
@@ -104,10 +105,14 @@ public class PaymentRequestService {
 
 		registerAfterCommit(() -> paymentProducer.sendPaymentRequested(paymentUser, inicisBillingApproval));
 
+
+		// 상태변경
+
+
 		// 응답
 		return CreatePaymentResponse.builder()
-				.oid(request.getOrderId())
-				.pid(payment.getId())
+				.serviceOrderId(request.getServiceOrderId())
+				.paymentId(payment.getId())
 				.build();
 	}
 
