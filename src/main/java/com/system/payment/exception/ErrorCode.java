@@ -10,6 +10,7 @@ import lombok.Getter;
 @JsonFormat(shape = JsonFormat.Shape.STRING)
 public enum ErrorCode {
     BAD_REQUEST_PARAM(4000, "Bad Request Parameter"),
+    NOT_FOUND(4000, "Not Found"),
     UNAUTHORIZED(4000, "Unauthorized"),
     SERVER_ERROR(5000, "Server Error"),
     SERVER_NULL_POINTER_ERROR(5001, "Server Null Pointer Error"),
