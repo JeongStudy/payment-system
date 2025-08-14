@@ -11,7 +11,6 @@ import com.system.payment.payment.model.request.CreatePaymentRequest;
 import com.system.payment.payment.model.response.CreatePaymentResponse;
 import com.system.payment.payment.model.response.IdempotencyKeyResponse;
 import com.system.payment.payment.model.response.PaymentStatusResponse;
-import com.system.payment.payment.repository.PaymentHistoryRepository;
 import com.system.payment.payment.repository.PaymentRepository;
 import com.system.payment.user.domain.AesKey;
 import com.system.payment.user.domain.PaymentUser;
@@ -38,7 +37,6 @@ public class PaymentRequestService {
 	private final PaymentHistoryService paymentHistoryService;
 	private final PaymentUserCardRepository paymentUserCardRepository;
 	private final PaymentRepository paymentRepository;
-	private final PaymentHistoryRepository paymentHistoryRepository;
 	private final PaymentProducer paymentProducer;
 
 	@Transactional
@@ -47,19 +45,6 @@ public class PaymentRequestService {
 		return IdempotencyKeyResponse.from(key);
 	}
 
-
-	/**
-	 * 프로세스:
-	 * 1) 비밀번호 검증
-	 * 2) (생략) 주문 검증
-	 * 3) 사용자 카드 조회
-	 * 4) Payment/Detail/History 생성 (상태=대기 "00")
-	 * 5) 상태 변경 정책: 프로듀서는 "대기"까지만; "요청(11)"은 컨슈머가 수신 즉시 변경
-	 * 6) 커밋 후 결제요청 Kafka 전송
-	 * 7) (컨슈머에서) Payment 상태값 "요청(11)"로 변경
-	 * <p>
-	 * 추가는 TODO에 있음.
-	 */
 	@Transactional
 	public CreatePaymentResponse createPaymentAndPublish(CreatePaymentRequest request) {
 
@@ -111,5 +96,10 @@ public class PaymentRequestService {
 				task.run();
 			}
 		});
+	}
+
+	public PaymentStatusResponse getPaymentStatus(Integer paymentId) {
+		//TODO 결제 정보 상태 롱폴링 체크 스캔을 위한 서비스 메소드 로직 구현
+		return null;
 	}
 }
