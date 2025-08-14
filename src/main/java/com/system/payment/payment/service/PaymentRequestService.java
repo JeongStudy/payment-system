@@ -54,6 +54,9 @@ public class PaymentRequestService {
 	 */
 	@Transactional
 	public CreatePaymentResponse createAndPublish(CreatePaymentRequest request) {
+		if(paymentRepository.existsByIdempotencyKey(request.getIdempotencyKey())){
+			throw new PaymentServerConflictException(ErrorCode.DUPLICATE_PAYMENT_IDEMPOTENCY_KEY);
+		}
 		// 유저 조회
 		final PaymentUser paymentUser = userService.findUser();
 

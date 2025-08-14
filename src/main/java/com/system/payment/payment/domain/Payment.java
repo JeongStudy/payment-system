@@ -66,7 +66,7 @@ public class Payment extends BaseEntity {
 	@Column(length = 300)
 	private String errorMessage;
 
-	@Column(length = 100, nullable = false)
+	@Column(length = 100, nullable = false, unique = true)
 	private String idempotencyKey;
 
 	@Column(length = 100, nullable = false)
