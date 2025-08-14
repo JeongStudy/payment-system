@@ -3,8 +3,10 @@ package com.system.payment.payment.service;
 import com.system.payment.card.domain.PaymentUserCard;
 import com.system.payment.card.repository.PaymentUserCardRepository;
 import com.system.payment.exception.ErrorCode;
+import com.system.payment.exception.PaymentServerConflictException;
 import com.system.payment.exception.PaymentServerNotFoundException;
 import com.system.payment.payment.domain.*;
+import com.system.payment.payment.model.dto.PaymentDetailItem;
 import com.system.payment.payment.model.request.CreatePaymentRequest;
 import com.system.payment.payment.model.dto.InicisBillingApproval;
 import com.system.payment.payment.model.response.CreatePaymentResponse;
@@ -23,6 +25,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -67,7 +72,12 @@ public class PaymentRequestService {
 		// 비밀번호 검증
 		credentialService.verifyOrThrow(decryptedPassword, paymentUser.getPassword());
 
-		// 2) 주문번호 검증 - 생략 (추후 ACL로 교체)
+
+		
+		List<PaymentDetailItem> itemList = new ArrayList<>();
+		itemList.add(PaymentDetailItem.product(1, 1));
+//		itemList.add(PaymentDetailItem.point(2, -5000));
+		PaymentItemValidator.validateAndVerifyTotal(itemList, request.getAmount());
 
 		// 3) 사용자 카드 조회(빌링키)
 		final PaymentUserCard paymentUserCard = paymentUserCardRepository.findById(request.getPaymentUserCardId())
