@@ -79,7 +79,8 @@ public class PaymentRequestService {
 
 		String transactionId = KeyGeneratorUtil.generateTransactionId();
 
-		Payment payment = Payment.create(
+		final Payment payment = paymentRepository.save(
+				Payment.create(
 				PaymentUserRef.of(paymentUser.getId()),
 				ReferenceRef.of(ReferenceType.ORDER, request.getServiceOrderId()),
 				PaymentMethodRef.of(PaymentMethodType.CARD, paymentUserCard.getId()),
@@ -88,9 +89,7 @@ public class PaymentRequestService {
 				request.getIdempotencyKey(),
 				transactionId,
 				itemList
-		);
-
-		payment = paymentRepository.save(payment);
+		));
 
 		// TODO 히스토리 저장은 분리하는게 좋을것같아.
 		PaymentHistory history = PaymentHistory.builder()
