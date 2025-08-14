@@ -74,7 +74,7 @@ public class Payment extends BaseEntity {
 	@Column(length = 100, nullable = false, unique = true)
 	private String transactionId;
 
-	@OneToMany(mappedBy = "payment", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "payment_id", nullable = false)
 	@OrderBy("id ASC")
 	private final List<PaymentDetail> details = new ArrayList<>();
