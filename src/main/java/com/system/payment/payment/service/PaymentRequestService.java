@@ -8,9 +8,9 @@ import com.system.payment.exception.PaymentServerNotFoundException;
 import com.system.payment.payment.domain.*;
 import com.system.payment.payment.model.dto.PaymentDetailItem;
 import com.system.payment.payment.model.request.CreatePaymentRequest;
-import com.system.payment.payment.model.dto.InicisBillingApproval;
 import com.system.payment.payment.model.response.CreatePaymentResponse;
 import com.system.payment.payment.model.response.IdempotencyKeyResponse;
+import com.system.payment.payment.model.response.PaymentStatusResponse;
 import com.system.payment.payment.repository.PaymentHistoryRepository;
 import com.system.payment.payment.repository.PaymentRepository;
 import com.system.payment.user.domain.AesKey;
@@ -47,6 +47,7 @@ public class PaymentRequestService {
 		return IdempotencyKeyResponse.from(key);
 	}
 
+
 	/**
 	 * 프로세스:
 	 * 1) 비밀번호 검증
@@ -56,15 +57,17 @@ public class PaymentRequestService {
 	 * 5) 상태 변경 정책: 프로듀서는 "대기"까지만; "요청(11)"은 컨슈머가 수신 즉시 변경
 	 * 6) 커밋 후 결제요청 Kafka 전송
 	 * 7) (컨슈머에서) Payment 상태값 "요청(11)"로 변경
+	 * <p>
+	 * 추가는 TODO에 있음.
 	 */
 	@Transactional
-	public CreatePaymentResponse createAndPublish(CreatePaymentRequest request) {
-		if(paymentRepository.existsByIdempotencyKey(request.getIdempotencyKey())){
+	public CreatePaymentResponse createPaymentAndPublish(CreatePaymentRequest request) {
+
+		if (paymentRepository.existsByIdempotencyKey(request.getIdempotencyKey())) {
 			throw new PaymentServerConflictException(ErrorCode.DUPLICATE_PAYMENT_IDEMPOTENCY_KEY);
 		}
 
 		final PaymentUser paymentUser = userService.findUser();
-
 
 		final AesKey aesKey = cryptoService.resolveValidAesKey(request.getRsaPublicKey(), request.getEncAesKey());
 		final String decryptedPassword = cryptoService.decryptPasswordWithAes(request.getEncPassword(), aesKey.getAesKey());
@@ -82,34 +85,23 @@ public class PaymentRequestService {
 
 		final Payment payment = paymentRepository.save(
 				Payment.create(
-				PaymentUserRef.of(paymentUser.getId()),
-				ReferenceRef.of(ReferenceType.ORDER, request.getServiceOrderId()),
-				PaymentMethodRef.of(PaymentMethodType.CARD, paymentUserCard.getId()),
-				PaymentType.NORMAL,
-				request.getAmount(),
-				request.getIdempotencyKey(),
-				transactionId,
-				itemList
-		));
+						PaymentUserRef.of(paymentUser.getId()),
+						ReferenceRef.of(ReferenceType.ORDER, request.getServiceOrderId()),
+						PaymentMethodRef.of(PaymentMethodType.CARD, paymentUserCard.getId()),
+						PaymentType.NORMAL,
+						request.getAmount(),
+						request.getIdempotencyKey(),
+						transactionId,
+						itemList
+				));
 
 		paymentHistoryService.recordCreated(payment);
 
-		// 6) 커밋 후 결제요청 이벤트 전송 (미전달 시 상태 "00" 유지 → 모니터링 가능)
-		InicisBillingApproval inicisBillingApproval = InicisBillingApproval.builder()
-				.build();
+		registerAfterCommit(() -> paymentProducer.sendPaymentRequested(payment, paymentUser, paymentUserCard, request));
 
+		payment.changeResultCodeRequested();
 
-		registerAfterCommit(() -> paymentProducer.sendPaymentRequested(paymentUser, inicisBillingApproval));
-
-
-		// 상태변경
-
-
-		// 응답
-		return CreatePaymentResponse.builder()
-				.serviceOrderId(request.getServiceOrderId())
-				.paymentId(payment.getId())
-				.build();
+		return CreatePaymentResponse.from(payment);
 	}
 
 	private void registerAfterCommit(Runnable task) {
