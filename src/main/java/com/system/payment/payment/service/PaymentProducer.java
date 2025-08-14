@@ -37,7 +37,7 @@ public class PaymentProducer {
 
 	public static final String PAYMENT_REQUESTED_TOPIC = "payment.requested.v1";
 
-	public void sendPaymentRequested(Payment payment, PaymentUser paymentUser, PaymentUserCard paymentUserCard, CreatePaymentRequest request) {
+	public void sendPaymentRequested(Payment payment, PaymentUser paymentUser, PaymentUserCard paymentUserCard, String productName) {
 
 		// TODO 유저별 파티셔닝, 같은 유저는 같은 파티션으로 가야함, 현재 서버는 2개인데, 서버가 증설될것도 고려해야함
 		// 파티셔닝하는 인터페이스를 만들어서, 파티션을 만들어보자
@@ -54,7 +54,7 @@ public class PaymentProducer {
 
 		InicisBillingApproval inicisBillingApproval = buildInicisBillingApproval(
 				payment, paymentUser, paymentUserCard,
-				clientIp, mid, iniApiKey, url, request.getProductName()
+				clientIp, mid, iniApiKey, url, productName
 		);
 
 		PaymentRequestedMessageV1<InicisBillingApproval> message =
