@@ -8,6 +8,7 @@ import com.system.payment.payment.domain.*;
 import com.system.payment.payment.model.request.CreatePaymentRequest;
 import com.system.payment.payment.model.dto.InicisBillingApproval;
 import com.system.payment.payment.model.response.CreatePaymentResponse;
+import com.system.payment.payment.model.response.IdempotencyKeyResponse;
 import com.system.payment.payment.repository.PaymentHistoryRepository;
 import com.system.payment.payment.repository.PaymentRepository;
 import com.system.payment.user.domain.AesKey;
@@ -16,6 +17,7 @@ import com.system.payment.user.service.CredentialService;
 import com.system.payment.user.service.CryptoService;
 import com.system.payment.user.service.UserService;
 import com.system.payment.util.TransactionIdUtil;
+import com.system.payment.util.KeyGeneratorUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +35,12 @@ public class PaymentRequestService {
 	private final PaymentRepository paymentRepository;
 	private final PaymentHistoryRepository paymentHistoryRepository;
 	private final PaymentProducer paymentProducer;
+
+	@Transactional
+	public IdempotencyKeyResponse getIdempotencyKey() {
+		String key = KeyGeneratorUtil.generateIdempotencyKey();
+		return IdempotencyKeyResponse.from(key);
+	}
 
 	/**
 	 * 프로세스:
