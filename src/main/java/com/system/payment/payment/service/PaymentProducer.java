@@ -43,7 +43,6 @@ public class PaymentProducer {
 		// 파티셔닝하는 인터페이스를 만들어서, 파티션을 만들어보자
 		// 여기서의 key는 뭘까? 파티셔닝 키인지? 데이터를 구별하는 키인지?
 
-		Integer partition = 1;
 		String key = String.valueOf(paymentUser.getId());
 		String clientIp = null;
 		try {
@@ -78,7 +77,7 @@ public class PaymentProducer {
 						)
 				);
 
-		kafkaTemplate.send(PAYMENT_REQUESTED_TOPIC, partition, key, message);
+		kafkaTemplate.send(PAYMENT_REQUESTED_TOPIC, key, message);
 	}
 
 	private InicisBillingApproval buildInicisBillingApproval(
