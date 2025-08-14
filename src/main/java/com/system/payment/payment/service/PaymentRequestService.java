@@ -61,24 +61,19 @@ public class PaymentRequestService {
 		if(paymentRepository.existsByIdempotencyKey(request.getIdempotencyKey())){
 			throw new PaymentServerConflictException(ErrorCode.DUPLICATE_PAYMENT_IDEMPOTENCY_KEY);
 		}
-		// 유저 조회
+
 		final PaymentUser paymentUser = userService.findUser();
 
-		// 암 복호화
+
 		final AesKey aesKey = cryptoService.resolveValidAesKey(request.getRsaPublicKey(), request.getEncAesKey());
 		final String decryptedPassword = cryptoService.decryptPasswordWithAes(request.getEncPassword(), aesKey.getAesKey());
-
-		// 비밀번호 검증
 		credentialService.verifyOrThrow(decryptedPassword, paymentUser.getPassword());
 
-
-		
 		List<PaymentDetailItem> itemList = new ArrayList<>();
 		itemList.add(PaymentDetailItem.product(1, 1));
 //		itemList.add(PaymentDetailItem.point(2, -5000));
 		PaymentItemValidator.validateAndVerifyTotal(itemList, request.getAmount());
-
-		// 3) 사용자 카드 조회(빌링키)
+		
 		final PaymentUserCard paymentUserCard = paymentUserCardRepository.findById(request.getPaymentUserCardId())
 				.orElseThrow(() -> new PaymentServerNotFoundException(ErrorCode.NOT_FOUND));
 
