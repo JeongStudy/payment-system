@@ -18,7 +18,6 @@ import com.system.payment.user.domain.PaymentUser;
 import com.system.payment.user.service.CredentialService;
 import com.system.payment.user.service.CryptoService;
 import com.system.payment.user.service.UserService;
-import com.system.payment.util.TransactionIdUtil;
 import com.system.payment.util.KeyGeneratorUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -84,7 +83,7 @@ public class PaymentRequestService {
 				.orElseThrow(() -> new PaymentServerNotFoundException(ErrorCode.NOT_FOUND));
 
 		// 트랜잭션 id 생성
-		String transactionId = TransactionIdUtil.generate();
+		String transactionId = KeyGeneratorUtil.generateTransactionId();
 
 		// 4) Payment/Detail/History 생성 (상태=대기 "00")
 		Payment payment = Payment.create(
