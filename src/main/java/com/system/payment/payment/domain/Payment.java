@@ -125,15 +125,11 @@ public class Payment extends BaseEntity {
 		return this.details;
 	}
 
-//
-//	public void removeDetail(PaymentDetail detail) {
-//		this.details.remove(detail); // orphanRemoval=true → 자동 삭제
-//	}
-//
-//	public void markRequested() {
-//		this.paymentResultCode = PaymentResultCode.REQUESTED;
-//		this.requestedTimestamp = LocalDateTime.now();
-//	}
+	public void changeResultCodeRequested() {
+		this.paymentResultCode = PaymentResultCode.REQUESTED;
+		this.requestedTimestamp = LocalDateTime.now();
+	}
+
 //
 //	public void markCompleted() {
 //		this.paymentResultCode = PaymentResultCode.COMPLETED;
