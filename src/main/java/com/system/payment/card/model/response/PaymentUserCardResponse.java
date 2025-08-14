@@ -28,9 +28,9 @@ public class PaymentUserCardResponse {
                 .build();
     }
 
-    public static List<PaymentUserCardResponse> from(List<PaymentUserCard> entities) {
-        if (entities == null || entities.isEmpty()) return Collections.emptyList();
-        return entities.stream()
+    public static List<PaymentUserCardResponse> from(List<PaymentUserCard> paymentUserCards) {
+        if (paymentUserCards == null || paymentUserCards.isEmpty()) return Collections.emptyList();
+        return paymentUserCards.stream()
                 .map(PaymentUserCardResponse::from)
                 .toList();
     }
