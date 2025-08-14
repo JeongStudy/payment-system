@@ -10,7 +10,6 @@ import com.system.payment.payment.model.dto.PaymentDetailItem;
 import com.system.payment.payment.model.request.CreatePaymentRequest;
 import com.system.payment.payment.model.response.CreatePaymentResponse;
 import com.system.payment.payment.model.response.IdempotencyKeyResponse;
-import com.system.payment.payment.model.response.PaymentStatusResponse;
 import com.system.payment.payment.repository.PaymentRepository;
 import com.system.payment.user.domain.AesKey;
 import com.system.payment.user.domain.PaymentUser;
@@ -21,8 +20,6 @@ import com.system.payment.util.KeyGeneratorUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +32,9 @@ public class PaymentRequestService {
 	private final CryptoService cryptoService;
 	private final CredentialService credentialService;
 	private final PaymentHistoryService paymentHistoryService;
+	private final OutboxService outboxService;
 	private final PaymentUserCardRepository paymentUserCardRepository;
 	private final PaymentRepository paymentRepository;
-	private final PaymentProducer paymentProducer;
 
 	@Transactional
 	public IdempotencyKeyResponse getIdempotencyKey() {
@@ -47,6 +44,7 @@ public class PaymentRequestService {
 
 	@Transactional
 	public CreatePaymentResponse createPaymentAndPublish(CreatePaymentRequest request) {
+		final String productName = request.getProductName();
 
 		if (paymentRepository.existsByIdempotencyKey(request.getIdempotencyKey())) {
 			throw new PaymentServerConflictException(ErrorCode.DUPLICATE_PAYMENT_IDEMPOTENCY_KEY);
@@ -82,24 +80,14 @@ public class PaymentRequestService {
 
 		paymentHistoryService.recordCreated(payment);
 
-		registerAfterCommit(() -> paymentProducer.sendPaymentRequested(payment, paymentUser, paymentUserCard, request));
-
-		payment.changeResultCodeRequested();
+		outboxService.enqueuePaymentRequested(
+				payment.getId(), payment.getTransactionId(),
+				payment.getUserRef().getUserId(),
+				payment.getMethodRef().getPaymentMethodType().name(),
+				payment.getMethodRef().getPaymentMethodId(),
+				productName
+		);
 
 		return CreatePaymentResponse.from(payment);
-	}
-
-	private void registerAfterCommit(Runnable task) {
-		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-			@Override
-			public void afterCommit() {
-				task.run();
-			}
-		});
-	}
-
-	public PaymentStatusResponse getPaymentStatus(Integer paymentId) {
-		//TODO 결제 정보 상태 롱폴링 체크 스캔을 위한 서비스 메소드 로직 구현
-		return null;
 	}
 }
