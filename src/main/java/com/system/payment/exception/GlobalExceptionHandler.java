@@ -112,6 +112,16 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	}
 
+	@ExceptionHandler(PgResponseParseException.class)
+	public ResponseEntity<Response<Void>> handlePgResponseParseException(PgResponseParseException e) {
+		log.error("PG 응답 파싱 실패", e);
+		Response<Void> response = Response.<Void>builder()
+				.status(ErrorCode.PG_RESPONSE_PARSE_ERROR.getStatus())
+				.message(ErrorCode.PG_RESPONSE_PARSE_ERROR.getMessage())
+				.build();
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	}
+
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Response<Void>> handleGeneralException(Exception e) {
 		log.error("서버 내부 일반 오류 발생", e);
