@@ -2,9 +2,10 @@ package com.system.payment.payment.domain;
 
 import com.system.payment.common.domain.BaseEntity;
 import com.system.payment.payment.domain.converter.PaymentResultCodeConverter;
-import com.system.payment.user.domain.PaymentUser;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Entity
@@ -18,10 +19,6 @@ public class PaymentDetail extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "payment_id", nullable = false)
-	private Payment payment;
-
 	@Embedded
 	private ItemRef itemRef;
 
@@ -32,16 +29,14 @@ public class PaymentDetail extends BaseEntity {
 	@Column(nullable = false, length = 2)
 	private PaymentResultCode paymentDetailResultCode;
 
-	private PaymentDetail(Payment payment, ItemRef itemRef, Integer amount, PaymentResultCode paymentDetailResultCode){
-		this.payment = payment;
+	private PaymentDetail(ItemRef itemRef, Integer amount, PaymentResultCode paymentDetailResultCode){
 		this.itemRef = itemRef;
 		this.amount = amount;
 		this.paymentDetailResultCode = paymentDetailResultCode;
 	}
 
-	public static PaymentDetail create(Payment payment, ItemRef itemRef, Integer amount){
+	public static PaymentDetail create(ItemRef itemRef, Integer amount){
 		return new PaymentDetail(
-				payment,
 				itemRef,
 				amount,
 				PaymentResultCode.WAITING
