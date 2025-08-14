@@ -29,7 +29,10 @@ public enum ErrorCode {
     DUPLICATE_EMAIL(1004, "이미 존재하는 이메일입니다."),
     USER_ID_NOT_EXIST(1005, "사용자 ID가 존재하지 않습니다."),
     INVALID_PASSWORD(1006, "ID나 비밀번호가 틀렸습니다."),
-    DUPLICATE_PAYMENT_IDEMPOTENCY_KEY(1007, "이미 존재하는 결제 요청 정보입니다.")
+    DUPLICATE_PAYMENT_IDEMPOTENCY_KEY(1007, "이미 존재하는 결제 요청 정보입니다."),
+    PAYMENT_ITEMS_NOT_FOUND(1008, "결제 아이템이 비어 있습니다."),
+    PAYMENT_INVALID_TOTAL_AMOUNT(1009, "아이템 합계와 요청 금액이 일치하지 않습니다.")
+
     ;
 
     private final int status;
