@@ -35,6 +35,7 @@ public class PaymentRequestService {
 	private final UserService userService;
 	private final CryptoService cryptoService;
 	private final CredentialService credentialService;
+	private final PaymentHistoryService paymentHistoryService;
 	private final PaymentUserCardRepository paymentUserCardRepository;
 	private final PaymentRepository paymentRepository;
 	private final PaymentHistoryRepository paymentHistoryRepository;
@@ -91,19 +92,7 @@ public class PaymentRequestService {
 				itemList
 		));
 
-		// TODO 히스토리 저장은 분리하는게 좋을것같아.
-		PaymentHistory history = PaymentHistory.builder()
-				.payment(payment)
-				.newResultCode(PaymentResultCode.WAITING.getCode())
-				.changedAt(payment.getCreatedTimestamp())
-				.changedBy("SYSTEM")
-				.changedReason("create payment")
-				.newData(snapshot(payment))
-				.transactionId(transactionId)
-				.build();
-
-		paymentHistoryRepository.save(history);
-
+		paymentHistoryService.recordCreated(payment);
 
 		// 6) 커밋 후 결제요청 이벤트 전송 (미전달 시 상태 "00" 유지 → 모니터링 가능)
 		InicisBillingApproval inicisBillingApproval = InicisBillingApproval.builder()
@@ -130,11 +119,5 @@ public class PaymentRequestService {
 				task.run();
 			}
 		});
-	}
-
-	private String snapshot(Payment p) {
-		return "{\"paymentId\":" + p.getId()
-				+ ",\"code\":\"" + p.getPaymentResultCode().getCode()
-				+ "\",\"amount\":" + p.getTotalAmount() + "}";
 	}
 }
