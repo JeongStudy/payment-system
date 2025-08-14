@@ -24,7 +24,7 @@ public final class PaymentItemValidator {
 		}
 
 		if ((int) total != requestedAmount) {
-			throw new PaymentServerInternalServerErrorException(ErrorCode.PAYMENT_INVALID_TOTAL_AMOUNT);
+			throw new PaymentServerInternalServerErrorException(ErrorCode.PAYMENT_INVALID_ITEM_SUM_AMOUNT_AND_TOTAL_AMOUNT);
 		}
 	}
 }
