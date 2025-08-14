@@ -4,8 +4,6 @@ import com.system.payment.card.domain.BillingKeyStatus;
 import com.system.payment.card.domain.PaymentUserCard;
 import com.system.payment.card.domain.PgCompany;
 import com.system.payment.card.model.request.CardAuthRequest;
-import com.system.payment.card.model.request.InicisRequest;
-import com.system.payment.card.model.response.InicisBillingKeyResponse;
 import com.system.payment.card.model.response.PGAuthParamsResponse;
 import com.system.payment.card.model.response.PaymentUserCardResponse;
 import com.system.payment.card.provider.BillingAuthProviderRegistry;
