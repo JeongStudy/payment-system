@@ -74,7 +74,8 @@ public class Payment extends BaseEntity {
 	@Column(length = 100, nullable = false, unique = true)
 	private String transactionId;
 
-	@OneToMany(mappedBy = "payment", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "payment", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "payment_id", nullable = false)
 	@OrderBy("id ASC")
 	private final List<PaymentDetail> details = new ArrayList<>();
 
@@ -119,7 +120,7 @@ public class Payment extends BaseEntity {
 			throw new PaymentServerNotFoundException(ErrorCode.PAYMENT_ITEMS_NOT_FOUND);
 		for (PaymentDetailItem item : itemList) {
 			this.details.add(PaymentDetail
-					.create(this, ItemRef.of(item.getItemId(), item.getItemType()), item.getItemAmount()));
+					.create(ItemRef.of(item.getItemId(), item.getItemType()), item.getItemAmount()));
 		}
 		return this.details;
 	}
