@@ -32,6 +32,21 @@ public class PaymentDetail extends BaseEntity {
 	@Column(nullable = false, length = 2)
 	private PaymentResultCode paymentDetailResultCode;
 
+	private PaymentDetail(Payment payment, ItemRef itemRef, Integer amount, PaymentResultCode paymentDetailResultCode){
+		this.payment = payment;
+		this.itemRef = itemRef;
+		this.amount = amount;
+		this.paymentDetailResultCode = paymentDetailResultCode;
+	}
+
+	public static PaymentDetail create(Payment payment, ItemRef itemRef, Integer amount){
+		return new PaymentDetail(
+				payment,
+				itemRef,
+				amount,
+				PaymentResultCode.WAITING
+		);
+	}
 
     public void markCompleted() { this.paymentDetailResultCode = PaymentResultCode.COMPLETED; }
     public void markFailed()    { this.paymentDetailResultCode = PaymentResultCode.FAILED; }

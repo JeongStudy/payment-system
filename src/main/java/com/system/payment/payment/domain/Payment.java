@@ -1,8 +1,11 @@
 package com.system.payment.payment.domain;
 
 import com.system.payment.common.domain.BaseEntity;
+import com.system.payment.exception.ErrorCode;
+import com.system.payment.exception.PaymentServerBadRequestException;
+import com.system.payment.exception.PaymentServerNotFoundException;
 import com.system.payment.payment.domain.converter.PaymentResultCodeConverter;
-import com.system.payment.user.domain.PaymentUser;
+import com.system.payment.payment.model.dto.PaymentDetailItem;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -12,7 +15,6 @@ import lombok.experimental.SuperBuilder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Table(name = "payment", schema = "payment")
@@ -69,7 +71,7 @@ public class Payment extends BaseEntity {
 	@Column(length = 100, nullable = false, unique = true)
 	private String idempotencyKey;
 
-	@Column(length = 100, nullable = false)
+	@Column(length = 100, nullable = false, unique = true)
 	private String transactionId;
 
 	@OneToMany(mappedBy = "payment", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -83,8 +85,7 @@ public class Payment extends BaseEntity {
 					int totalAmount,
 					PaymentResultCode paymentResultCode,
 					String idempotencyKey,
-					String transactionId,
-					LocalDateTime requestedTimestamp) {
+					String transactionId) {
 		this.userRef = userRef;
 		this.referenceRef = referenceRef;
 		this.methodRef = methodRef;
@@ -93,7 +94,6 @@ public class Payment extends BaseEntity {
 		this.paymentResultCode = paymentResultCode;
 		this.idempotencyKey = idempotencyKey;
 		this.transactionId = transactionId;
-		this.requestedTimestamp = requestedTimestamp;
 	}
 
 
@@ -103,33 +103,27 @@ public class Payment extends BaseEntity {
 								 PaymentType paymentType,
 								 int totalAmount,
 								 String idempotencyKey,
-								 String transactionId) {
+								 String transactionId,
+								 List<PaymentDetailItem> items) {
 
-		// 최소 불변식 체크 (필요 시 더 추가)
-		Objects.requireNonNull(userRef, "userRef");
-		Objects.requireNonNull(methodRef, "methodRef");
-		Objects.requireNonNull(paymentType, "paymentType");
-		if (totalAmount <= 0) throw new IllegalArgumentException("totalAmount must be > 0");
-		Objects.requireNonNull(idempotencyKey, "idempotencyKey");
-		Objects.requireNonNull(transactionId, "transactionId");
-
+		if (totalAmount <= 0)
+			throw new PaymentServerBadRequestException(ErrorCode.PAYMENT_TOTAL_AMOUNT_MUST_BE_POSITIVE);
 		PaymentResultCode paymentResultCode = PaymentResultCode.WAITING;
-
-		LocalDateTime requestedTimestamp = LocalDateTime.now();
-
-		return new Payment(userRef, referenceRef, methodRef, paymentType, totalAmount, paymentResultCode, idempotencyKey, transactionId, requestedTimestamp);
+		Payment payment = new Payment(userRef, referenceRef, methodRef, paymentType, totalAmount, paymentResultCode, idempotencyKey, transactionId);
+		payment.addDetails(items);
+		return payment;
 	}
 
-	public PaymentDetail addDetail(Integer itemId, ItemType itemType, Integer amount) {
-		PaymentDetail detail = PaymentDetail.builder()
-        .payment(this)
-        .itemRef(ItemRef.of(itemId, itemType))
-        .amount(amount)
-        .paymentDetailResultCode(PaymentResultCode.WAITING) // 컨버터가 "00" 저장
-        .build();
-		this.details.add(detail);
-    	return detail;
+	private List<PaymentDetail> addDetails(List<PaymentDetailItem> itemList) {
+		if (itemList == null || itemList.isEmpty())
+			throw new PaymentServerNotFoundException(ErrorCode.PAYMENT_ITEMS_NOT_FOUND);
+		for (PaymentDetailItem item : itemList) {
+			this.details.add(PaymentDetail
+					.create(this, ItemRef.of(item.getItemId(), item.getItemType()), item.getItemAmount()));
+		}
+		return this.details;
 	}
+
 //
 //	public void removeDetail(PaymentDetail detail) {
 //		this.details.remove(detail); // orphanRemoval=true → 자동 삭제

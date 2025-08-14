@@ -73,14 +73,12 @@ public class PaymentRequestService {
 		itemList.add(PaymentDetailItem.product(1, 1));
 //		itemList.add(PaymentDetailItem.point(2, -5000));
 		PaymentItemValidator.validateAndVerifyTotal(itemList, request.getAmount());
-		
+
 		final PaymentUserCard paymentUserCard = paymentUserCardRepository.findById(request.getPaymentUserCardId())
 				.orElseThrow(() -> new PaymentServerNotFoundException(ErrorCode.NOT_FOUND));
 
-		// 트랜잭션 id 생성
 		String transactionId = KeyGeneratorUtil.generateTransactionId();
 
-		// 4) Payment/Detail/History 생성 (상태=대기 "00")
 		Payment payment = Payment.create(
 				PaymentUserRef.of(paymentUser.getId()),
 				ReferenceRef.of(ReferenceType.ORDER, request.getServiceOrderId()),
@@ -88,18 +86,13 @@ public class PaymentRequestService {
 				PaymentType.NORMAL,
 				request.getAmount(),
 				request.getIdempotencyKey(),
-				transactionId
+				transactionId,
+				itemList
 		);
-
-		// 예시
-		Integer ItemId = 1;
-
-		// 단일 수단이면 전체 금액으로 1개의 detail 생성 (여러 수단/부분결제면 반복 생성)
-		payment.addDetail(ItemId, ItemType.PRODUCT, payment.getTotalAmount());
 
 		payment = paymentRepository.save(payment);
 
-		// History: prev=null -> new="00"
+		// TODO 히스토리 저장은 분리하는게 좋을것같아.
 		PaymentHistory history = PaymentHistory.builder()
 				.payment(payment)
 				.newResultCode(PaymentResultCode.WAITING.getCode())
