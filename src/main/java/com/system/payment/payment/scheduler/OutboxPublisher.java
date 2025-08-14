@@ -16,17 +16,16 @@ public class OutboxPublisher {
 	private final OutboxEventRepository repo;
 	private final OutboxPublishWorker worker;
 
-	@Scheduled(fixedDelay = 1000)
+	@Scheduled(fixedDelay = 3000)
 	public void publishBatch() {
 		var batch = repo.pickPending(LocalDateTime.now(), PageRequest.of(0, 100));
-		for (OutboxEvent e : batch) {
+		batch.parallelStream().forEach(e -> {
 			try {
-				worker.processOne(e.getId());   // ← 프록시 통해 @Transactional 진입
+				worker.processOne(e.getId());
 			} catch (Exception ex) {
-				// 여기서는 삼켜도 OK. 재시도 스케줄은 worker에서 markFailed/backoff 하거나
-				// 필요한 경우 여기서 호출하도록 변경
+				// 예외 로깅 또는 재시도 처리
 			}
-		}
+		});
 	}
 }
 
