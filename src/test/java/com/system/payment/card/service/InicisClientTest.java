@@ -30,20 +30,22 @@ class InicisClientTest {
     private static final String VERIFICATION = "ver";
     private static final String CHARSET = "UTF-8";
 
+    private static final String SUCCESS_JSON = """
+        {"resultCode":"0000"}
+        """;
+    private static final String FAIL_JSON = "{not-json}";
+
     @Test
     @DisplayName("성공: 2xx + JSON 파싱 + 폼 파라미터 검증(format=JSON 포함)")
     void requestBillingKey_success_and_form_verified() throws Exception {
         // given
-        String json = """
-        {"resultCode":"0000","CARD_Num":"****-****-****-1234","CARD_BillKey":"BILL-KEY"}
-        """;
         when(restTemplate.postForEntity(eq(AUTH_URL), any(HttpEntity.class), eq(String.class)))
-                .thenReturn(ResponseEntity.ok(json));
+                .thenReturn(ResponseEntity.ok(SUCCESS_JSON));
 
         InicisBillingKeyResponse mapped = new InicisBillingKeyResponse();
         var f = InicisBillingKeyResponse.class.getDeclaredField("resultCode");
         f.setAccessible(true); f.set(mapped, "0000");
-        when(objectMapper.readValue(eq(json), eq(InicisBillingKeyResponse.class))).thenReturn(mapped);
+        when(objectMapper.readValue(eq(SUCCESS_JSON), eq(InicisBillingKeyResponse.class))).thenReturn(mapped);
 
         // when
         InicisBillingKeyResponse res = client.requestBillingKey(AUTH_URL, MID, AUTH_TOKEN, TIMESTAMP, SIGNATURE, VERIFICATION, CHARSET);
@@ -71,10 +73,10 @@ class InicisClientTest {
     @Test
     @DisplayName("실패: JSON 파싱 예외 → PgResponseParseException")
     void requestBillingKey_parseError_throwsPgParseEx() throws Exception {
-        String bad = "{not-json}";
+
         when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(String.class)))
-                .thenReturn(ResponseEntity.ok(bad));
-        when(objectMapper.readValue(eq(bad), eq(InicisBillingKeyResponse.class)))
+                .thenReturn(ResponseEntity.ok(FAIL_JSON));
+        when(objectMapper.readValue(eq(FAIL_JSON), eq(InicisBillingKeyResponse.class)))
                 .thenThrow(new RuntimeException("parse"));
 
         assertThatThrownBy(() ->
