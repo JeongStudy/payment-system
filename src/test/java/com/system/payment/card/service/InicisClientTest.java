@@ -54,13 +54,16 @@ class InicisClientTest {
         assertThat(res.getResultCode()).isEqualTo("0000");
 
         // then: 요청 폼 검증 (헤더 Accept 검증 없음)
-        ArgumentCaptor<HttpEntity> cap = ArgumentCaptor.forClass(HttpEntity.class);
-        verify(restTemplate).postForEntity(eq(AUTH_URL), cap.capture(), eq(String.class));
-
-        assertThat(cap.getValue().getBody()).isInstanceOf(MultiValueMap.class);
         @SuppressWarnings("unchecked")
-        MultiValueMap<String, String> form = (MultiValueMap<String, String>) cap.getValue().getBody();
+        ArgumentCaptor<HttpEntity<MultiValueMap<String, String>>> cap =
+                ArgumentCaptor.forClass(HttpEntity.class);
 
+        verify(restTemplate).postForEntity(eq(AUTH_URL), cap.capture(), eq(String.class));
+        HttpEntity<MultiValueMap<String, String>> entity = cap.getValue();
+
+        MultiValueMap<String, String> form = entity.getBody();
+
+        assertThat(form).isNotNull();
         assertThat(form.getFirst("mid")).isEqualTo(MID);
         assertThat(form.getFirst("authToken")).isEqualTo(AUTH_TOKEN);
         assertThat(form.getFirst("timestamp")).isEqualTo(TIMESTAMP);
