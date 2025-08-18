@@ -31,6 +31,9 @@ public class OutboxEvent extends BaseEntity {
 	private Integer attempts;     // 재시도 횟수
 	@Column(nullable = false)
 	private LocalDateTime nextAttemptAt; // 재시도 타이밍을 제어하는 스케줄 타임스탬프
+	@Column
+	private String lastError; // 재시도 타이밍을 제어하는 스케줄 타임스탬프
+
 
 	@PrePersist
 	void prePersist() {
