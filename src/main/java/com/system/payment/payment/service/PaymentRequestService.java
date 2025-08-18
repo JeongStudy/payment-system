@@ -10,6 +10,7 @@ import com.system.payment.payment.model.dto.PaymentDetailItem;
 import com.system.payment.payment.model.request.CreatePaymentRequest;
 import com.system.payment.payment.model.response.CreatePaymentResponse;
 import com.system.payment.payment.model.response.IdempotencyKeyResponse;
+import com.system.payment.payment.model.response.PaymentStatusResponse;
 import com.system.payment.payment.repository.PaymentRepository;
 import com.system.payment.user.domain.AesKey;
 import com.system.payment.user.domain.PaymentUser;
@@ -19,10 +20,12 @@ import com.system.payment.user.service.UserService;
 import com.system.payment.util.KeyGeneratorUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -67,17 +70,17 @@ public class PaymentRequestService {
 		String transactionId = KeyGeneratorUtil.generateTransactionId();
 
 		final Payment payment = Payment.create(
-						PaymentUserRef.of(paymentUser.getId()),
-						ReferenceRef.of(ReferenceType.ORDER,
+				PaymentUserRef.of(paymentUser.getId()),
+				ReferenceRef.of(ReferenceType.ORDER,
 						request.getServiceOrderId()),
-						PaymentMethodRef.of(PaymentMethodType.CARD,
+				PaymentMethodRef.of(PaymentMethodType.CARD,
 						paymentUserCard.getId()),
-						PaymentType.NORMAL,
-						request.getAmount(),
-						request.getIdempotencyKey(),
-						transactionId,
-						itemList
-				);
+				PaymentType.NORMAL,
+				request.getAmount(),
+				request.getIdempotencyKey(),
+				transactionId,
+				itemList
+		);
 		paymentRepository.save(payment);
 
 
@@ -93,5 +96,17 @@ public class PaymentRequestService {
 		);
 
 		return CreatePaymentResponse.from(payment);
+	}
+
+	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+	public PaymentStatusResponse getPaymentStatus(Integer paymentId) {
+		var payment = paymentRepository.findById(paymentId)
+				.orElseThrow(() -> new PaymentServerNotFoundException(ErrorCode.NOT_FOUND));
+
+		return PaymentStatusResponse.builder()
+				.paymentId(payment.getId())
+				.code(payment.getPaymentResultCode().getCode())
+				.description(payment.getPaymentResultCode().getDescription())
+				.build();
 	}
 }
