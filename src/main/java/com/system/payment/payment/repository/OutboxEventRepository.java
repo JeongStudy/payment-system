@@ -12,11 +12,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface OutboxEventRepository extends JpaRepository<OutboxEvent, Long> {
+public interface OutboxEventRepository extends JpaRepository<OutboxEvent, Integer> {
 
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
 	@Query("select e from OutboxEvent e where e.id = :id")
-	Optional<OutboxEvent> findByIdForUpdate(@Param("id") Long id);
+	Optional<OutboxEvent> findByIdForUpdate(@Param("id") Integer id);
 
 	@Query("""
 			select e from OutboxEvent e

@@ -86,7 +86,7 @@ public class PaymentRequestService {
 
 		paymentHistoryService.recordCreated(payment);
 
-		outboxService.enqueuePaymentRequested(
+		Integer eventId = outboxService.enqueuePaymentRequested(
 				payment.getId(),
 				payment.getTransactionId(),
 				payment.getUserRef().getUserId(),
@@ -95,7 +95,7 @@ public class PaymentRequestService {
 				productName
 		);
 
-		return CreatePaymentResponse.from(payment);
+		return CreatePaymentResponse.from(payment, eventId);
 	}
 
 	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)

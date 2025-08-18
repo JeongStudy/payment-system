@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class OutboxEvent extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Integer id;
 	@Column(nullable = false)
 	private String eventType;     // e.g. "PAYMENT_REQUESTED_V1"
 	@Column(nullable = false)
