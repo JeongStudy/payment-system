@@ -57,7 +57,7 @@ public class PaymentRequestService {
 		credentialService.verifyOrThrow(decryptedPassword, paymentUser.getPassword());
 
 		List<PaymentDetailItem> itemList = new ArrayList<>();
-		itemList.add(PaymentDetailItem.product(1, 1));
+		itemList.add(PaymentDetailItem.order(1, 1));
 //		itemList.add(PaymentDetailItem.point(2, -5000));
 		PaymentItemValidator.validateAndVerifyTotal(itemList, request.getAmount());
 
@@ -66,22 +66,26 @@ public class PaymentRequestService {
 
 		String transactionId = KeyGeneratorUtil.generateTransactionId();
 
-		final Payment payment = paymentRepository.save(
-				Payment.create(
+		final Payment payment = Payment.create(
 						PaymentUserRef.of(paymentUser.getId()),
-						ReferenceRef.of(ReferenceType.ORDER, request.getServiceOrderId()),
-						PaymentMethodRef.of(PaymentMethodType.CARD, paymentUserCard.getId()),
+						ReferenceRef.of(ReferenceType.ORDER,
+						request.getServiceOrderId()),
+						PaymentMethodRef.of(PaymentMethodType.CARD,
+						paymentUserCard.getId()),
 						PaymentType.NORMAL,
 						request.getAmount(),
 						request.getIdempotencyKey(),
 						transactionId,
 						itemList
-				));
+				);
+		paymentRepository.save(payment);
+
 
 		paymentHistoryService.recordCreated(payment);
 
 		outboxService.enqueuePaymentRequested(
-				payment.getId(), payment.getTransactionId(),
+				payment.getId(),
+				payment.getTransactionId(),
 				payment.getUserRef().getUserId(),
 				payment.getMethodRef().getPaymentMethodType().name(),
 				payment.getMethodRef().getPaymentMethodId(),
