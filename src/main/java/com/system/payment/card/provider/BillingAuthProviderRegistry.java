@@ -16,6 +16,9 @@ public class BillingAuthProviderRegistry {
     public BillingAuthProviderRegistry(List<BillingAuthProvider> beans) {
         Map<PgCompany, BillingAuthProvider> map = new EnumMap<>(PgCompany.class);
         for (BillingAuthProvider b : beans) {
+            if (map.containsKey(b.supports())) {
+                throw new IllegalStateException("Duplicate BillingAuthProvider for PG: " + b.supports());
+            }
             map.put(b.supports(), b);
         }
         this.providers = Map.copyOf(map); // 불변화

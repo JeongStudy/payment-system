@@ -115,9 +115,10 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(PgResponseParseException.class)
 	public ResponseEntity<Response<Void>> handlePgResponseParseException(PgResponseParseException e) {
 		log.error("PG 응답 파싱 실패", e);
+		ErrorCode errorCode = e.getErrorCode();
 		Response<Void> response = Response.<Void>builder()
-				.status(ErrorCode.PG_RESPONSE_PARSE_ERROR.getStatus())
-				.message(ErrorCode.PG_RESPONSE_PARSE_ERROR.getMessage())
+				.status(errorCode.getStatus())
+				.message(errorCode.getMessage())
 				.build();
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	}
