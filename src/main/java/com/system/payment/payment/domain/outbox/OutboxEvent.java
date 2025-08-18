@@ -1,5 +1,6 @@
 package com.system.payment.payment.domain.outbox;
 
+import com.system.payment.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OutboxEvent {
+public class OutboxEvent extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -29,24 +30,14 @@ public class OutboxEvent {
 	@Column(nullable = false)
 	private Integer attempts;     // 재시도 횟수
 	@Column(nullable = false)
-	private LocalDateTime nextAttemptAt;
-	@Column(nullable = false, updatable = false)
-	private LocalDateTime createdAt;
-	@Column(nullable = false)
-	private LocalDateTime updatedAt;
+	private LocalDateTime nextAttemptAt; // 재시도 타이밍을 제어하는 스케줄 타임스탬프
 
 	@PrePersist
 	void prePersist() {
 		this.status = this.status == null ? "PENDING" : this.status;
 		this.attempts = this.attempts == null ? 0 : this.attempts;
 		LocalDateTime now = LocalDateTime.now();
-		this.createdAt = now;
-		this.updatedAt = now;
 		this.nextAttemptAt = now;
 	}
 
-	@PreUpdate
-	void preUpdate() {
-		this.updatedAt = LocalDateTime.now();
-	}
 }
