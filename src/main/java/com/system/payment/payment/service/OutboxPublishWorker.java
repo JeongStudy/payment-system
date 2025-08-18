@@ -22,7 +22,7 @@ public class OutboxPublishWorker {
 	private final PaymentUserRepository paymentUserRepository;
 	private final UserService userService;
 	private final PaymentProducer paymentProducer;
-	private final ObjectMapper mapper;
+	private final ObjectMapper objectMapper;
 
 	private static final int MAX_ATTEMPTS = 10;
 
@@ -42,9 +42,9 @@ public class OutboxPublishWorker {
 		try {
 			String raw = e.getPayload();
 			if (raw.startsWith("\"")) {
-				raw = mapper.readValue(raw, String.class);
+				raw = objectMapper.readValue(raw, String.class);
 			}
-			var args = mapper.readValue(raw, PaymentRequestedArgs.class);
+			var args = objectMapper.readValue(raw, PaymentRequestedArgs.class);
 			var payment = paymentRepository.findById(args.paymentId()).orElseThrow();
 			var user = paymentUserRepository.getByIdOrThrow(args.userId());
 			var card = paymentUserCardRepository.findById(args.methodId()).orElseThrow();
