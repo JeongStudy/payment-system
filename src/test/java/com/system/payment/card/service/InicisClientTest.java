@@ -29,14 +29,15 @@ class InicisClientTest {
     private static final String SIGNATURE = "sig";
     private static final String VERIFICATION = "ver";
     private static final String CHARSET = "UTF-8";
-
+    private static final String FORMAT = "JSON";
+    private static final String SUCCESS_CODE = "0000";
     private static final String SUCCESS_JSON = """
         {"resultCode":"0000"}
         """;
     private static final String FAIL_JSON = "{not-json}";
 
     @Test
-    @DisplayName("성공: 2xx + JSON 파싱 + 폼 파라미터 검증(format=JSON 포함)")
+    @DisplayName("2xx + JSON 파싱 + 폼 파라미터 검증(format=JSON 포함) - 성공")
     void requestBillingKey_success_and_form_verified() throws Exception {
         // given
         when(restTemplate.postForEntity(eq(AUTH_URL), any(HttpEntity.class), eq(String.class)))
@@ -44,14 +45,14 @@ class InicisClientTest {
 
         InicisBillingKeyResponse mapped = new InicisBillingKeyResponse();
         var f = InicisBillingKeyResponse.class.getDeclaredField("resultCode");
-        f.setAccessible(true); f.set(mapped, "0000");
+        f.setAccessible(true); f.set(mapped, SUCCESS_CODE);
         when(objectMapper.readValue(eq(SUCCESS_JSON), eq(InicisBillingKeyResponse.class))).thenReturn(mapped);
 
         // when
         InicisBillingKeyResponse res = client.requestBillingKey(AUTH_URL, MID, AUTH_TOKEN, TIMESTAMP, SIGNATURE, VERIFICATION, CHARSET);
 
         // then: 결과
-        assertThat(res.getResultCode()).isEqualTo("0000");
+        assertThat(res.getResultCode()).isEqualTo(SUCCESS_CODE);
 
         // then: 요청 폼 검증 (헤더 Accept 검증 없음)
         @SuppressWarnings("unchecked")
@@ -70,11 +71,11 @@ class InicisClientTest {
         assertThat(form.getFirst("signature")).isEqualTo(SIGNATURE);
         assertThat(form.getFirst("verification")).isEqualTo(VERIFICATION);
         assertThat(form.getFirst("charset")).isEqualTo(CHARSET);
-        assertThat(form.getFirst("format")).isEqualTo("JSON");
+        assertThat(form.getFirst("format")).isEqualTo(FORMAT);
     }
 
     @Test
-    @DisplayName("실패: JSON 파싱 예외 → PgResponseParseException")
+    @DisplayName("JSON 파싱 예외(PgResponseParseException) - 실패")
     void requestBillingKey_parseError_throwsPgParseEx() throws Exception {
 
         when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(String.class)))
@@ -88,7 +89,7 @@ class InicisClientTest {
     }
 
     @Test
-    @DisplayName("실패: RestTemplate 예외는 그대로 전파(RestClientException)")
+    @DisplayName("RestTemplate 예외 전파(RestClientException) - 실패")
     void requestBillingKey_httpThrows_propagates() {
         when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(String.class)))
                 .thenThrow(new RestClientException("boom"));

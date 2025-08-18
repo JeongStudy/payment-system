@@ -6,7 +6,6 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
 public class InicisRequest {
     private String resultCode;
     private String resultMsg;

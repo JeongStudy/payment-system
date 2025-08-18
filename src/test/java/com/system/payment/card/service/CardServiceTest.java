@@ -32,7 +32,7 @@ class CardServiceTest {
     private static final String CREATED_TIMESTAMP = "createdTimestamp";
     private static final Integer USER_ID = 1;
     private static final Integer CARD_ID = 1;
-    private static final String OID = "oid";
+    private static final String OID = "OID-1";
     private static final String PG_INICIS = "INICIS";
 
     @Mock

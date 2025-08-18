@@ -68,13 +68,12 @@ public class InicisService {
         String buyerEmail = request.getBuyerEmail();
         String goodName = request.getGoodName();
 
-        // ※ 해시 생성 공식은 반드시 이니시스 문서 기준으로 맞춰야 함!
         String timestamp = idGeneratorUtil.timestampGenerate();
         String signatureText = String.format("oid=%s&price=%s&timestamp=%s", oid, price, timestamp);
         String signature = HashUtils.sha256(signatureText);
 
-        String varificationText = String.format("oid=%s&price=%s&signKey=%s&timestamp=%s", oid, price, signKey, timestamp);
-        String verification = HashUtils.sha256(varificationText);
+        String verificationText = String.format("oid=%s&price=%s&signKey=%s&timestamp=%s", oid, price, signKey, timestamp);
+        String verification = HashUtils.sha256(verificationText);
 
         String mKey = HashUtils.sha256(signKey);
 
