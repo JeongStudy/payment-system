@@ -33,7 +33,7 @@ public class PaymentRequestController {
 		return Response.created(createPaymentResponse, SuccessCode.PAYMENT_REQUESTS_SUCCESS);
 	}
 
-	@GetMapping("/requests/{paymentId}/status")
+	@GetMapping("/requests/status/{paymentId}")
 	public ResponseEntity<Response<PaymentStatusResponse>> getPaymentStatus(@PathVariable Integer paymentId) {
 		PaymentStatusResponse paymentStatusResponse = paymentRequestService.getPaymentStatus(paymentId);
 		return Response.ok(paymentStatusResponse, SuccessCode.PAYMENT_STATUS_DATA_SUCCESS);
