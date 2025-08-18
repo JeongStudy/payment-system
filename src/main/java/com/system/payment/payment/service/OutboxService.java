@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class OutboxService {
-	private final OutboxEventRepository repo;
+	private final OutboxEventRepository outboxEventRepository;
 	private final ObjectMapper mapper = new ObjectMapper();
 
 	@Transactional
@@ -26,7 +26,7 @@ public class OutboxService {
 					.eventKey(txId)
 					.payload(json)
 					.build();
-			repo.save(e);
+			outboxEventRepository.save(e);
 		} catch (Exception e) {
 			throw new IllegalStateException("outbox serialize failed", e);
 		}
@@ -35,7 +35,7 @@ public class OutboxService {
 	@Transactional
 	public void markSent(OutboxEvent e) {
 		e.setStatus("SENT");
-		repo.save(e);
+		outboxEventRepository.save(e);
 	}
 
 	@Transactional
@@ -46,6 +46,6 @@ public class OutboxService {
 		long sec = Math.min(300, (long) Math.pow(2, Math.min(10, n)));
 		e.setNextAttemptAt(LocalDateTime.now().plusSeconds(sec));
 		e.setStatus("PENDING");
-		repo.save(e);
+		outboxEventRepository.save(e);
 	}
 }
