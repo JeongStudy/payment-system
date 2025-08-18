@@ -106,12 +106,14 @@ public record PaymentRequestedMessageV1<A>(
     ) {
         public Identifiers {
             Objects.requireNonNull(paymentId, "paymentId must not be null");
+            Objects.requireNonNull(userId, "userId must not be null");
+            Objects.requireNonNull(transactionId, "transactionId must not be null");
             // transactionId/userId는 케이스에 따라 null 허용
         }
 
         /** Kafka 파티션 키로 사용할 값 */
         public String partitionKey() {
-            return String.valueOf(paymentId);
+            return String.valueOf(userId);
         }
     }
 
