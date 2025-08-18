@@ -17,7 +17,7 @@ public class OutboxService {
 	private final ObjectMapper mapper = new ObjectMapper();
 
 	@Transactional
-	public void enqueuePaymentRequested(Integer paymentId, String txId, Integer userId, String methodType, Integer methodId, String productName) {
+	public Integer enqueuePaymentRequested(Integer paymentId, String txId, Integer userId, String methodType, Integer methodId, String productName) {
 		try {
 			var args = new PaymentRequestedArgs(paymentId, txId, userId, methodType, methodId, productName);
 			String json = mapper.writeValueAsString(args);
@@ -26,7 +26,7 @@ public class OutboxService {
 					.eventKey(txId)
 					.payload(json)
 					.build();
-			outboxEventRepository.save(e);
+			return outboxEventRepository.save(e).getId();
 		} catch (Exception e) {
 			throw new IllegalStateException("outbox serialize failed", e);
 		}

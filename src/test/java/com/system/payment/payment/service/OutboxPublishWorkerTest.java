@@ -52,7 +52,7 @@ class OutboxPublishWorkerTest {
 	@InjectMocks
 	OutboxPublishWorker worker;
 
-	private static OutboxEvent newEvent(Long id, String status, String type, String payload, int attempts) {
+	private static OutboxEvent newEvent(Integer id, String status, String type, String payload, int attempts) {
 		OutboxEvent e = new OutboxEvent();
 		e.setId(id);
 		e.setStatus(status);
@@ -83,7 +83,7 @@ class OutboxPublishWorkerTest {
 	@DisplayName("성공 플로우: Producer 전송 후 markSent 호출")
 	void processOne_success_marksSent() throws Exception {
 		// given
-		Long id = 10L;
+		Integer id = 10;
 		OutboxEvent e = newEvent(id, "PENDING", "PAYMENT_REQUESTED_V1", "{}", 0);
 
 		when(outboxEventRepository.findByIdForUpdate(id)).thenReturn(Optional.of(e));
@@ -106,7 +106,7 @@ class OutboxPublishWorkerTest {
 	@DisplayName("실패(시도<MAX): markFailedAndBackoff 호출 및 lastError 세팅")
 	void processOne_failure_underMax_callsBackoff() throws Exception {
 		// given
-		Long id = 11L;
+		Integer id = 11;
 		OutboxEvent e = newEvent(id, "PENDING", "PAYMENT_REQUESTED_V1", "{}", 0);
 
 		when(outboxEventRepository.findByIdForUpdate(id)).thenReturn(Optional.of(e));
@@ -137,7 +137,7 @@ class OutboxPublishWorkerTest {
 	@DisplayName("실패(시도>=MAX): DEAD 전환 및 저장")
 	void processOne_failure_reachMax_setsDeadAndSaves() throws Exception {
 		// given
-		Long id = 12L;
+		Integer id = 12;
 		OutboxEvent e = newEvent(id, "PENDING", "PAYMENT_REQUESTED_V1", "{}", 9); // attempts=9 → next=10
 
 		when(outboxEventRepository.findByIdForUpdate(id)).thenReturn(Optional.of(e));
@@ -172,7 +172,7 @@ class OutboxPublishWorkerTest {
 	@DisplayName("스킵: PENDING이 아니면 처리하지 않음")
 	void processOne_skips_whenNotPending() {
 		// given
-		Long id = 13L;
+		Integer id = 13;
 		OutboxEvent e = newEvent(id, "SENT", "PAYMENT_REQUESTED_V1", "{}", 0);
 		when(outboxEventRepository.findByIdForUpdate(id)).thenReturn(Optional.of(e));
 
@@ -187,7 +187,7 @@ class OutboxPublishWorkerTest {
 	@DisplayName("스킵: 이벤트 타입 불일치 시 처리하지 않음")
 	void processOne_skips_whenTypeMismatch() {
 		// given
-		Long id = 14L;
+		Integer id = 14;
 		OutboxEvent e = newEvent(id, "PENDING", "OTHER_EVENT", "{}", 0);
 		when(outboxEventRepository.findByIdForUpdate(id)).thenReturn(Optional.of(e));
 

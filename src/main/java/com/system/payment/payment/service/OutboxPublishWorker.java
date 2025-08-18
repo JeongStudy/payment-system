@@ -30,7 +30,7 @@ public class OutboxPublishWorker {
 	 * - 실패: markFailedAndBackoff (다음 시도 시각 + 시도횟수 증가)
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void processOne(Long eventId) {
+	public void processOne(Integer eventId) {
 		var e = outboxEventRepository.findByIdForUpdate(eventId).orElseThrow();
 
 		// 가드: 대상 상태/타입만 처리
