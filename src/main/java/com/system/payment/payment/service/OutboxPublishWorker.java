@@ -5,6 +5,7 @@ import com.system.payment.card.repository.PaymentUserCardRepository;
 import com.system.payment.payment.domain.outbox.PaymentRequestedArgs;
 import com.system.payment.payment.repository.OutboxEventRepository;
 import com.system.payment.payment.repository.PaymentRepository;
+import com.system.payment.user.repository.PaymentUserRepository;
 import com.system.payment.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ public class OutboxPublishWorker {
 	private final OutboxService outboxService;
 	private final PaymentRepository paymentRepository;
 	private final PaymentUserCardRepository paymentUserCardRepository;
+	private final PaymentUserRepository paymentUserRepository;
 	private final UserService userService;
 	private final PaymentProducer paymentProducer;
 	private final ObjectMapper mapper;
@@ -38,9 +40,13 @@ public class OutboxPublishWorker {
 		if (!"PAYMENT_REQUESTED_V1".equals(e.getEventType())) return;
 
 		try {
-			var args = mapper.readValue(e.getPayload(), PaymentRequestedArgs.class);
+			String raw = e.getPayload();
+			if (raw.startsWith("\"")) {
+				raw = mapper.readValue(raw, String.class);
+			}
+			var args = mapper.readValue(raw, PaymentRequestedArgs.class);
 			var payment = paymentRepository.findById(args.paymentId()).orElseThrow();
-			var user = userService.findUser();
+			var user = paymentUserRepository.getByIdOrThrow(args.userId());
 			var card = paymentUserCardRepository.findById(args.methodId()).orElseThrow();
 
 			paymentProducer.sendPaymentRequested(payment, user, card, args.productName());
