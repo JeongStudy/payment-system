@@ -11,10 +11,10 @@ public class PaymentDetailItem {
 	private Integer itemId;
 	private Integer itemAmount;
 
-	public static PaymentDetailItem product(Integer productId, int amount) {
+	public static PaymentDetailItem order(Integer orderId, int amount) {
 		return PaymentDetailItem.builder()
 				.itemType(ItemType.PRODUCT)
-				.itemId(productId)
+				.itemId(orderId)
 				.itemAmount(amount)
 				.build();
 	}
