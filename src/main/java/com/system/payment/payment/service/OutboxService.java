@@ -14,13 +14,13 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class OutboxService {
 	private final OutboxEventRepository outboxEventRepository;
-	private final ObjectMapper mapper = new ObjectMapper();
+	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	@Transactional
 	public Integer enqueuePaymentRequested(Integer paymentId, String txId, Integer userId, String methodType, Integer methodId, String productName) {
 		try {
 			var args = new PaymentRequestedArgs(paymentId, txId, userId, methodType, methodId, productName);
-			String json = mapper.writeValueAsString(args);
+			String json = objectMapper.writeValueAsString(args);
 			var e = OutboxEvent.builder()
 					.eventType("PAYMENT_REQUESTED_V1")
 					.eventKey(txId)
