@@ -15,6 +15,7 @@ import com.system.payment.user.service.CredentialService;
 import com.system.payment.user.service.CryptoService;
 import com.system.payment.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -83,6 +84,7 @@ class PaymentRequestServiceTest {
 	}
 
 	@Test
+	@DisplayName("결제 요청 발급 성공")
 	void createPaymentAndPublish_success() {
 		// given
 		when(paymentRepository.existsByIdempotencyKey("idem-123")).thenReturn(false);
@@ -134,6 +136,7 @@ class PaymentRequestServiceTest {
 	}
 
 	@Test
+	@DisplayName("결제 요청 멱등성 키 중복 실패")
 	void duplicate_idempotencyKey_conflict() {
 		when(paymentRepository.existsByIdempotencyKey("idem-123")).thenReturn(true);
 
@@ -147,6 +150,7 @@ class PaymentRequestServiceTest {
 	}
 
 	@Test
+	@DisplayName("결제 요청 유저 카드 찾을 수 없음 실패")
 	void card_not_found() {
 		when(paymentRepository.existsByIdempotencyKey("idem-123")).thenReturn(false);
 
