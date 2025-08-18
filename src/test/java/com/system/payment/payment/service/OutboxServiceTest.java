@@ -22,130 +22,131 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class OutboxServiceTest {
 
-    @Mock
-    OutboxEventRepository outboxEventRepository;
+	@Mock
+	OutboxEventRepository outboxEventRepository;
 
-    @InjectMocks
-    OutboxService outboxService;
+	@InjectMocks
+	OutboxService outboxService;
 
-    ObjectMapper objectMapper;
+	ObjectMapper objectMapper;
 
-    @BeforeEach
-    void setUp() {
-        objectMapper = new ObjectMapper();
-    }
+	@BeforeEach
+	void setUp() {
+		objectMapper = new ObjectMapper();
+	}
 
-    @Test
-    @DisplayName("enqueuePaymentRequested: OutboxEvent(eventType, eventKey, payload)가 올바르게 저장된다")
-    void enqueuePaymentRequested_savesCorrectOutboxEvent() throws Exception {
-        // given
-        Integer paymentId = 1;
-        String txId = "tx-abc-001";
-        Integer userId = 1;
-        String methodType = "CARD";
-        Integer methodId = 1;
-        String productName = "AI 라이센스 키(연 1석)";
+	@Test
+	@DisplayName("enqueuePaymentRequested: OutboxEvent(eventType, eventKey, payload)가 올바르게 저장된다")
+	void enqueuePaymentRequested_savesCorrectOutboxEvent() throws Exception {
+		// given
+		Integer paymentId = 1;
+		String txId = "tx-abc-001";
+		Integer userId = 1;
+		String methodType = "CARD";
+		Integer methodId = 1;
+		String productName = "AI 라이센스 키(연 1석)";
 
-        ArgumentCaptor<OutboxEvent> captor = ArgumentCaptor.forClass(OutboxEvent.class);
+		ArgumentCaptor<OutboxEvent> captor = ArgumentCaptor.forClass(OutboxEvent.class);
 
-        // when
-        outboxService.enqueuePaymentRequested(paymentId, txId, userId, methodType, methodId, productName);
+		// when
+		outboxService.enqueuePaymentRequested(paymentId, txId, userId, methodType, methodId, productName);
 
-        // then
-        verify(outboxEventRepository).save(captor.capture());
-        OutboxEvent saved = captor.getValue();
+		// then
+		verify(outboxEventRepository).save(captor.capture());
+		OutboxEvent saved = captor.getValue();
 
-        assertThat(saved).isNotNull();
-        assertThat(saved.getEventType()).isEqualTo("PAYMENT_REQUESTED_V1"); // from service
-        assertThat(saved.getEventKey()).isEqualTo(txId);                    // txId -> eventKey
-        assertThat(saved.getPayload()).isNotBlank();
+		assertThat(saved).isNotNull();
+		assertThat(saved.getEventType()).isEqualTo("PAYMENT_REQUESTED_V1"); // from service
+		assertThat(saved.getEventKey()).isEqualTo(txId);                    // txId -> eventKey
+		assertThat(saved.getPayload()).isNotBlank();
 
-        // payload 검증(JSON → Map)
-        Map<String, Object> payload = objectMapper.readValue(
-                saved.getPayload(), new TypeReference<Map<String, Object>>() {}
-        );
+		// payload 검증(JSON → Map)
+		Map<String, Object> payload = objectMapper.readValue(
+				saved.getPayload(), new TypeReference<Map<String, Object>>() {
+				}
+		);
 
-        // 숫자(Object → Number → int) 캐스팅 유의
-        assertThat(((Number) payload.get("paymentId")).intValue()).isEqualTo(paymentId);
-        // record 필드명은 transactionId 임(서비스가 이 구조로 직렬화함)
-        assertThat(payload.get("transactionId")).isEqualTo(txId);
-        assertThat(((Number) payload.get("userId")).intValue()).isEqualTo(userId);
-        assertThat(payload.get("methodType")).isEqualTo(methodType);
-        assertThat(((Number) payload.get("methodId")).intValue()).isEqualTo(methodId);
-        assertThat(payload.get("productName")).isEqualTo(productName);
-    }
+		// 숫자(Object → Number → int) 캐스팅 유의
+		assertThat(((Number) payload.get("paymentId")).intValue()).isEqualTo(paymentId);
+		// record 필드명은 transactionId 임(서비스가 이 구조로 직렬화함)
+		assertThat(payload.get("transactionId")).isEqualTo(txId);
+		assertThat(((Number) payload.get("userId")).intValue()).isEqualTo(userId);
+		assertThat(payload.get("methodType")).isEqualTo(methodType);
+		assertThat(((Number) payload.get("methodId")).intValue()).isEqualTo(methodId);
+		assertThat(payload.get("productName")).isEqualTo(productName);
+	}
 
-    @Test
-    @DisplayName("markSent: 상태를 SENT로 설정하고 저장한다")
-    void markSent_updatesStatusToSentAndSaves() {
-        // given
-        OutboxEvent e = new OutboxEvent();
-        e.setStatus("PENDING");
+	@Test
+	@DisplayName("markSent: 상태를 SENT로 설정하고 저장한다")
+	void markSent_updatesStatusToSentAndSaves() {
+		// given
+		OutboxEvent e = new OutboxEvent();
+		e.setStatus("PENDING");
 
-        ArgumentCaptor<OutboxEvent> captor = ArgumentCaptor.forClass(OutboxEvent.class);
+		ArgumentCaptor<OutboxEvent> captor = ArgumentCaptor.forClass(OutboxEvent.class);
 
-        // when
-        outboxService.markSent(e);
+		// when
+		outboxService.markSent(e);
 
-        // then
-        verify(outboxEventRepository).save(captor.capture());
-        OutboxEvent saved = captor.getValue();
-        assertThat(saved.getStatus()).isEqualTo("SENT");
-    }
+		// then
+		verify(outboxEventRepository).save(captor.capture());
+		OutboxEvent saved = captor.getValue();
+		assertThat(saved.getStatus()).isEqualTo("SENT");
+	}
 
-    @Test
-    @DisplayName("markFailedAndBackoff: attempts를 +1 하고 지수 백오프(초기 2초)를 적용한다")
-    void markFailedAndBackoff_incrementsAttempts_andAppliesExponentialBackoff_initial() {
-        // given: 현재 attempts = 0 → 증가 후 1 → 지수백오프 2초
-        OutboxEvent e = new OutboxEvent();
-        e.setAttempts(0);       // @PrePersist가 실행되지 않으므로 테스트에서 직접 세팅
-        e.setStatus("PENDING"); // 동일
+	@Test
+	@DisplayName("markFailedAndBackoff: attempts를 +1 하고 지수 백오프(초기 2초)를 적용한다")
+	void markFailedAndBackoff_incrementsAttempts_andAppliesExponentialBackoff_initial() {
+		// given: 현재 attempts = 0 → 증가 후 1 → 지수백오프 2초
+		OutboxEvent e = new OutboxEvent();
+		e.setAttempts(0);       // @PrePersist가 실행되지 않으므로 테스트에서 직접 세팅
+		e.setStatus("PENDING"); // 동일
 
-        ArgumentCaptor<OutboxEvent> captor = ArgumentCaptor.forClass(OutboxEvent.class);
-        LocalDateTime before = LocalDateTime.now();
+		ArgumentCaptor<OutboxEvent> captor = ArgumentCaptor.forClass(OutboxEvent.class);
+		LocalDateTime before = LocalDateTime.now();
 
-        // when
-        outboxService.markFailedAndBackoff(e);
+		// when
+		outboxService.markFailedAndBackoff(e);
 
-        // then
-        LocalDateTime after = LocalDateTime.now();
-        verify(outboxEventRepository).save(captor.capture());
-        OutboxEvent saved = captor.getValue();
+		// then
+		LocalDateTime after = LocalDateTime.now();
+		verify(outboxEventRepository).save(captor.capture());
+		OutboxEvent saved = captor.getValue();
 
-        assertThat(saved.getAttempts()).isEqualTo(1);
-        assertThat(saved.getStatus()).isEqualTo("PENDING");
+		assertThat(saved.getAttempts()).isEqualTo(1);
+		assertThat(saved.getStatus()).isEqualTo("PENDING");
 
-        long expectedSec = 2L; // 2^1
-        assertThat(saved.getNextAttemptAt())
-                .isAfterOrEqualTo(before.plusSeconds(expectedSec - 1))
-                .isBeforeOrEqualTo(after.plusSeconds(expectedSec + 1));
-    }
+		long expectedSec = 2L; // 2^1
+		assertThat(saved.getNextAttemptAt())
+				.isAfterOrEqualTo(before.plusSeconds(expectedSec - 1))
+				.isBeforeOrEqualTo(after.plusSeconds(expectedSec + 1));
+	}
 
-    @Test
-    @DisplayName("markFailedAndBackoff: 백오프는 최대 300초로 캡된다(시도 9→10에서 300초)")
-    void markFailedAndBackoff_capsBackoffAt300Seconds() {
-        // given: attempts = 9 → 증가 후 10 → 2^10=1024 하지만 cap 300초
-        OutboxEvent e = new OutboxEvent();
-        e.setAttempts(9);
-        e.setStatus("PENDING");
+	@Test
+	@DisplayName("markFailedAndBackoff: 백오프는 최대 300초로 캡된다(시도 9→10에서 300초)")
+	void markFailedAndBackoff_capsBackoffAt300Seconds() {
+		// given: attempts = 9 → 증가 후 10 → 2^10=1024 하지만 cap 300초
+		OutboxEvent e = new OutboxEvent();
+		e.setAttempts(9);
+		e.setStatus("PENDING");
 
-        ArgumentCaptor<OutboxEvent> captor = ArgumentCaptor.forClass(OutboxEvent.class);
-        LocalDateTime before = LocalDateTime.now();
+		ArgumentCaptor<OutboxEvent> captor = ArgumentCaptor.forClass(OutboxEvent.class);
+		LocalDateTime before = LocalDateTime.now();
 
-        // when
-        outboxService.markFailedAndBackoff(e);
+		// when
+		outboxService.markFailedAndBackoff(e);
 
-        // then
-        LocalDateTime after = LocalDateTime.now();
-        verify(outboxEventRepository).save(captor.capture());
-        OutboxEvent saved = captor.getValue();
+		// then
+		LocalDateTime after = LocalDateTime.now();
+		verify(outboxEventRepository).save(captor.capture());
+		OutboxEvent saved = captor.getValue();
 
-        assertThat(saved.getAttempts()).isEqualTo(10);
-        assertThat(saved.getStatus()).isEqualTo("PENDING");
+		assertThat(saved.getAttempts()).isEqualTo(10);
+		assertThat(saved.getStatus()).isEqualTo("PENDING");
 
-        long expectedSec = 300L; // cap
-        assertThat(saved.getNextAttemptAt())
-                .isAfterOrEqualTo(before.plusSeconds(expectedSec - 1))
-                .isBeforeOrEqualTo(after.plusSeconds(expectedSec + 1));
-    }
+		long expectedSec = 300L; // cap
+		assertThat(saved.getNextAttemptAt())
+				.isAfterOrEqualTo(before.plusSeconds(expectedSec - 1))
+				.isBeforeOrEqualTo(after.plusSeconds(expectedSec + 1));
+	}
 }
