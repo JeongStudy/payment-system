@@ -91,7 +91,7 @@ class PaymentRequestServiceTest {
 
 		PaymentUser mockUser = mock(PaymentUser.class);
 		when(mockUser.getId()).thenReturn(1);
-		when(mockUser.getPassword()).thenReturn("$2b$hash");
+		when(mockUser.getEncPassword()).thenReturn("$2b$hash");
 		when(userService.findUser()).thenReturn(mockUser);
 
 		PaymentUserCard mockCard = mock(PaymentUserCard.class);
@@ -156,7 +156,7 @@ class PaymentRequestServiceTest {
 
 		PaymentUser user = mock(PaymentUser.class);
 		lenient().when(user.getId()).thenReturn(1);
-		lenient().when(user.getPassword()).thenReturn("$2b$hash");
+		lenient().when(user.getEncPassword()).thenReturn("$2b$hash");
 		lenient().when(userService.findUser()).thenReturn(user);
 
 		AesKey aesKey = mock(AesKey.class);

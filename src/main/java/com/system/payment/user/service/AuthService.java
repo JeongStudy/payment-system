@@ -2,7 +2,6 @@ package com.system.payment.user.service;
 
 import com.system.payment.exception.ErrorCode;
 import com.system.payment.exception.PaymentServerConflictException;
-import com.system.payment.exception.PaymentServerNotFoundException;
 import com.system.payment.user.domain.AesKey;
 import com.system.payment.user.domain.PaymentUser;
 import com.system.payment.user.model.reponse.LoginResponse;
@@ -51,7 +50,7 @@ public class AuthService {
 		final AesKey aesKey = cryptoService.resolveValidAesKey(request.getRsaPublicKey(), request.getEncAesKey());
 
 		final String decryptedPassword = cryptoService.decryptPasswordWithAes(request.getEncPassword(), aesKey.getAesKey());
-		credentialService.verifyOrThrow(decryptedPassword, user.getPassword());
+		credentialService.verifyOrThrow(decryptedPassword, user.getEncPassword());
 
 		final String jwtToken = jwtUtil.generateToken(user.getId());
 		return LoginResponse.from(jwtToken);
