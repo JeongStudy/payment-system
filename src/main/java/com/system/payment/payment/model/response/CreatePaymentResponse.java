@@ -10,11 +10,13 @@ import lombok.Getter;
 public class CreatePaymentResponse {
 	private String serviceOrderId;
 	private Integer paymentId;
+	private Integer eventId;
 
-	public static CreatePaymentResponse from(Payment payment) {
+	public static CreatePaymentResponse from(Payment payment, Integer eventId) {
 		return CreatePaymentResponse.builder()
 				.serviceOrderId(payment.getReferenceRef().getReferenceId())
 				.paymentId(payment.getId())
+				.eventId(eventId)
 				.build();
 	}
 }

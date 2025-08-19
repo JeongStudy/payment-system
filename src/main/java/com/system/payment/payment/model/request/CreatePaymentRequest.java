@@ -2,39 +2,43 @@ package com.system.payment.payment.model.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreatePaymentRequest {
 
 	@NotNull
-	private final Integer paymentUserCardId;
+	private Integer paymentUserCardId;
 
 	@NotNull
-	private final String serviceOrderId;
+	private String serviceOrderId;
 
-	private final Integer pointId;
+	private Integer pointId;
 
-	private final Integer couponId;
+	private Integer couponId;
 
 	@NotBlank
-	private final String productName;
+	private String productName;
 
 	@NotNull
-	private final Integer amount;
+	private Integer amount;
 
 	@NotNull
-	private final String idempotencyKey;
+	private String idempotencyKey;
 
 	// 결제 인증
 	@NotBlank
-	private final String encPassword;
+	private String encPassword;
 
 	@NotBlank
-	private final String encAesKey;
+	private String encAesKey;
 
 	@NotBlank
-	private final String rsaPublicKey;
+	private String rsaPublicKey;
 }

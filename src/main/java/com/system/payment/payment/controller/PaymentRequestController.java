@@ -3,6 +3,7 @@ package com.system.payment.payment.controller;
 import com.system.payment.payment.model.request.CreatePaymentRequest;
 import com.system.payment.payment.model.response.CreatePaymentResponse;
 import com.system.payment.payment.model.response.IdempotencyKeyResponse;
+import com.system.payment.payment.model.response.PaymentStatusResponse;
 import com.system.payment.payment.service.PaymentRequestService;
 import com.system.payment.util.Response;
 import com.system.payment.util.SuccessCode;
@@ -20,8 +21,8 @@ public class PaymentRequestController {
 
 	@GetMapping("/requests/idempotency-key")
 	public ResponseEntity<Response<IdempotencyKeyResponse>> getIdempotencyKey() {
-        final IdempotencyKeyResponse idempotencyKeyResponse = paymentRequestService.getIdempotencyKey();
-        return Response.ok(idempotencyKeyResponse,SuccessCode.PAYMENT_IDEMPOTENCY_KEY_SUCCESS);
+		final IdempotencyKeyResponse idempotencyKeyResponse = paymentRequestService.getIdempotencyKey();
+		return Response.ok(idempotencyKeyResponse, SuccessCode.PAYMENT_IDEMPOTENCY_KEY_SUCCESS);
 	}
 
 	@PostMapping("/requests")
@@ -30,5 +31,11 @@ public class PaymentRequestController {
 	) {
 		final CreatePaymentResponse createPaymentResponse = paymentRequestService.createPaymentAndPublish(request);
 		return Response.created(createPaymentResponse, SuccessCode.PAYMENT_REQUESTS_SUCCESS);
+	}
+
+	@GetMapping("/requests/status/{paymentId}")
+	public ResponseEntity<Response<PaymentStatusResponse>> getPaymentStatus(@PathVariable("paymentId") Integer paymentId) {
+		PaymentStatusResponse paymentStatusResponse = paymentRequestService.getPaymentStatus(paymentId);
+		return Response.ok(paymentStatusResponse, SuccessCode.PAYMENT_STATUS_DATA_SUCCESS);
 	}
 }

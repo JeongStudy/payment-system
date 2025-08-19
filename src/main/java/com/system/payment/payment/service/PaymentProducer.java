@@ -3,6 +3,7 @@ package com.system.payment.payment.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.system.payment.card.domain.PaymentUserCard;
+import com.system.payment.example.controller.ExampleController;
 import com.system.payment.payment.domain.Payment;
 import com.system.payment.payment.model.dto.InicisBillingApproval;
 import com.system.payment.payment.model.dto.PaymentRequestedMessageV1;
@@ -11,7 +12,10 @@ import com.system.payment.user.domain.PaymentUser;
 import com.system.payment.util.HashUtils;
 import com.system.payment.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
 import java.net.InetAddress;
@@ -20,6 +24,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.CompletableFuture;
 
 import static com.system.payment.util.TimeUtil.toInstant;
 
@@ -37,12 +42,9 @@ public class PaymentProducer {
 
 	public static final String PAYMENT_REQUESTED_TOPIC = "payment.requested.v1";
 
+	private static final Logger logger = LoggerFactory.getLogger(ExampleController.class);
+
 	public void sendPaymentRequested(Payment payment, PaymentUser paymentUser, PaymentUserCard paymentUserCard, String productName) {
-
-		// TODO 유저별 파티셔닝, 같은 유저는 같은 파티션으로 가야함, 현재 서버는 2개인데, 서버가 증설될것도 고려해야함
-		// 파티셔닝하는 인터페이스를 만들어서, 파티션을 만들어보자
-		// 여기서의 key는 뭘까? 파티셔닝 키인지? 데이터를 구별하는 키인지?
-
 		String key = String.valueOf(paymentUser.getId());
 		String clientIp = null;
 		try {
@@ -77,7 +79,8 @@ public class PaymentProducer {
 						)
 				);
 
-		kafkaTemplate.send(PAYMENT_REQUESTED_TOPIC, key, message);
+		final CompletableFuture<SendResult<String, Object>> send = kafkaTemplate.send(PAYMENT_REQUESTED_TOPIC, key, message);
+		logger.info("");
 	}
 
 	private InicisBillingApproval buildInicisBillingApproval(
