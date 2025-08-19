@@ -2,6 +2,8 @@ package com.system.payment.card.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.system.payment.card.model.response.InicisBillingKeyResponse;
+import com.system.payment.exception.ErrorCode;
+import com.system.payment.exception.PgResponseParseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
@@ -46,7 +48,7 @@ public class InicisClient {
             log.info("INICIS billing-key raw: {}", response.getBody());
             return objectMapper.readValue(response.getBody(), InicisBillingKeyResponse.class);
         } catch (Exception e) {
-            throw new IllegalStateException("이니시스 빌링키 발급 응답 파싱 실패", e);
+            throw new PgResponseParseException(ErrorCode.PG_RESPONSE_PARSE_ERROR);
         }
     }
 }

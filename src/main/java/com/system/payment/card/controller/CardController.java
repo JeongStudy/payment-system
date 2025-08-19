@@ -1,32 +1,32 @@
 package com.system.payment.card.controller;
 
-import com.system.payment.card.domain.PaymentUserCard;
 import com.system.payment.card.model.request.CardAuthRequest;
 import com.system.payment.card.model.request.InicisRequest;
 import com.system.payment.card.model.response.InicisBillingKeyResponse;
 import com.system.payment.card.model.response.PGAuthParamsResponse;
 import com.system.payment.card.model.response.PaymentUserCardResponse;
 import com.system.payment.card.service.CardService;
+import com.system.payment.card.service.InicisService;
 import com.system.payment.provider.AuthUserProvider;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/payment/cards")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 @Slf4j
 public class CardController {
 
     private final CardService cardService;
-
+    private final InicisService inicisService;
     private final AuthUserProvider authUserProvider;
 
     @GetMapping("/active")
@@ -43,13 +43,22 @@ public class CardController {
     }
 
     @PostMapping("/inicis/return")
-    public void handleInicisReturn(@ModelAttribute InicisRequest request, HttpServletResponse response) throws IOException {
-        InicisBillingKeyResponse billingKeyResponse = cardService.handleInicisCallback(request);
+    public ResponseEntity<Void> handleAuthCallback(@ModelAttribute InicisRequest request) {
+        String resultCode = inicisService.createAndSaveBillingKey(request);
 
-        log.info(billingKeyResponse.toString());
+        // 현재 도메인을 기준으로 리다이렉트 URL 생성
+        String base = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .build().toUriString();
+        String target = UriComponentsBuilder
+                .fromUriString(base) // 문자열 기반이지만 프로토콜+호스트가 포함된 URI
+                .path("/")
+                .queryParam("resultCode", resultCode)
+                .build()
+                .toUriString();
 
-        // 처리 후 프론트로 이동
-//        String url = "https://9892b382ce09.ngrok-free.app/card/return?resultCode=" + resultCode + "&authToken=" + authToken;
-//        response.sendRedirect(url);
+        // 303 See Other 권장 (POST 이후 GET로 전환)
+        return ResponseEntity.status(HttpStatus.SEE_OTHER)
+                .location(URI.create(target))
+                .build();
     }
 }
