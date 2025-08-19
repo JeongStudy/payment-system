@@ -2,6 +2,7 @@ package com.system.payment.user.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.system.payment.payment.service.PaymentProducer;
 import com.system.payment.user.model.request.LoginRequest;
 import com.system.payment.user.model.request.SignUpRequest;
 import com.system.payment.util.AesKeyCryptoUtil;
@@ -15,8 +16,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -44,26 +48,32 @@ class AuthControllerTest {
 	@Autowired
 	private ObjectMapper objectMapper;
 
+	@MockitoBean
+	private PaymentProducer paymentProducer;  // 메시지 발행 막기
+
+	@MockitoBean
+	private KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry; // Listener 자체 Mock
+
 	private static final Logger logger = LoggerFactory.getLogger(AuthControllerTest.class);
 
 	// 전역 변수 선언
-    private String email;
-    private String password;
-    private String firstName;
-    private String lastName;
-    private String phoneNumber;
+	private String email;
+	private String password;
+	private String firstName;
+	private String lastName;
+	private String phoneNumber;
 
 	private String accessToken;
-	
-    @BeforeEach
-    void setUp() {
-        // 테스트 시작 전마다 초기화 (유니크 이메일 보장)
-        this.email = "test" + System.currentTimeMillis() + "@test.com"; // 항상 다른 이메일
-        this.password = "manager0";
-        this.firstName = "JAEBIN";
-        this.lastName = "CHUNG";
-        this.phoneNumber = "01025861111";
-    }
+
+	@BeforeEach
+	void setUp() {
+		// 테스트 시작 전마다 초기화 (유니크 이메일 보장)
+		this.email = "test" + System.currentTimeMillis() + "@test.com"; // 항상 다른 이메일
+		this.password = "manager0";
+		this.firstName = "JAEBIN";
+		this.lastName = "CHUNG";
+		this.phoneNumber = "01025861111";
+	}
 
 	@Test
 	@DisplayName("회원가입 전체 시나리오 - 키 발급 및 암호화 포함")
@@ -172,17 +182,17 @@ class AuthControllerTest {
 	}
 
 	@Test
-    @DisplayName("로그인 후 JWT로 유저 정보 조회 성공")
-    void getUserInfo_success() throws Exception {
+	@DisplayName("로그인 후 JWT로 유저 정보 조회 성공")
+	void getUserInfo_success() throws Exception {
 		// 로그인
-        login_flow_with_crypto();
+		login_flow_with_crypto();
 
-		if(accessToken.isEmpty()){
+		if (accessToken.isEmpty()) {
 			logger.error("accessToken is empty.");
 			return;
 		}
-		
-        // 유저 정보 조회
+
+		// 유저 정보 조회
 		final ResultActions resultActions = mockMvc.perform(get("/api/auth/info")
 						.header("Authorization", accessToken))
 				.andDo(print())
@@ -190,14 +200,14 @@ class AuthControllerTest {
 				.andExpect(jsonPath("$.data.email").value(email))
 				.andExpect(jsonPath("$.data.firstName", notNullValue()))
 				.andExpect(jsonPath("$.data.lastName", notNullValue()));
-		
+
 		logger.info(resultActions.andReturn().getResponse().getContentAsString());
 		logger.info("");
 	}
 
-    @Test
-    @DisplayName("잘못된 토큰(가짜 토큰) → 401 반환")
-    void getUserInfo_invalidToken() throws Exception {
+	@Test
+	@DisplayName("잘못된 토큰(가짜 토큰) → 401 반환")
+	void getUserInfo_invalidToken() throws Exception {
 
 		final ResultActions resultActions = mockMvc.perform(get("/api/auth/info")
 						.header("Authorization", "Bearer fake.invalid.token"))
@@ -206,15 +216,15 @@ class AuthControllerTest {
 
 		logger.info(resultActions.andReturn().getResponse().getContentAsString());
 		logger.info("");
-    }
+	}
 
 	@Disabled("JWT 만료 테스트는 개발 환경에서만 사용, 빌드에는 포함하지 않음")
-    @Test
-    @DisplayName("만료된 토큰 → 401 반환")
-    void getUserInfo_expiredToken() throws Exception {
-        login_flow_with_crypto();
+	@Test
+	@DisplayName("만료된 토큰 → 401 반환")
+	void getUserInfo_expiredToken() throws Exception {
+		login_flow_with_crypto();
 
-		if(accessToken.isEmpty()){
+		if (accessToken.isEmpty()) {
 			logger.error("accessToken is empty.");
 			return;
 		}
@@ -226,17 +236,17 @@ class AuthControllerTest {
 						.header("Authorization", accessToken))
 				.andDo(print())
 				.andExpect(status().isUnauthorized());
-		
+
 		logger.info(resultActions.andReturn().getResponse().getContentAsString());
 		logger.info("");
 	}
 
-    @Test
-    @DisplayName("토큰 없이 유저 정보 요청 → 401 반환")
-    void getUserInfo_noToken() throws Exception {
-        login_flow_with_crypto();
+	@Test
+	@DisplayName("토큰 없이 유저 정보 요청 → 401 반환")
+	void getUserInfo_noToken() throws Exception {
+		login_flow_with_crypto();
 
-		if(accessToken.isEmpty()){
+		if (accessToken.isEmpty()) {
 			logger.error("accessToken is empty.");
 			return;
 		}
@@ -246,5 +256,5 @@ class AuthControllerTest {
 
 		logger.info(resultActions.andReturn().getResponse().getContentAsString());
 		logger.info("");
-    }
+	}
 }

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 //@ActiveProfiles("integration")
-public class ExceptionTestControllerTest {
+class ExceptionTestControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -36,7 +37,10 @@ public class ExceptionTestControllerTest {
 	private ObjectMapper objectMapper;
 
 	@MockitoBean
-	private PaymentProducer paymentProducer;
+	private PaymentProducer paymentProducer;  // 메시지 발행 막기
+
+	@MockitoBean
+	private KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry; // Listener 자체 Mock
 
 	private static final Logger logger = LoggerFactory.getLogger(ExceptionTestControllerTest.class);
 
