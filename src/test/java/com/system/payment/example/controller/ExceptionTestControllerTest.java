@@ -1,4 +1,4 @@
-package com.system.payment.payment.controller;
+package com.system.payment.example.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
