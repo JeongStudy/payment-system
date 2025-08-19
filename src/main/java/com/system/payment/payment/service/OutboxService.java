@@ -34,18 +34,24 @@ public class OutboxService {
 
 	@Transactional
 	public void markSent(OutboxEvent e) {
-		e.setStatus("SENT");
-		outboxEventRepository.save(e);
+		OutboxEvent updated = e.toBuilder()
+				.status("SENT")
+				.build();
+
+		outboxEventRepository.save(updated);
 	}
 
 	@Transactional
 	public void markFailedAndBackoff(OutboxEvent e) {
 		int n = e.getAttempts() + 1;
-		e.setAttempts(n);
-		// 지수백오프(최대 5분)
 		long sec = Math.min(300, (long) Math.pow(2, Math.min(10, n)));
-		e.setNextAttemptAt(LocalDateTime.now().plusSeconds(sec));
-		e.setStatus("PENDING");
-		outboxEventRepository.save(e);
+
+		OutboxEvent updated = e.toBuilder()
+				.attempts(n)
+				.nextAttemptAt(LocalDateTime.now().plusSeconds(sec))
+				.status("PENDING")
+				.build();
+
+		outboxEventRepository.save(updated);
 	}
 }
