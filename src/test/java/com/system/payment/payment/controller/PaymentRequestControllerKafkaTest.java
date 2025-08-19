@@ -10,8 +10,9 @@ import com.system.payment.user.model.request.LoginRequest;
 import com.system.payment.util.AesKeyCryptoUtil;
 import com.system.payment.util.RsaKeyCryptoUtil;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(properties = "spring.task.scheduling.enabled=false")
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -131,7 +133,7 @@ class PaymentRequestControllerKafkaTest {
 		testSink.reset();
 	}
 
-	@BeforeEach
+	@BeforeAll
 	void setUp() {
 		jdbcTemplate.execute(initSignUpSql);
 		jdbcTemplate.execute(initCardRegisterSql);
