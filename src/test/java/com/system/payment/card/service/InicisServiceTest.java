@@ -122,7 +122,7 @@ class InicisServiceTest {
     void createAndSaveBillingKey_whenCardNotFound_throwNotFound() {
         // given
         InicisRequest req = minimalInicisRequest(OID_NOT_EXIST);
-        when(paymentUserCardRepository.findByOid(OID_NOT_EXIST)).thenReturn(Optional.empty());
+        when(paymentUserCardRepository.findByPgOid(OID_NOT_EXIST)).thenReturn(Optional.empty());
 
         // expect
         assertThatThrownBy(() -> inicisService.createAndSaveBillingKey(req))
@@ -136,7 +136,7 @@ class InicisServiceTest {
         InicisRequest req = minimalInicisRequest(OID_ACTIVE);
         PaymentUserCard card = mock(PaymentUserCard.class);
         when(card.getBillingKeyStatus()).thenReturn(BillingKeyStatus.ACTIVE);
-        when(paymentUserCardRepository.findByOid(OID_ACTIVE)).thenReturn(Optional.of(card));
+        when(paymentUserCardRepository.findByPgOid(OID_ACTIVE)).thenReturn(Optional.of(card));
 
         // when
         String code = inicisService.createAndSaveBillingKey(req);
@@ -155,7 +155,7 @@ class InicisServiceTest {
 
         PaymentUserCard card = mock(PaymentUserCard.class);
         when(card.getBillingKeyStatus()).thenReturn(BillingKeyStatus.PENDING);
-        when(paymentUserCardRepository.findByOid(OID_PG_FAIL)).thenReturn(Optional.of(card));
+        when(paymentUserCardRepository.findByPgOid(OID_PG_FAIL)).thenReturn(Optional.of(card));
 
         InicisBillingKeyResponse resp = new InicisBillingKeyResponse();
         set(resp, "resultCode", RESULT_SAMPLE_FAIL);
@@ -178,7 +178,7 @@ class InicisServiceTest {
 
         PaymentUserCard card = mock(PaymentUserCard.class);
         when(card.getBillingKeyStatus()).thenReturn(BillingKeyStatus.PENDING);
-        when(paymentUserCardRepository.findByOid(OID_SUCCESS)).thenReturn(Optional.of(card));
+        when(paymentUserCardRepository.findByPgOid(OID_SUCCESS)).thenReturn(Optional.of(card));
 
         InicisBillingKeyResponse resp = new InicisBillingKeyResponse();
         set(resp, "resultCode", RESULT_SUCCESS);
