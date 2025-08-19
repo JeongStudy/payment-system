@@ -110,7 +110,7 @@ public class InicisService {
     public String createAndSaveBillingKey(InicisRequest request) {
         String oid = request.getOrderNumber();
         // 1) 락 걸고 조회 (동시성 안전)
-        PaymentUserCard card = paymentUserCardRepository.findByOid(oid)
+        PaymentUserCard card = paymentUserCardRepository.findByPgOid(oid)
                 .orElseThrow(() -> new PaymentServerNotFoundException(ErrorCode.NOT_FOUND));
 
         // 2) 이미 ACTIVE면 멱등 성공
