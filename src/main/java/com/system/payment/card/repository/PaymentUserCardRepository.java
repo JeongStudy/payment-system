@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface PaymentUserCardRepository extends JpaRepository<PaymentUserCard, Integer> {
     @Lock(LockModeType.PESSIMISTIC_WRITE) // FOR UPDATE
-    Optional<PaymentUserCard> findByOid(String oid);
+    Optional<PaymentUserCard> findByPgOid(String oid);
 
     List<PaymentUserCard> findByUser_IdAndIsDeletedFalseAndBillingKeyStatus(
             Integer userId,
