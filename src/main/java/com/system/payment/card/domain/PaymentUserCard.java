@@ -21,9 +21,8 @@ public class PaymentUserCard extends BaseEntity {
     @JoinColumn(nullable = false)
     private PaymentUser user;
 
-    //TODO oid가 moid, mid 필요
     @Column(length = 200, nullable = false, unique = true)
-    private String oid;
+    private String pgOid;
 
     @Column(length = 20)
     private String cardNumberMasked;

@@ -62,7 +62,7 @@ public class CardService {
     private void savePendingCard(PaymentUser user, String oid, PgCompany pgCompany) {
         paymentUserCardRepository.save(PaymentUserCard.builder()
                 .user(user)
-                .oid(oid)
+                .pgOid(oid)
                 .pgCompany(pgCompany)
                 .pgCompanyCode(pgCompany.getCode())
                 .billingKeyStatus(BillingKeyStatus.PENDING)

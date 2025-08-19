@@ -13,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaTemplate;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 
 import static com.system.payment.payment.service.PaymentProducer.PAYMENT_REQUESTED_TOPIC;
@@ -55,7 +54,7 @@ class PaymentProducerTest {
 
 		// card
 		when(card.getId()).thenReturn(1);
-		when(card.getOid()).thenReturn("DemoTest_1755064988200");
+		when(card.getPgOid()).thenReturn("DemoTest_1755064988200");
 		when(card.getBillingKey()).thenReturn("BK-XYZ");
 
 		// payment (deep stubs로 체이닝)
