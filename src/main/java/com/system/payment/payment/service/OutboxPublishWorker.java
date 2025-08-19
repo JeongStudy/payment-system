@@ -8,6 +8,8 @@ import com.system.payment.payment.repository.PaymentRepository;
 import com.system.payment.user.repository.PaymentUserRepository;
 import com.system.payment.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,8 @@ public class OutboxPublishWorker {
 	private final ObjectMapper objectMapper;
 
 	private static final int MAX_ATTEMPTS = 10;
+
+	private static final Logger logger = LoggerFactory.getLogger(OutboxPublishWorker.class);
 
 	/**
 	 * 개별 이벤트를 신규 트랜잭션(REQUIRES_NEW) 경계에서 처리.
@@ -53,6 +57,8 @@ public class OutboxPublishWorker {
 
 			outboxService.markSent(e);
 		} catch (Exception ex) {
+			ex.printStackTrace();
+			logger.error(ex.getMessage());
 			// 4) 실패 처리: 이번 실패 반영 시 시도수 계산
 			int nextAttempts = e.getAttempts() + 1;
 

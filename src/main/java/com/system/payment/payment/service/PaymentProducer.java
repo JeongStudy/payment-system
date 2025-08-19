@@ -3,6 +3,7 @@ package com.system.payment.payment.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.system.payment.card.domain.PaymentUserCard;
+import com.system.payment.example.controller.ExampleController;
 import com.system.payment.payment.domain.Payment;
 import com.system.payment.payment.model.dto.InicisBillingApproval;
 import com.system.payment.payment.model.dto.PaymentRequestedMessageV1;
@@ -11,7 +12,10 @@ import com.system.payment.user.domain.PaymentUser;
 import com.system.payment.util.HashUtils;
 import com.system.payment.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
 import java.net.InetAddress;
@@ -20,6 +24,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.CompletableFuture;
 
 import static com.system.payment.util.TimeUtil.toInstant;
 
@@ -36,6 +41,8 @@ public class PaymentProducer {
 	private static final String url = "https://c5af73f84ead.ngrok-free.app";
 
 	public static final String PAYMENT_REQUESTED_TOPIC = "payment.requested.v1";
+
+	private static final Logger logger = LoggerFactory.getLogger(ExampleController.class);
 
 	public void sendPaymentRequested(Payment payment, PaymentUser paymentUser, PaymentUserCard paymentUserCard, String productName) {
 		String key = String.valueOf(paymentUser.getId());
@@ -72,7 +79,8 @@ public class PaymentProducer {
 						)
 				);
 
-		kafkaTemplate.send(PAYMENT_REQUESTED_TOPIC, key, message);
+		final CompletableFuture<SendResult<String, Object>> send = kafkaTemplate.send(PAYMENT_REQUESTED_TOPIC, key, message);
+		logger.info("");
 	}
 
 	private InicisBillingApproval buildInicisBillingApproval(
