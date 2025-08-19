@@ -9,6 +9,7 @@ import com.system.payment.payment.domain.outbox.PaymentRequestedArgs;
 import com.system.payment.payment.repository.OutboxEventRepository;
 import com.system.payment.payment.repository.PaymentRepository;
 import com.system.payment.user.domain.PaymentUser;
+import com.system.payment.user.repository.PaymentUserRepository;
 import com.system.payment.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,8 @@ class OutboxPublishWorkerTest {
 
 	@Mock
 	OutboxEventRepository outboxEventRepository;
+	@Mock
+	PaymentUserRepository paymentUserRepository;
 	@Mock
 	OutboxService outboxService;
 	@Mock
@@ -90,7 +93,7 @@ class OutboxPublishWorkerTest {
 		when(objectMapper.readValue(anyString(), eq(PaymentRequestedArgs.class)))
 				.thenReturn(args(1, "tx-abc-001", 1, "CARD", 1, "AI 라이센스 키(연 1석)"));
 		when(paymentRepository.findById(1)).thenReturn(Optional.of(dummyPayment()));
-		when(userService.findUser()).thenReturn(dummyUser());
+		when(paymentUserRepository.getByIdOrThrow(1)).thenReturn(dummyUser());
 		when(paymentUserCardRepository.findById(1)).thenReturn(Optional.of(dummyCard()));
 
 		// when
@@ -113,7 +116,7 @@ class OutboxPublishWorkerTest {
 		when(objectMapper.readValue(anyString(), eq(PaymentRequestedArgs.class)))
 				.thenReturn(args(1, "tx-abc-001", 1, "CARD", 1, "AI 라이센스 키(연 1석)"));
 		when(paymentRepository.findById(1)).thenReturn(Optional.of(dummyPayment()));
-		when(userService.findUser()).thenReturn(dummyUser());
+		when(paymentUserRepository.getByIdOrThrow(1)).thenReturn(dummyUser());
 		when(paymentUserCardRepository.findById(1)).thenReturn(Optional.of(dummyCard()));
 
 		// 프로듀서에서 일시 실패 발생
@@ -144,7 +147,7 @@ class OutboxPublishWorkerTest {
 		when(objectMapper.readValue(anyString(), eq(PaymentRequestedArgs.class)))
 				.thenReturn(args(1, "tx-abc-001", 1, "CARD", 1, "AI 라이센스 키(연 1석)"));
 		when(paymentRepository.findById(1)).thenReturn(Optional.of(dummyPayment()));
-		when(userService.findUser()).thenReturn(dummyUser());
+		when(paymentUserRepository.getByIdOrThrow(1)).thenReturn(dummyUser());
 		when(paymentUserCardRepository.findById(1)).thenReturn(Optional.of(dummyCard()));
 
 		doThrow(new RuntimeException("permanent failure"))
