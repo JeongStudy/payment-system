@@ -17,7 +17,9 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class OutboxServiceTest {
@@ -46,10 +48,18 @@ class OutboxServiceTest {
 		Integer methodId = 1;
 		String productName = "AI 라이센스 키(연 1석)";
 
+		when(outboxEventRepository.save(any(OutboxEvent.class)))
+				.thenAnswer(invocation -> {
+					OutboxEvent e = invocation.getArgument(0);
+					e.setId(1); // 테스트 검증용 ID
+					return e;
+				});
+
 		ArgumentCaptor<OutboxEvent> captor = ArgumentCaptor.forClass(OutboxEvent.class);
 
 		// when
 		outboxService.enqueuePaymentRequested(paymentId, txId, userId, methodType, methodId, productName);
+
 
 		// then
 		verify(outboxEventRepository).save(captor.capture());

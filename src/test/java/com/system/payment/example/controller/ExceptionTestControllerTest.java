@@ -1,6 +1,7 @@
 package com.system.payment.example.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.system.payment.payment.service.PaymentProducer;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -18,7 +20,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+
+@SpringBootTest(properties = {
+		"spring.task.scheduling.enabled=false"
+})
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 //@ActiveProfiles("integration")
@@ -29,6 +34,9 @@ public class ExceptionTestControllerTest {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+
+	@MockitoBean
+	private PaymentProducer paymentProducer;
 
 	private static final Logger logger = LoggerFactory.getLogger(ExceptionTestControllerTest.class);
 
