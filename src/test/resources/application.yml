@@ -17,8 +17,6 @@ spring:
         jdbc.time_zone: Asia/Seoul
   kafka:
     bootstrap-servers: dummy:0  # 실제 broker 필요 없음
-    listener:
-      auto-startup: false
     jmx:
       enabled: false
 
