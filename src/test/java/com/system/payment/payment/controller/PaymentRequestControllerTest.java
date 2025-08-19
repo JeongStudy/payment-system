@@ -12,8 +12,9 @@ import com.system.payment.user.domain.PaymentUser;
 import com.system.payment.user.model.request.LoginRequest;
 import com.system.payment.util.AesKeyCryptoUtil;
 import com.system.payment.util.RsaKeyCryptoUtil;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)  // 👈 추가
 @SpringBootTest(properties = "spring.task.scheduling.enabled=false")
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -75,7 +77,7 @@ class PaymentRequestControllerTest {
 	private String accessToken;
 	private String password;
 
-	@BeforeEach
+	@BeforeAll
 	void setUp() {
 		jdbcTemplate.execute(initSignUpSql);
 		jdbcTemplate.execute(initCardRegisterSql);
