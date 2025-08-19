@@ -34,8 +34,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -201,10 +201,10 @@ class PaymentRequestControllerTest {
 				.andReturn();
 
 		JsonNode requsetRes = objectMapper.readTree(mvcResult.getResponse().getContentAsString());
-		String eventId = requsetRes.at("/data/eventId").asText();
+		Integer eventId = requsetRes.at("/data/eventId").asInt();
 
 		// 3) Outbox 저장 확인
-		Optional<OutboxEvent> event = outboxEventRepository.findById(Integer.valueOf(eventId));
+		Optional<OutboxEvent> event = outboxEventRepository.findById(eventId);
 		OutboxEvent e = event.get();
 		assertThat(e.getEventType()).isEqualTo("PAYMENT_REQUESTED_V1"); // :contentReference[oaicite:2]{index=2}
 		assertThat(e.getStatus()).isIn("PENDING");
