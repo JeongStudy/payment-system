@@ -7,7 +7,6 @@ import com.system.payment.example.controller.ExampleController;
 import com.system.payment.payment.domain.Payment;
 import com.system.payment.payment.model.dto.InicisBillingApproval;
 import com.system.payment.payment.model.dto.PaymentRequestedMessageV1;
-import com.system.payment.payment.model.request.CreatePaymentRequest;
 import com.system.payment.user.domain.PaymentUser;
 import com.system.payment.util.HashUtils;
 import com.system.payment.util.TimeUtil;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -91,7 +89,7 @@ public class PaymentProducer {
 		String type = "billing";
 		String paymethod = "card";
 
-		InicisBillingApproval.Data data = InicisBillingApproval.Data.create(url, card.getOid(), goodName,
+		InicisBillingApproval.Data data = InicisBillingApproval.Data.create(url, card.getPgOid(), goodName,
 				new StringBuilder().append(user.getLastName()).append(user.getFirstName()).toString(),
 				user.getEmail(), user.getPhoneNumber(), String.valueOf(payment.getTotalAmount()), card.getBillingKey());
 
