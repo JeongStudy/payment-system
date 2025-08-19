@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;INIT=CREATE SCHEMA IF NOT EXISTS payment\;SET SCHEMA payment
+    url: jdbc:h2:mem:testdb;LOCK_TIMEOUT=5000;MODE=PostgreSQL;INIT=CREATE SCHEMA IF NOT EXISTS payment\;SET SCHEMA payment
     username: sa
     password:
     driver-class-name: org.h2.Driver
