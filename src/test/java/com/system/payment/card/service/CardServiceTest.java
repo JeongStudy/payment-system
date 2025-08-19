@@ -19,7 +19,6 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Sort;
 
-import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -107,7 +106,7 @@ class CardServiceTest {
 
         PaymentUserCard savedCard = cardCaptor.getValue();
         assertThat(savedCard.getUser()).isSameAs(user);
-        assertThat(savedCard.getOid()).isEqualTo(OID);
+        assertThat(savedCard.getPgOid()).isEqualTo(OID);
         assertThat(savedCard.getPgCompany()).isEqualTo(PgCompany.INICIS);
         assertThat(savedCard.getPgCompanyCode()).isEqualTo(PgCompany.INICIS.getCode());
         assertThat(savedCard.getBillingKeyStatus()).isEqualTo(BillingKeyStatus.PENDING);
