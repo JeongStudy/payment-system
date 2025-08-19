@@ -1,10 +1,12 @@
 package com.system.payment.card.model.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.ToString;
 
 @Getter
+@JsonIgnoreProperties(ignoreUnknown = true)
 @ToString
 public class InicisBillingKeyResponse {
     @JsonProperty("CARD_Quota")
