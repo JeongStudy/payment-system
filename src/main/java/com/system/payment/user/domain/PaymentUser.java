@@ -22,7 +22,7 @@ public class PaymentUser extends BaseEntity {
 	private String email;
 
 	@Column(length = 300, nullable = false)
-	private String password;
+	private String encPassword;
 
 	@Column(length = 50, nullable = false)
 	private String lastName;
@@ -35,7 +35,7 @@ public class PaymentUser extends BaseEntity {
 
 	private PaymentUser(String email, String encodedPassword, String firstName, String lastName, String phoneNumber) {
 		this.email = email;
-		this.password = encodedPassword;
+		this.encPassword = encodedPassword;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.phoneNumber = phoneNumber;
