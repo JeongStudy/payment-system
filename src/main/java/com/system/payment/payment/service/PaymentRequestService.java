@@ -25,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -57,7 +56,7 @@ public class PaymentRequestService {
 
 		final AesKey aesKey = cryptoService.resolveValidAesKey(request.getRsaPublicKey(), request.getEncAesKey());
 		final String decryptedPassword = cryptoService.decryptPasswordWithAes(request.getEncPassword(), aesKey.getAesKey());
-		credentialService.verifyOrThrow(decryptedPassword, paymentUser.getPassword());
+		credentialService.verifyOrThrow(decryptedPassword, paymentUser.getEncPassword());
 
 		List<PaymentDetailItem> itemList = new ArrayList<>();
 		itemList.add(PaymentDetailItem.order(1, 1));
