@@ -14,9 +14,11 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -53,6 +55,15 @@ class AuthControllerTest {
 	@MockitoBean
 	private KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry; // Listener 자체 Mock
 
+	@Autowired
+	JdbcTemplate jdbcTemplate;
+
+	@Value("${sql.init-sign-up-secret-sql}")
+	String initSignUpSql;
+
+	@Value("${sql.init-card-register-secret-sql}")
+	String initCardRegisterSql;
+
 	private static final Logger logger = LoggerFactory.getLogger(AuthControllerTest.class);
 
 	// 전역 변수 선언
@@ -72,6 +83,11 @@ class AuthControllerTest {
 		this.firstName = "JAEBIN";
 		this.lastName = "CHUNG";
 		this.phoneNumber = "01025861111";
+	}
+
+	private void changeTestEmailAndPassword() {
+		this.email = "test1234@naver.com";
+		this.password = "1q2w3e4r!";
 	}
 
 	@Test
@@ -130,7 +146,12 @@ class AuthControllerTest {
 	void login_flow_with_crypto() throws Exception {
 
 		// 0. 회원가입
-		this.signup_flow_with_crypto();
+//		this.signup_flow_with_crypto();
+		jdbcTemplate.execute("DELETE FROM payment.payment_user");
+		jdbcTemplate.execute("ALTER TABLE payment.payment_user ALTER COLUMN id RESTART WITH 1");
+		jdbcTemplate.execute(initSignUpSql);
+
+		changeTestEmailAndPassword();
 
 		// 1. RSA 공개키 발급
 		MvcResult rsaResult = mockMvc.perform(post("/api/payment/crypto/rsa"))
@@ -150,7 +171,6 @@ class AuthControllerTest {
 		String encAesKey = RsaKeyCryptoUtil.encryptAesKeyWithRsaPublicKey(aesKey, publicKey);
 
 		// 4. 평문 비밀번호 AES 키로 암호화
-		String password = "manager0";
 		String encPassword = AesKeyCryptoUtil.encryptPasswordWithAesKey(password, aesKey);
 
 		// 5. 이미 가입된 이메일 사용 (ex. 회원가입 테스트 후 그 데이터로 테스트)
@@ -178,6 +198,7 @@ class AuthControllerTest {
 		assertNotNull(jwtHeader);
 		assertTrue(jwtHeader.startsWith("Bearer "));
 		accessToken = jwtHeader;
+		logger.info("accessToken=" + accessToken);
 	}
 
 	@Test
