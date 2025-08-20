@@ -2,18 +2,14 @@ package com.system.payment.user.service;
 
 import com.system.payment.exception.CryptoException;
 import com.system.payment.exception.ErrorCode;
-import com.system.payment.exception.PaymentServerNotFoundException;
 import com.system.payment.user.domain.AesKey;
 import com.system.payment.user.domain.RsaKeyPair;
 import com.system.payment.user.model.reponse.AesKeyResponse;
 import com.system.payment.user.model.reponse.RsaKeyResponse;
 import com.system.payment.user.repository.AesKeyRepository;
-import com.system.payment.user.repository.PaymentUserRepository;
 import com.system.payment.user.repository.RsaKeyPairRepository;
 import com.system.payment.util.AesKeyCryptoUtil;
-import com.system.payment.util.JwtUtil;
 import com.system.payment.util.RsaKeyCryptoUtil;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

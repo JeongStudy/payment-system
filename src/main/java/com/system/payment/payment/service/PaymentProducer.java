@@ -24,8 +24,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.CompletableFuture;
 
-import static com.system.payment.util.TimeUtil.toInstant;
-
 @Service
 @RequiredArgsConstructor
 public class PaymentProducer {

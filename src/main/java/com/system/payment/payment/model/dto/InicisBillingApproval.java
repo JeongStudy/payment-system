@@ -1,6 +1,5 @@
 package com.system.payment.payment.model.dto;
 
-import com.system.payment.payment.model.request.CreatePaymentRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
