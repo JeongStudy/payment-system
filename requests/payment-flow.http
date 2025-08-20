@@ -1,0 +1,77 @@
+
+@email = test1234@naver.com
+@password = 1q2w3e4r!
+@jwt = Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJpYXQiOjE3NTU2NjEyNzUsImV4cCI6MTc1NTc0NzY3NX0.ig-VqjovRG5Vr67ocY-qXA7oTPVvqPd87WLVrvNwpG4
+
+### 2. 멱등성 키 발급
+GET http://localhost:8080/api/payments/requests/idempotency-key
+Authorization: {{jwt}}
+
+> {%
+    client.global.set("idempotencyKey", response.body.data.idempotencyKey);
+%}
+
+### 3. RSA 공개키 발급
+POST http://localhost:8080/api/payment/crypto/rsa
+
+> {%
+    client.global.set("rsaPublicKey", response.body.data.publicKey);
+%}
+
+### 4. AES 키 발급
+POST http://localhost:8080/api/payment/crypto/aes
+
+> {%
+    client.global.set("aesKey", response.body.data.aesKey);
+%}
+
+### 5. 비밀번호 AES 암호화
+# password는 테스트 계정의 실제 평문 비밀번호 입력
+POST http://localhost:8080/api/payment/crypto/encrypt/password
+Content-Type: application/json
+
+{
+  "password": "{{password}}",
+  "aesKey": "{{aesKey}}"
+}
+
+> {%
+    client.global.set("encPassword", response.body.data);
+%}
+
+### 6. AES 키를 RSA 공개키로 암호화
+POST http://localhost:8080/api/payment/crypto/encrypt/aes
+Content-Type: application/json
+
+{
+  "aesKey": "{{aesKey}}",
+  "rsaPublicKey": "{{rsaPublicKey}}"
+}
+
+> {%
+    client.global.set("encAesKey", response.body.data);
+%}
+
+### 7. 결제 요청
+POST http://localhost:8080/api/payments/requests
+Authorization: {{jwt}}
+Content-Type: application/json
+
+{
+  "idempotencyKey": "{{idempotencyKey}}",
+  "paymentUserCardId": 1,
+  "productName": "AI 라이센스 키(연 1석)",
+  "rsaPublicKey": "{{rsaPublicKey}}",
+  "encAesKey": "{{encAesKey}}",
+  "encPassword": "{{encPassword}}",
+  "amount": 1,
+  "serviceOrderId": "2400811"
+}
+
+> {%
+    client.global.set("paymentId", response.body.data.paymentId);
+%}
+
+### 8. 결제 상태 확인
+GET http://localhost:8080/api/payments/requests/status/{{paymentId}}
+Authorization: {{jwt}}
