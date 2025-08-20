@@ -16,7 +16,7 @@ import java.net.InetAddress;
 import java.time.LocalDateTime;
 
 import static com.system.payment.payment.service.PaymentProducer.PAYMENT_REQUESTED_TOPIC;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
