@@ -6,6 +6,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 
@@ -41,12 +43,15 @@ public class PaymentHistory extends BaseEntity {
 	private String changedReason;
 
 	@Column(columnDefinition = "jsonb")
+	@JdbcTypeCode(SqlTypes.JSON)
 	private String prevData;
 
 	@Column(columnDefinition = "jsonb", nullable = false)
+	@JdbcTypeCode(SqlTypes.JSON)
 	private String newData;
 
 	@Column(columnDefinition = "jsonb")
+	@JdbcTypeCode(SqlTypes.JSON)
 	private String externalResponse;
 
 	@Column(nullable = false, length = 100)
