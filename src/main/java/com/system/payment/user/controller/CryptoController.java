@@ -2,14 +2,14 @@ package com.system.payment.user.controller;
 
 import com.system.payment.user.model.reponse.AesKeyResponse;
 import com.system.payment.user.model.reponse.RsaKeyResponse;
+import com.system.payment.user.model.request.EncryptAesKeyRequest;
+import com.system.payment.user.model.request.EncryptPasswordRequest;
 import com.system.payment.user.service.CryptoService;
 import com.system.payment.util.Response;
 import com.system.payment.util.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/payment/crypto")
@@ -28,5 +28,20 @@ public class CryptoController {
 	public ResponseEntity<Response<RsaKeyResponse>> generateRsaKey(){
 		RsaKeyResponse rsaKey = cryptoService.generateRsaKey();
 		return Response.created(rsaKey, SuccessCode.RAS_KEY_CREATED);
+	}
+
+	@PostMapping("/encrypt/password")
+	public ResponseEntity<Response<String>> encryptPasswordWithAesKey(
+			@RequestBody EncryptPasswordRequest encryptPasswordRequest){
+		String encPassword =  cryptoService.encryptPasswordWithAesKey(encryptPasswordRequest);
+		return Response.ok(encPassword, SuccessCode.OK);
+	}
+
+	@PostMapping("/encrypt/aes")
+	public ResponseEntity<Response<String>> encryptAesKeyWithRsaPublicKey(
+			@RequestBody EncryptAesKeyRequest encryptAesKeyRequest
+	){
+		String encAesKey = cryptoService.encryptAesKeyWithRsaPublicKey(encryptAesKeyRequest);
+		return Response.ok(encAesKey, SuccessCode.OK);
 	}
 }

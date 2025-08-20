@@ -45,6 +45,8 @@ public class SecurityConfig {
 						.requestMatchers(
 								"/api/payment/crypto/aes",
 								"/api/payment/crypto/rsa",
+								"/api/payment/crypto/encrypt/password",
+								"/api/payment/crypto/encrypt/aes",
 								"/api/auth/login",
 								"/api/auth/signup",
 								"/api/payment/health-check",

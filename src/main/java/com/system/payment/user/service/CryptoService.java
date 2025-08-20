@@ -6,6 +6,8 @@ import com.system.payment.user.domain.AesKey;
 import com.system.payment.user.domain.RsaKeyPair;
 import com.system.payment.user.model.reponse.AesKeyResponse;
 import com.system.payment.user.model.reponse.RsaKeyResponse;
+import com.system.payment.user.model.request.EncryptAesKeyRequest;
+import com.system.payment.user.model.request.EncryptPasswordRequest;
 import com.system.payment.user.repository.AesKeyRepository;
 import com.system.payment.user.repository.RsaKeyPairRepository;
 import com.system.payment.util.AesKeyCryptoUtil;
@@ -82,4 +84,12 @@ public class CryptoService {
     public String decryptPasswordWithAes(String encPassword, String aesKeyPlain) {
         return AesKeyCryptoUtil.decryptPasswordWithAesKey(encPassword, aesKeyPlain);
     }
+
+	public String encryptPasswordWithAesKey(EncryptPasswordRequest encryptPasswordRequest){
+		return AesKeyCryptoUtil.encryptPasswordWithAesKey(encryptPasswordRequest.getPassword(), encryptPasswordRequest.getAesKey());
+	}
+
+	public String encryptAesKeyWithRsaPublicKey(EncryptAesKeyRequest encryptAesKeyRequest){
+		return RsaKeyCryptoUtil.encryptAesKeyWithRsaPublicKey(encryptAesKeyRequest.getAesKey(), encryptAesKeyRequest.getRsaPublicKey());
+	}
 }
