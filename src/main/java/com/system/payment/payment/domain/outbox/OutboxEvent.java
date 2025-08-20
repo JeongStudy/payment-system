@@ -3,6 +3,8 @@ package com.system.payment.payment.domain.outbox;
 import com.system.payment.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 
@@ -24,6 +26,7 @@ public class OutboxEvent extends BaseEntity {
 	@Column(nullable = false)
 	private String eventKey;      // e.g. transactionId (카프카 key 겸 멱등키)
 	@Column(nullable = false, columnDefinition = "jsonb")   // RDB별 타입 조정
+	@JdbcTypeCode(SqlTypes.JSON)
 	private String payload;                               // JSON(아래 Args)
 	@Column(nullable = false)
 	private String status;        // PENDING/SENT/FAILED
