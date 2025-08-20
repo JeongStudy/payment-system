@@ -7,7 +7,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "outbox_event",
+@Table(name = "outbox_event", schema = "payment",
 		indexes = @Index(name = "idx_outbox_status_next", columnList = "status,nextAttemptAt"),
 		uniqueConstraints = @UniqueConstraint(name = "uk_outbox_key_type", columnNames = {"eventKey", "eventType"}))
 @Getter
