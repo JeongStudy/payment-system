@@ -1,20 +1,18 @@
 package com.system.payment.integration;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.system.payment.payment.model.dto.InicisBillingApproval;
 import com.system.payment.payment.model.dto.PaymentRequestedMessageV1;
 import com.system.payment.payment.service.PaymentConsumer;
-import com.system.payment.payment.service.PaymentProcessService;
 import com.system.payment.payment.service.PaymentProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.serializer.JsonSerializer;
@@ -27,26 +25,22 @@ import org.springframework.test.context.DynamicPropertySource;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.verify;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+// ... 기존 import 생략 ...
 
 @SpringBootTest
 @EmbeddedKafka(partitions = 2, topics = {PaymentProducer.PAYMENT_REQUESTED_TOPIC})
-@Import(PaymentConsumerTestConfig.class) // ✅ KafkaTestConsumerConfig 제거
 @ActiveProfiles("test")
 class PaymentConsumerIntegrationTest {
 
     @Autowired
-    private EmbeddedKafkaBroker embeddedKafka;
-
-    @Autowired
-    private PaymentConsumer consumer;
+    EmbeddedKafkaBroker embeddedKafka;
 
     @DynamicPropertySource
     static void kafkaProps(DynamicPropertyRegistry r) {
-        // EmbeddedKafka broker 연결
         r.add("spring.kafka.bootstrap-servers",
                 () -> System.getProperty("spring.embedded.kafka.brokers"));
 
@@ -59,24 +53,20 @@ class PaymentConsumerIntegrationTest {
                 () -> "com.system.payment.payment.partitioner.ConsistentHashPartitioner");
         r.add("spring.kafka.producer.properties.enable.idempotence", () -> "true");
         r.add("spring.kafka.producer.properties.acks", () -> "all");
-        r.add("spring.kafka.producer.properties.retries", () -> "3");
-        r.add("spring.kafka.producer.properties.max.in.flight.requests.per.connection", () -> "5");
 
-        // Consumer → property 방식으로만 유지
-        r.add("spring.kafka.consumer.group-id", () -> "payment-consumer");
+        // Consumer (프로퍼티만)
+        r.add("spring.kafka.consumer.group-id", () -> "payment-request-consumer");
         r.add("spring.kafka.consumer.auto-offset-reset", () -> "latest");
         r.add("spring.kafka.consumer.key-deserializer",
                 () -> "org.apache.kafka.common.serialization.StringDeserializer");
-
-        r.add("spring.kafka.consumer.properties.spring.json.trusted.packages", () -> "*");
-        r.add("spring.kafka.consumer.properties.spring.json.use.type.headers", () -> "false");
+        r.add("spring.kafka.consumer.value-deserializer",
+                () -> "org.springframework.kafka.support.serializer.JsonDeserializer");
+        r.add("spring.kafka.consumer.properties.spring.json.trusted.packages",
+                () -> "com.system.payment.*");
+        r.add("spring.kafka.consumer.properties.spring.json.use.type.headers",
+                () -> "false");
         r.add("spring.kafka.consumer.properties.spring.json.value.default.type",
                 () -> "com.system.payment.payment.model.dto.PaymentRequestedMessageV1");
-
-        // 세션/폴링 관련 옵션
-        r.add("spring.kafka.consumer.properties.heartbeat.interval.ms", () -> "3000");
-        r.add("spring.kafka.consumer.properties.session.timeout.ms", () -> "30000");
-        r.add("spring.kafka.consumer.properties.max.poll.interval.ms", () -> "300000");
     }
 
     private KafkaTemplate<String, PaymentRequestedMessageV1<InicisBillingApproval>> kafkaTemplate() {
@@ -89,9 +79,15 @@ class PaymentConsumerIntegrationTest {
     }
 
     @Test
-    void consumer_should_receive_message_and_invoke_onMessage() {
-        // given
-        InicisBillingApproval.Data data = InicisBillingApproval.Data.create(
+    void logs_when_message_consumed() throws Exception {
+        // 1) PaymentConsumer 로거에 ListAppender 부착
+        Logger logger = (Logger) LoggerFactory.getLogger(PaymentConsumer.class);
+        ListAppender<ILoggingEvent> appender = new ListAppender<>();
+        appender.start();
+        logger.addAppender(appender);
+
+        // 2) 테스트 메시지 준비
+        var data = InicisBillingApproval.Data.create(
                 "https://example.ngrok-free.app",
                 "DemoTest_1755064988200",
                 "AI 라이센스 키(연 1석)",
@@ -101,64 +97,43 @@ class PaymentConsumerIntegrationTest {
                 "1",
                 "billkey-xyz"
         );
-        InicisBillingApproval approval = InicisBillingApproval.create(
-                "INIBillTst",
-                "billing",
-                "card",
-                "20250820132222",
-                "10.40.212.158",
-                "hash-abc",
-                data
+        var approval = InicisBillingApproval.create(
+                "INIBillTst", "billing", "card", "20250820132222",
+                "10.40.212.158", "hash-abc", data
         );
+        var envelope = PaymentRequestedMessageV1.Envelope.newEnvelope("payment-api", "idemp-001");
+        var identifiers = new PaymentRequestedMessageV1.Identifiers(1, "txn-001", 42);
+        var payment = new PaymentRequestedMessageV1.Payload.PaymentSnapshot(
+                1, "KRW", "CARD", 1, "00", Instant.now()
+        );
+        var external = new PaymentRequestedMessageV1.Payload.External<>("INICIS", approval);
+        var payload = new PaymentRequestedMessageV1.Payload<>(payment, external);
+        var event = new PaymentRequestedMessageV1<>(envelope, identifiers, payload);
 
-        PaymentRequestedMessageV1.Envelope envelope =
-                PaymentRequestedMessageV1.Envelope.newEnvelope("payment-api", "idemp-001");
+        // 3) 동기 전송 (브로커 write 보장)
+        var template = kafkaTemplate();
+        template.send(PaymentProducer.PAYMENT_REQUESTED_TOPIC, identifiers.partitionKey(), event).get();
 
-        PaymentRequestedMessageV1.Identifiers identifiers =
-                new PaymentRequestedMessageV1.Identifiers(1, "txn-001", 42);
+        // 4) 최대 5초 대기하며 로그에 "[CONSUME]"가 찍혔는지 폴링
+        boolean seen = waitUntil(() -> appender.list.stream()
+                .anyMatch(ev -> {
+                    String msg = ev.getFormattedMessage();
+                    return msg.contains("[CONSUME]")
+                            && msg.contains("txId=txn-001")
+                            && msg.contains("provider=INICIS");
+                }), 5000);
 
-        PaymentRequestedMessageV1.Payload.PaymentSnapshot payment =
-                new PaymentRequestedMessageV1.Payload.PaymentSnapshot(
-                        1, "KRW", "CARD", 1, "00", Instant.now()
-                );
-
-        PaymentRequestedMessageV1.Payload.External<InicisBillingApproval> external =
-                new PaymentRequestedMessageV1.Payload.External<>("INICIS", approval);
-
-        PaymentRequestedMessageV1.Payload<InicisBillingApproval> payload =
-                new PaymentRequestedMessageV1.Payload<>(payment, external);
-
-        PaymentRequestedMessageV1<InicisBillingApproval> event =
-                new PaymentRequestedMessageV1<>(envelope, identifiers, payload);
-
-        KafkaTemplate<String, PaymentRequestedMessageV1<InicisBillingApproval>> template = kafkaTemplate();
-
-        // when
-        template.send(PaymentRequestedMessageV1.TOPIC, identifiers.partitionKey(), event);
-
-        // then
-        verify(consumer, timeout(5000))
-                .onMessage(
-                        Mockito.<PaymentRequestedMessageV1<InicisBillingApproval>>any(),
-                        anyString(),
-                        anyInt(),
-                        anyLong()
-                );
-    }
-}
-
-@TestConfiguration
-class PaymentConsumerTestConfig {
-
-    @Bean
-    @Primary
-    PaymentProcessService paymentProcessService() {
-        return Mockito.mock(PaymentProcessService.class);
+        logger.detachAppender(appender); // 정리
+        assertThat(seen).isTrue();
     }
 
-    @Bean
-    @Primary
-    PaymentConsumer paymentConsumer(PaymentProcessService paymentProcessService) {
-        return Mockito.spy(new PaymentConsumer(paymentProcessService));
+    // 유틸: 조건이 참이 될 때까지 간단 폴링 (Awaitility 없어도 사용 가능)
+    private static boolean waitUntil(Supplier<Boolean> cond, long timeoutMs) throws InterruptedException {
+        long start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < timeoutMs) {
+            if (cond.get()) return true;
+            Thread.sleep(50);
+        }
+        return false;
     }
 }
