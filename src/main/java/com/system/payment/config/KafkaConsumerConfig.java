@@ -10,6 +10,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.ResolvableType;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
@@ -30,57 +31,30 @@ public class KafkaConsumerConfig {
 
     private final KafkaProperties kafkaProperties;
 
-    // 제네릭 포함 FQCN으로 값 타입을 고정 (패키지 경로는 그대로 사용)
-    private static final String VALUE_DEFAULT_TYPE =
-            "com.system.payment.payment.model.dto.PaymentRequestedMessageV1" +
-                    "<com.system.payment.payment.model.dto.InicisBillingApproval>";
-
     @Bean
     public ConsumerFactory<String, PaymentRequestedMessageV1<InicisBillingApproval>> paymentConsumerFactory() {
-        ObjectMapper objectMapper = new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-        JsonDeserializer<PaymentRequestedMessageV1<InicisBillingApproval>> valueDeserializer =
-                new JsonDeserializer<>(PaymentRequestedMessageV1.class, objectMapper, false);
-        valueDeserializer.addTrustedPackages("com.system.payment.*");
-        valueDeserializer.ignoreTypeHeaders();
-
+        // 🔸 valueDeserializer 인스턴스 전달 없이, 프로퍼티만!
         Map<String, Object> props = kafkaProperties.buildConsumerProperties(null);
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, VALUE_DEFAULT_TYPE); // 제네릭 포함 기본 타입 고정
-        props.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, false);
-
-        return new DefaultKafkaConsumerFactory<>(
-                props,
-                new StringDeserializer(),
-                valueDeserializer
-        );
+        return new DefaultKafkaConsumerFactory<>(props);
     }
 
     @Bean(name = "paymentKafkaListenerContainerFactory")
-    public ConcurrentKafkaListenerContainerFactory<String, PaymentRequestedMessageV1<InicisBillingApproval>> paymentKafkaListenerContainerFactory(
-            ConsumerFactory<String, PaymentRequestedMessageV1<InicisBillingApproval>> paymentConsumerFactory
+    public ConcurrentKafkaListenerContainerFactory<String, PaymentRequestedMessageV1<InicisBillingApproval>>
+    paymentKafkaListenerContainerFactory(
+            ConsumerFactory<String, PaymentRequestedMessageV1<InicisBillingApproval>> cf
     ) {
-        ConcurrentKafkaListenerContainerFactory<String, PaymentRequestedMessageV1<InicisBillingApproval>> factory =
-                new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(paymentConsumerFactory);
+        var factory = new ConcurrentKafkaListenerContainerFactory<String, PaymentRequestedMessageV1<InicisBillingApproval>>();
+        factory.setConsumerFactory(cf);
 
-        // 재시도/백오프/예외정책
-        ExponentialBackOffWithMaxRetries backOff = new ExponentialBackOffWithMaxRetries(5);
+        var backOff = new ExponentialBackOffWithMaxRetries(5);
         backOff.setInitialInterval(500);
         backOff.setMultiplier(2.0);
         backOff.setMaxInterval(5_000);
 
-        DefaultErrorHandler kafkaErrorHandler = new DefaultErrorHandler(
-                (consumerRecord, ex) -> {
-                    // DeadLetterPublishingRecoverer 사용 시 구성
-                },
-                backOff
-        );
-        kafkaErrorHandler.setAckAfterHandle(true);
-        kafkaErrorHandler.addNotRetryableExceptions(IllegalArgumentException.class); // 밸리데이션류는 재시도X
-
-        factory.setCommonErrorHandler(kafkaErrorHandler);
+        var eh = new DefaultErrorHandler((cr, ex) -> {}, backOff);
+        eh.setAckAfterHandle(true);
+        eh.addNotRetryableExceptions(IllegalArgumentException.class);
+        factory.setCommonErrorHandler(eh);
         return factory;
     }
 }
