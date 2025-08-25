@@ -1,12 +1,20 @@
 package com.system.payment.util;
 
+import com.system.payment.exception.ErrorCode;
+import com.system.payment.exception.PaymentValidationException;
 import com.system.payment.payment.model.dto.InicisBillingApproval;
 import com.system.payment.payment.model.dto.PaymentRequestedMessageV1;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+@Slf4j
+@RequiredArgsConstructor
 public class KafkaUtil {
+
+    private StringUtil stringUtil;
 
     public String extractKafkaHeader(Map<String, Object> headers, String key) {
         Object v = headers.get(key);
@@ -21,12 +29,20 @@ public class KafkaUtil {
             PaymentRequestedMessageV1.Payload.External<InicisBillingApproval> external,
             InicisBillingApproval approval
     ) {
-        if (idempotencyKey == null || idempotencyKey.isBlank()) { throw new IllegalArgumentException("idempotencyKey required");}
-        if (txId == null || txId.isBlank()) { throw new IllegalArgumentException("transactionId required");}
-        if (external == null) { throw new IllegalArgumentException("payload.external required"); }
-        if (external.provider() == null) { throw new IllegalArgumentException("external.provider required"); }
-        if (approval == null) { throw new IllegalArgumentException("external.approval required"); }
-        if (approval.getMid() == null || approval.getMid().isBlank()) { throw new IllegalArgumentException("approval.mid required"); }
+        if (idempotencyKey == null || idempotencyKey.isBlank()
+                || txId == null || txId.isBlank()
+                || external == null
+                || external.provider() == null
+                || approval == null
+                || approval.getMid() == null || approval.getMid().isBlank()) {
+
+            log.warn("[VALIDATION] invalid payload: idempotencyKey={}, txId={}, external={}, provider={}, approval={}, mid={}",
+                    stringUtil.safe(idempotencyKey), stringUtil.safe(txId),
+                    external != null, (external != null ? external.provider() : null),
+                    (approval != null), (approval != null ? approval.getMid() : null));
+
+            throw new PaymentValidationException(ErrorCode.PAYMENT_VALIDATION_MISSING_FIELD);
+        }
         // 필요 시 추가 필드:
         // if (approval.getOid() == null || approval.getOid().isBlank()) throw new IllegalArgumentException("approval.oid required");
         // if (approval.getTid() == null || approval.getTid().isBlank()) throw new IllegalArgumentException("approval.tid required");
