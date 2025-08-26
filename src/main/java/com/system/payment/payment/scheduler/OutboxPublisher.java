@@ -18,7 +18,7 @@ public class OutboxPublisher {
 
 	private static final Logger logger = LoggerFactory.getLogger(OutboxPublisher.class);
 
-	@Scheduled(fixedDelay = 3000, initialDelay = 10000)
+	@Scheduled(fixedDelay = 3000, initialDelay = 20000)
 	public void publishBatch() {
 		var now = LocalDateTime.now();
 		var batch = outboxEventRepository.pickPending(now, PageRequest.of(0, 100));
