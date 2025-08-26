@@ -1,7 +1,7 @@
 package com.system.payment.filter;
 
 import com.system.payment.config.security.PaymentServerAuthenticationEntryPoint;
-import com.system.payment.user.model.SimpleUserDetails;
+import com.system.payment.user.model.dto.SimpleUserDetails;
 import com.system.payment.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;

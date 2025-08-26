@@ -1,4 +1,4 @@
-package com.system.payment.user.model;
+package com.system.payment.user.model.dto;
 
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
