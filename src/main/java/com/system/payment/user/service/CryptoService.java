@@ -10,7 +10,7 @@ import com.system.payment.user.model.request.EncryptAesKeyRequest;
 import com.system.payment.user.model.request.EncryptPasswordRequest;
 import com.system.payment.user.repository.AesKeyRepository;
 import com.system.payment.user.repository.RsaKeyPairRepository;
-import com.system.payment.util.AesKeyCryptoUtil;
+import com.system.payment.util.AesKeyCryptoUtils;
 import com.system.payment.util.RsaKeyCryptoUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,11 +82,11 @@ public class CryptoService {
     }
 
     public String decryptPasswordWithAes(String encPassword, String aesKeyPlain) {
-        return AesKeyCryptoUtil.decryptPasswordWithAesKey(encPassword, aesKeyPlain);
+        return AesKeyCryptoUtils.decryptPasswordWithAesKey(encPassword, aesKeyPlain);
     }
 
 	public String encryptPasswordWithAesKey(EncryptPasswordRequest encryptPasswordRequest){
-		return AesKeyCryptoUtil.encryptPasswordWithAesKey(encryptPasswordRequest.getPassword(), encryptPasswordRequest.getAesKey());
+		return AesKeyCryptoUtils.encryptPasswordWithAesKey(encryptPasswordRequest.getPassword(), encryptPasswordRequest.getAesKey());
 	}
 
 	public String encryptAesKeyWithRsaPublicKey(EncryptAesKeyRequest encryptAesKeyRequest){

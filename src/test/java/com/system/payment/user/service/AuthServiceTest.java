@@ -10,7 +10,7 @@ import com.system.payment.user.model.request.SignUpRequest;
 import com.system.payment.user.repository.AesKeyRepository;
 import com.system.payment.user.repository.PaymentUserRepository;
 import com.system.payment.user.repository.RsaKeyPairRepository;
-import com.system.payment.util.AesKeyCryptoUtil;
+import com.system.payment.util.AesKeyCryptoUtils;
 import com.system.payment.util.JwtUtil;
 import com.system.payment.util.RsaKeyCryptoUtil;
 import org.junit.jupiter.api.DisplayName;
@@ -88,7 +88,7 @@ class AuthServiceTest {
 		// AES 대칭키 RSA 공개키 암호화, 비밀번호 암호화된 AES 대칭키로 AES 암호화
 		String encAesKey = RsaKeyCryptoUtil.encryptAesKeyWithRsaPublicKey(aesKeyStr, publicKey);
 		String password = "manager0";
-		String encPassword = AesKeyCryptoUtil.encryptPasswordWithAesKey(password, aesKeyStr);
+		String encPassword = AesKeyCryptoUtils.encryptPasswordWithAesKey(password, aesKeyStr);
 
 		// 회원 가입 요청 객체 생성
 		SignUpRequest request = SignUpRequest.builder()
@@ -107,7 +107,7 @@ class AuthServiceTest {
 //		assert decryptedAesKey.equals(aesKeyStr);
 //
 //		// 평문 비밀번호 확인
-//		String decryptedPassword = AesKeyCryptoUtil.decryptPasswordWithAesKey(encPassword, aesKeyStr);
+//		String decryptedPassword = AesKeyCryptoUtils.decryptPasswordWithAesKey(encPassword, aesKeyStr);
 //		assert decryptedPassword.equals(password);
 
 		// region given-when-then
@@ -159,7 +159,7 @@ class AuthServiceTest {
 		// AES 대칭키 RSA 공개키 암호화, 비밀번호 암호화된 AES 대칭키로 AES 암호화
 		String encAesKey = RsaKeyCryptoUtil.encryptAesKeyWithRsaPublicKey(aesKeyStr, publicKey);
 		String password = "manager0";
-		String encPassword = AesKeyCryptoUtil.encryptPasswordWithAesKey(password, aesKeyStr);
+		String encPassword = AesKeyCryptoUtils.encryptPasswordWithAesKey(password, aesKeyStr);
 
         // signUp 내부에서 쓰인 Crypto/Credential 동작은 여기선 검증 대상 아님이라 생략 가능
 
