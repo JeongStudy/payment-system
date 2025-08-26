@@ -26,6 +26,7 @@ public class UserService {
 		return paymentUserRepository.getByIdOrThrow(userId);
 	}
 
+	@Transactional
 	public UserResponse getUser() {
 		final PaymentUser paymentUser = findUser();
 		return UserResponse.from(paymentUser);
