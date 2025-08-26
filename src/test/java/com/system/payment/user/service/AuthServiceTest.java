@@ -71,7 +71,7 @@ class AuthServiceTest {
 		try {
 			keyGen = KeyPairGenerator.getInstance("RSA");
 		} catch (NoSuchAlgorithmException e) {
-			throw new CryptoException(ErrorCode.RSA_KEY_GENERATION_FAIL);
+			throw new CryptoException(ErrorCode.RSA_KEY_PAIR_GENERATION_FAIL);
 		}
 		keyGen.initialize(2048);
 		KeyPair pair = keyGen.generateKeyPair();
@@ -142,7 +142,7 @@ class AuthServiceTest {
 		try {
 			keyGen = KeyPairGenerator.getInstance("RSA");
 		} catch (NoSuchAlgorithmException e) {
-			throw new CryptoException(ErrorCode.RSA_KEY_GENERATION_FAIL);
+			throw new CryptoException(ErrorCode.RSA_KEY_PAIR_GENERATION_FAIL);
 		}
 		keyGen.initialize(2048);
 		KeyPair pair = keyGen.generateKeyPair();
