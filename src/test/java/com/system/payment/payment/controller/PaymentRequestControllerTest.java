@@ -6,7 +6,7 @@ import com.system.payment.card.domain.PaymentUserCard;
 import com.system.payment.payment.domain.Payment;
 import com.system.payment.payment.domain.outbox.OutboxEvent;
 import com.system.payment.payment.repository.OutboxEventRepository;
-import com.system.payment.payment.service.OutboxPublishWorker;
+import com.system.payment.payment.scheduler.OutboxPublishWorker;
 import com.system.payment.payment.service.PaymentProducer;
 import com.system.payment.user.domain.PaymentUser;
 import com.system.payment.user.model.request.LoginRequest;

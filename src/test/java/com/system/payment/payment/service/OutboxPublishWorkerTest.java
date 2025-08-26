@@ -8,6 +8,7 @@ import com.system.payment.payment.domain.outbox.OutboxEvent;
 import com.system.payment.payment.domain.outbox.PaymentRequestedArgs;
 import com.system.payment.payment.repository.OutboxEventRepository;
 import com.system.payment.payment.repository.PaymentRepository;
+import com.system.payment.payment.scheduler.OutboxPublishWorker;
 import com.system.payment.user.domain.PaymentUser;
 import com.system.payment.user.repository.PaymentUserRepository;
 import com.system.payment.user.service.UserService;
