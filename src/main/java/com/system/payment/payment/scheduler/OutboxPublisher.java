@@ -1,7 +1,6 @@
 package com.system.payment.payment.scheduler;
 
 import com.system.payment.payment.repository.OutboxEventRepository;
-import com.system.payment.payment.service.OutboxPublishWorker;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
