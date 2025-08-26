@@ -147,6 +147,7 @@ class AuthControllerTest {
 
 		// 0. 회원가입
 //		this.signup_flow_with_crypto();
+		jdbcTemplate.execute("DELETE FROM payment.payment_user_card");
 		jdbcTemplate.execute("DELETE FROM payment.payment_user");
 		jdbcTemplate.execute("ALTER TABLE payment.payment_user ALTER COLUMN id RESTART WITH 1");
 		jdbcTemplate.execute(initSignUpSql);
