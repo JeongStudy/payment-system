@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.system.payment.card.domain.PaymentUserCard;
 import com.system.payment.payment.domain.Payment;
+import com.system.payment.payment.domain.outbox.EventType;
 import com.system.payment.payment.domain.outbox.OutboxEvent;
 import com.system.payment.payment.repository.OutboxEventRepository;
 import com.system.payment.payment.scheduler.OutboxPublishWorker;
@@ -208,7 +209,7 @@ class PaymentRequestControllerTest {
 		// 3) Outbox 저장 확인
 		Optional<OutboxEvent> event = outboxEventRepository.findById(eventId);
 		OutboxEvent e = event.get();
-		assertThat(e.getEventType()).isEqualTo("PAYMENT_REQUESTED_V1"); // :contentReference[oaicite:2]{index=2}
+		assertThat(e.getEventType()).isEqualTo(EventType.PAYMENT_REQUESTED_V1); // :contentReference[oaicite:2]{index=2}
 		assertThat(e.getStatus()).isIn("PENDING");
 		assertThat(e.getPayload()).isNotBlank();
 		assertThat(e.getEventKey()).isNotBlank(); // txId

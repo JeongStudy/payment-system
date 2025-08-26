@@ -2,10 +2,10 @@ package com.system.payment.payment.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.system.payment.payment.domain.outbox.EventType;
 import com.system.payment.payment.domain.outbox.OutboxEvent;
 import com.system.payment.payment.repository.OutboxEventRepository;
 import com.system.payment.payment.scheduler.OutboxPublishWorker;
-import com.system.payment.payment.service.PaymentProducer;
 import com.system.payment.user.model.request.LoginRequest;
 import com.system.payment.util.AesKeyCryptoUtils;
 import com.system.payment.util.RsaKeyCryptoUtils;
@@ -51,7 +51,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(properties = "spring.task.scheduling.enabled=false")
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@EmbeddedKafka(partitions = 2, topics = {PaymentProducer.PAYMENT_REQUESTED_TOPIC})
+@EmbeddedKafka(partitions = 2, topics = {"payment.requested.v1"})
 class PaymentRequestControllerKafkaTest {
 
 	@Autowired
@@ -79,6 +79,9 @@ class PaymentRequestControllerKafkaTest {
 
 	@Value("${sql.init-card-register-secret-sql}")
 	String initCardRegisterSql;
+
+	@Value("${payment.request.topic}")
+	private String PAYMENT_REQUESTED_TOPIC;
 
 	private static final Logger logger = LoggerFactory.getLogger(PaymentRequestControllerKafkaTest.class);
 
@@ -264,7 +267,7 @@ class PaymentRequestControllerKafkaTest {
 		// 3) Outbox 저장 확인
 		Optional<OutboxEvent> event = outboxEventRepository.findById(eventId);
 		OutboxEvent e = event.get();
-		assertThat(e.getEventType()).isEqualTo("PAYMENT_REQUESTED_V1"); // :contentReference[oaicite:2]{index=2}
+		assertThat(e.getEventType()).isEqualTo(EventType.PAYMENT_REQUESTED_V1); // :contentReference[oaicite:2]{index=2}
 		assertThat(e.getStatus()).isIn("PENDING");
 		assertThat(e.getPayload()).isNotBlank();
 		assertThat(e.getEventKey()).isNotBlank(); // txId
@@ -286,7 +289,7 @@ class PaymentRequestControllerKafkaTest {
 		boolean received = testSink.await(15, TimeUnit.SECONDS);
 		assertThat(received).isTrue();
 		assertThat(testSink.lastRecord).isNotNull();
-		assertThat(testSink.lastRecord.topic()).isEqualTo(PaymentProducer.PAYMENT_REQUESTED_TOPIC); // :contentReference[oaicite:4]{index=4}
+		assertThat(testSink.lastRecord.topic()).isEqualTo(PAYMENT_REQUESTED_TOPIC); // :contentReference[oaicite:4]{index=4}
 
 		//상태 폴링 1회
 		poll = mockMvc.perform(get("/api/payments/requests/status/" + paymentId)
@@ -301,7 +304,7 @@ class PaymentRequestControllerKafkaTest {
 		// 3) Outbox 저장 확인
 		event = outboxEventRepository.findById(eventId);
 		e = event.get();
-		assertThat(e.getEventType()).isEqualTo("PAYMENT_REQUESTED_V1"); // :contentReference[oaicite:2]{index=2}
+		assertThat(e.getEventType()).isEqualTo(EventType.PAYMENT_REQUESTED_V1); // :contentReference[oaicite:2]{index=2}
 		assertThat(e.getStatus()).isIn("SENT", "DEAD");
 		assertThat(e.getPayload()).isNotBlank();
 		assertThat(e.getEventKey()).isNotBlank(); // txId
@@ -327,7 +330,7 @@ class PaymentRequestControllerKafkaTest {
 
 		@KafkaListener(
 				id = "test-sink",
-				topics = PaymentProducer.PAYMENT_REQUESTED_TOPIC,
+				topics = "payment.requested.v1",
 				groupId = "payment-consumer-test",
 				properties = {"auto.offset.reset=latest",
 						"spring.json.trusted.packages=*"}
