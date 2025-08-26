@@ -3,7 +3,7 @@ package com.system.payment.util;
 import java.time.Instant;
 import java.util.UUID;
 
-public class KeyGeneratorUtil {
+public class KeyGeneratorUtils {
 
 	public static String generateIdempotencyKey() {
         return UUID.randomUUID().toString().replace("-", "");

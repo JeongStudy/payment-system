@@ -18,7 +18,7 @@ import com.system.payment.user.domain.PaymentUser;
 import com.system.payment.user.service.CredentialService;
 import com.system.payment.user.service.CryptoService;
 import com.system.payment.user.service.UserService;
-import com.system.payment.util.KeyGeneratorUtil;
+import com.system.payment.util.KeyGeneratorUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -41,7 +41,7 @@ public class PaymentRequestService {
 
 	@Transactional
 	public IdempotencyKeyResponse getIdempotencyKey() {
-		String key = KeyGeneratorUtil.generateIdempotencyKey();
+		String key = KeyGeneratorUtils.generateIdempotencyKey();
 		return IdempotencyKeyResponse.from(key);
 	}
 
@@ -67,7 +67,7 @@ public class PaymentRequestService {
 		final PaymentUserCard paymentUserCard = paymentUserCardRepository.findById(request.getPaymentUserCardId())
 				.orElseThrow(() -> new PaymentServerNotFoundException(ErrorCode.NOT_FOUND));
 
-		String transactionId = KeyGeneratorUtil.generateTransactionId();
+		String transactionId = KeyGeneratorUtils.generateTransactionId();
 
 		final Payment payment = Payment.create(
 				PaymentUserRef.of(paymentUser.getId()),
