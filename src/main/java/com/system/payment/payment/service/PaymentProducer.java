@@ -9,7 +9,7 @@ import com.system.payment.payment.model.dto.InicisBillingApproval;
 import com.system.payment.payment.model.dto.PaymentRequestedMessageV1;
 import com.system.payment.user.domain.PaymentUser;
 import com.system.payment.util.HashUtils;
-import com.system.payment.util.TimeUtil;
+import com.system.payment.util.TimeUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +66,7 @@ public class PaymentProducer {
 										payment.getMethodRef().getPaymentMethodType().name(),
 										paymentUserCard.getId(),
 										payment.getPaymentResultCode().getCode(),
-										TimeUtil.toInstant(payment.getCreatedTimestamp())
+										TimeUtils.toInstant(payment.getCreatedTimestamp())
 								),
 								new PaymentRequestedMessageV1.Payload.External<>(
 										"INICIS",

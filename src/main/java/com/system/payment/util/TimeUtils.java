@@ -4,8 +4,8 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
-public final class TimeUtil {
-  private TimeUtil() {}
+public final class TimeUtils {
+  private TimeUtils() {}
 
   private static final ZoneId DEFAULT_ZONE = ZoneId.of("Asia/Seoul");
 
