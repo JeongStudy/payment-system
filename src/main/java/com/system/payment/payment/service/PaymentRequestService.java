@@ -12,7 +12,6 @@ import com.system.payment.payment.model.response.CreatePaymentResponse;
 import com.system.payment.payment.model.response.IdempotencyKeyResponse;
 import com.system.payment.payment.model.response.PaymentStatusResponse;
 import com.system.payment.payment.repository.PaymentRepository;
-import com.system.payment.payment.validator.PaymentItemValidator;
 import com.system.payment.user.domain.AesKey;
 import com.system.payment.user.domain.PaymentUser;
 import com.system.payment.user.service.CredentialService;
@@ -62,7 +61,6 @@ public class PaymentRequestService {
 		List<PaymentDetailItem> itemList = new ArrayList<>();
 		itemList.add(PaymentDetailItem.order(1, 1));
 //		itemList.add(PaymentDetailItem.point(2, -5000));
-		PaymentItemValidator.validateAndVerifyTotal(itemList, request.getAmount());
 
 		final PaymentUserCard paymentUserCard = paymentUserCardRepository.findById(request.getPaymentUserCardId())
 				.orElseThrow(() -> new PaymentServerNotFoundException(ErrorCode.NOT_FOUND));
