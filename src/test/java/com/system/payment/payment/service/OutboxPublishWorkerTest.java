@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.system.payment.card.domain.PaymentUserCard;
 import com.system.payment.card.repository.PaymentUserCardRepository;
 import com.system.payment.payment.domain.Payment;
+import com.system.payment.payment.domain.outbox.EventType;
 import com.system.payment.payment.domain.outbox.OutboxEvent;
 import com.system.payment.payment.domain.outbox.PaymentRequestedArgs;
 import com.system.payment.payment.repository.OutboxEventRepository;
@@ -58,7 +59,7 @@ class OutboxPublishWorkerTest {
 	@InjectMocks
 	OutboxPublishWorker worker;
 
-	private static OutboxEvent newEvent(Integer id, String status, String type, String payload, int attempts) {
+	private static OutboxEvent newEvent(Integer id, String status, EventType type, String payload, int attempts) {
 		OutboxEvent e = new OutboxEvent();
 		e.setId(id);
 		e.setStatus(status);
@@ -90,7 +91,7 @@ class OutboxPublishWorkerTest {
 	void processOne_success_marksSent() throws Exception {
 		// given
 		Integer id = 10;
-		OutboxEvent e = newEvent(id, "PENDING", "PAYMENT_REQUESTED_V1", "{}", 0);
+		OutboxEvent e = newEvent(id, "PENDING", EventType.PAYMENT_REQUESTED_V1, "{}", 0);
 
 		when(outboxEventRepository.findByIdForUpdate(id)).thenReturn(Optional.of(e));
 		when(objectMapper.readValue(anyString(), eq(PaymentRequestedArgs.class)))
@@ -113,7 +114,7 @@ class OutboxPublishWorkerTest {
 	void processOne_failure_underMax_callsBackoff() throws Exception {
 		// given
 		Integer id = 11;
-		OutboxEvent e = newEvent(id, "PENDING", "PAYMENT_REQUESTED_V1", "{}", 0);
+		OutboxEvent e = newEvent(id, "PENDING", EventType.PAYMENT_REQUESTED_V1, "{}", 0);
 
 		when(outboxEventRepository.findByIdForUpdate(id)).thenReturn(Optional.of(e));
 		when(objectMapper.readValue(anyString(), eq(PaymentRequestedArgs.class)))
@@ -144,7 +145,7 @@ class OutboxPublishWorkerTest {
 	void processOne_failure_reachMax_setsDeadAndSaves() throws Exception {
 		// given
 		Integer id = 12;
-		OutboxEvent e = newEvent(id, "PENDING", "PAYMENT_REQUESTED_V1", "{}", 9); // attempts=9 → next=10
+		OutboxEvent e = newEvent(id, "PENDING", EventType.PAYMENT_REQUESTED_V1, "{}", 9); // attempts=9 → next=10
 
 		when(outboxEventRepository.findByIdForUpdate(id)).thenReturn(Optional.of(e));
 		when(objectMapper.readValue(anyString(), eq(PaymentRequestedArgs.class)))
@@ -179,7 +180,7 @@ class OutboxPublishWorkerTest {
 	void processOne_skips_whenNotPending() {
 		// given
 		Integer id = 13;
-		OutboxEvent e = newEvent(id, "SENT", "PAYMENT_REQUESTED_V1", "{}", 0);
+		OutboxEvent e = newEvent(id, "SENT", EventType.PAYMENT_REQUESTED_V1, "{}", 0);
 		when(outboxEventRepository.findByIdForUpdate(id)).thenReturn(Optional.of(e));
 
 		// when
@@ -189,18 +190,4 @@ class OutboxPublishWorkerTest {
 		verifyNoInteractions(paymentProducer, outboxService, paymentRepository, paymentUserCardRepository, userService);
 	}
 
-	@Test
-	@DisplayName("스킵: 이벤트 타입 불일치 시 처리하지 않음")
-	void processOne_skips_whenTypeMismatch() {
-		// given
-		Integer id = 14;
-		OutboxEvent e = newEvent(id, "PENDING", "OTHER_EVENT", "{}", 0);
-		when(outboxEventRepository.findByIdForUpdate(id)).thenReturn(Optional.of(e));
-
-		// when
-		worker.processOne(id);
-
-		// then
-		verifyNoInteractions(paymentProducer, outboxService, paymentRepository, paymentUserCardRepository, userService);
-	}
 }
