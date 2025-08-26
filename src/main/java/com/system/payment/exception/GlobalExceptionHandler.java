@@ -1,6 +1,7 @@
 package com.system.payment.exception;
 
 import com.system.payment.util.Response;
+import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -96,6 +97,16 @@ public class GlobalExceptionHandler {
 		log.error("IllegalArgumentException 발생", e);
 		Response<Void> response = Response.<Void>builder()
 				.status(ErrorCode.BAD_REQUEST_PARAM.getStatus())
+				.message(e.getMessage())
+				.build();
+		return ResponseEntity.badRequest().body(response);
+	}
+
+	@ExceptionHandler(JwtException.class)
+	public ResponseEntity<Response<Void>> handleJwtException(JwtException e) {
+		log.error("JwtException 발생", e);
+		Response<Void> response = Response.<Void>builder()
+				.status(ErrorCode.SERVER_ERROR.getStatus())
 				.message(e.getMessage())
 				.build();
 		return ResponseEntity.badRequest().body(response);
