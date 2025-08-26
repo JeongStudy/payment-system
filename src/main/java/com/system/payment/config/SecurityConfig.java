@@ -1,4 +1,4 @@
-package com.system.payment.config.security;
+package com.system.payment.config;
 
 import com.system.payment.filter.JwtAuthenticationFilter;
 import com.system.payment.filter.PaymentServerAuthenticationEntryPoint;
