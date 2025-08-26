@@ -11,7 +11,7 @@ import com.system.payment.user.repository.AesKeyRepository;
 import com.system.payment.user.repository.PaymentUserRepository;
 import com.system.payment.user.repository.RsaKeyPairRepository;
 import com.system.payment.util.AesKeyCryptoUtils;
-import com.system.payment.util.JwtUtil;
+import com.system.payment.util.JwtUtils;
 import com.system.payment.util.RsaKeyCryptoUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -56,7 +56,7 @@ class AuthServiceTest {
 	private PasswordEncoder passwordEncoder;
 
 	@Mock
-	private JwtUtil jwtUtil;
+	private JwtUtils jwtUtils;
 
 	@InjectMocks
 	private AuthService authService;
@@ -190,7 +190,7 @@ class AuthServiceTest {
         doNothing().when(credentialService).verifyOrThrow(eq(password), eq("bcrypt-hash"));
 
         // JWT
-        given(jwtUtil.generateToken(any()))
+        given(jwtUtils.generateToken(any()))
                 .willReturn("jwt-token");
 
         // when
@@ -202,7 +202,7 @@ class AuthServiceTest {
         verify(cryptoService, times(1)).resolveValidAesKey(eq(publicKey), eq(encAesKey));
         verify(cryptoService, times(1)).decryptPasswordWithAes(eq(encPassword), eq(aesKeyStr));
         verify(credentialService, times(1)).verifyOrThrow(eq(password), eq("bcrypt-hash"));
-        verify(jwtUtil, times(1)).generateToken(any());
+        verify(jwtUtils, times(1)).generateToken(any());
 
 	}
 }
