@@ -12,7 +12,7 @@ import com.system.payment.user.repository.PaymentUserRepository;
 import com.system.payment.user.repository.RsaKeyPairRepository;
 import com.system.payment.util.AesKeyCryptoUtils;
 import com.system.payment.util.JwtUtils;
-import com.system.payment.util.RsaKeyCryptoUtil;
+import com.system.payment.util.RsaKeyCryptoUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -86,7 +86,7 @@ class AuthServiceTest {
 		AesKey aesKey = AesKey.create(aesKeyStr);
 
 		// AES 대칭키 RSA 공개키 암호화, 비밀번호 암호화된 AES 대칭키로 AES 암호화
-		String encAesKey = RsaKeyCryptoUtil.encryptAesKeyWithRsaPublicKey(aesKeyStr, publicKey);
+		String encAesKey = RsaKeyCryptoUtils.encryptAesKeyWithRsaPublicKey(aesKeyStr, publicKey);
 		String password = "manager0";
 		String encPassword = AesKeyCryptoUtils.encryptPasswordWithAesKey(password, aesKeyStr);
 
@@ -103,7 +103,7 @@ class AuthServiceTest {
 				.build();
 
 //		// AES 대칭키 복호화 확인
-//		String decryptedAesKey = RsaKeyCryptoUtil.decryptEncryptedAesKeyWithRsaPrivateKey(encAesKey, privateKey);
+//		String decryptedAesKey = RsaKeyCryptoUtils.decryptEncryptedAesKeyWithRsaPrivateKey(encAesKey, privateKey);
 //		assert decryptedAesKey.equals(aesKeyStr);
 //
 //		// 평문 비밀번호 확인
@@ -157,7 +157,7 @@ class AuthServiceTest {
 		AesKey aesKey = AesKey.create(aesKeyStr);
 
 		// AES 대칭키 RSA 공개키 암호화, 비밀번호 암호화된 AES 대칭키로 AES 암호화
-		String encAesKey = RsaKeyCryptoUtil.encryptAesKeyWithRsaPublicKey(aesKeyStr, publicKey);
+		String encAesKey = RsaKeyCryptoUtils.encryptAesKeyWithRsaPublicKey(aesKeyStr, publicKey);
 		String password = "manager0";
 		String encPassword = AesKeyCryptoUtils.encryptPasswordWithAesKey(password, aesKeyStr);
 

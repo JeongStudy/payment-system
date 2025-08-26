@@ -11,7 +11,7 @@ import com.system.payment.user.model.request.EncryptPasswordRequest;
 import com.system.payment.user.repository.AesKeyRepository;
 import com.system.payment.user.repository.RsaKeyPairRepository;
 import com.system.payment.util.AesKeyCryptoUtils;
-import com.system.payment.util.RsaKeyCryptoUtil;
+import com.system.payment.util.RsaKeyCryptoUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,7 +72,7 @@ public class CryptoService {
         RsaKeyPair rsaKeyPair = rsaKeyPairRepository.getByPublicKeyOrThrow(rsaPublicKey);
         rsaKeyPair.validateNotExpired();
 
-        String aesKeyPlain = RsaKeyCryptoUtil
+        String aesKeyPlain = RsaKeyCryptoUtils
                 .decryptEncryptedAesKeyWithRsaPrivateKey(encAesKey, rsaKeyPair.getPrivateKey());
 
         AesKey aesKey = aesKeyRepository.getByAesKeyOrThrow(aesKeyPlain);
@@ -90,6 +90,6 @@ public class CryptoService {
 	}
 
 	public String encryptAesKeyWithRsaPublicKey(EncryptAesKeyRequest encryptAesKeyRequest){
-		return RsaKeyCryptoUtil.encryptAesKeyWithRsaPublicKey(encryptAesKeyRequest.getAesKey(), encryptAesKeyRequest.getRsaPublicKey());
+		return RsaKeyCryptoUtils.encryptAesKeyWithRsaPublicKey(encryptAesKeyRequest.getAesKey(), encryptAesKeyRequest.getRsaPublicKey());
 	}
 }

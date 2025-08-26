@@ -8,7 +8,7 @@ import com.system.payment.payment.scheduler.OutboxPublishWorker;
 import com.system.payment.payment.service.PaymentProducer;
 import com.system.payment.user.model.request.LoginRequest;
 import com.system.payment.util.AesKeyCryptoUtils;
-import com.system.payment.util.RsaKeyCryptoUtil;
+import com.system.payment.util.RsaKeyCryptoUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -159,7 +159,7 @@ class PaymentRequestControllerKafkaTest {
 		String aesKey = aesResponse.at("/data/aesKey").asText();
 
 		// 3. AES 키를 RSA 공개키로 암호화
-		String encAesKey = RsaKeyCryptoUtil.encryptAesKeyWithRsaPublicKey(aesKey, publicKey);
+		String encAesKey = RsaKeyCryptoUtils.encryptAesKeyWithRsaPublicKey(aesKey, publicKey);
 
 		// 4. 평문 비밀번호 AES 키로 암호화
 		String encPassword = AesKeyCryptoUtils.encryptPasswordWithAesKey(password, aesKey);
@@ -222,7 +222,7 @@ class PaymentRequestControllerKafkaTest {
 
 
 		// 3. AES 키를 RSA 공개키로 암호화
-		String encAesKey = RsaKeyCryptoUtil.encryptAesKeyWithRsaPublicKey(aesKey, publicKey);
+		String encAesKey = RsaKeyCryptoUtils.encryptAesKeyWithRsaPublicKey(aesKey, publicKey);
 
 
 		// 4. 평문 비밀번호 AES 키로 암호화
