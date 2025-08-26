@@ -1,6 +1,5 @@
 package com.system.payment.card.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.system.payment.card.domain.BillingKeyStatus;
 import com.system.payment.card.domain.PaymentUserCard;
 import com.system.payment.card.model.request.CardAuthRequest;
@@ -10,26 +9,13 @@ import com.system.payment.card.model.response.InicisBillingKeyResponse;
 import com.system.payment.card.repository.PaymentUserCardRepository;
 import com.system.payment.exception.ErrorCode;
 import com.system.payment.exception.PaymentServerNotFoundException;
-import com.system.payment.user.domain.PaymentUser;
+import com.system.payment.pg.inicis.InicisClient;
 import com.system.payment.util.HashUtils;
 import com.system.payment.util.IdGeneratorUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.client.RestTemplate;
-
-import java.net.http.HttpRequest;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.time.Instant;
 
 @Service
 @Slf4j
