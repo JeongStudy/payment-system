@@ -48,7 +48,7 @@ public class CryptoService {
 		try {
 			keyGen = KeyPairGenerator.getInstance("RSA");
 		} catch (NoSuchAlgorithmException e) {
-			throw new CryptoException(ErrorCode.RSA_KEY_GENERATION_FAIL);
+			throw new CryptoException(ErrorCode.RSA_KEY_PAIR_GENERATION_FAIL);
 		}
 
 		keyGen.initialize(2048);
