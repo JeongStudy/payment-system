@@ -1,4 +1,4 @@
-package com.system.payment.payment.service;
+package com.system.payment.payment.validator;
 
 import com.system.payment.exception.ErrorCode;
 import com.system.payment.exception.PaymentServerInternalServerErrorException;
