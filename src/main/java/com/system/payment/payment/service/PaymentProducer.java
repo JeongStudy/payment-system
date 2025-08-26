@@ -3,7 +3,6 @@ package com.system.payment.payment.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.system.payment.card.domain.PaymentUserCard;
-import com.system.payment.example.controller.ExampleController;
 import com.system.payment.payment.domain.Payment;
 import com.system.payment.payment.model.dto.InicisBillingApproval;
 import com.system.payment.payment.model.dto.PaymentRequestedMessageV1;
@@ -38,7 +37,7 @@ public class PaymentProducer {
 
 	public static final String PAYMENT_REQUESTED_TOPIC = "payment.requested.v1";
 
-	private static final Logger logger = LoggerFactory.getLogger(ExampleController.class);
+	private static final Logger logger = LoggerFactory.getLogger(PaymentProducer.class);
 
 	public void sendPaymentRequested(Payment payment, PaymentUser paymentUser, PaymentUserCard paymentUserCard, String productName) {
 		String key = String.valueOf(paymentUser.getId());
