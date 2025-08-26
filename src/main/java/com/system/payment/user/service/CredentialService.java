@@ -2,17 +2,15 @@ package com.system.payment.user.service;
 
 import com.system.payment.exception.ErrorCode;
 import com.system.payment.exception.PaymentServerUnauthorizedException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class CredentialService {
 
 	private final PasswordEncoder passwordEncoder;
-
-	public CredentialService(PasswordEncoder passwordEncoder) {
-		this.passwordEncoder = passwordEncoder;
-	}
 
 	public String hash(String plainPassword) {
 		return passwordEncoder.encode(plainPassword);

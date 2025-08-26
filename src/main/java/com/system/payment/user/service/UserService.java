@@ -6,18 +6,15 @@ import com.system.payment.provider.AuthUserProvider;
 import com.system.payment.user.domain.PaymentUser;
 import com.system.payment.user.model.reponse.UserResponse;
 import com.system.payment.user.repository.PaymentUserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 	private final AuthUserProvider authUserProvider;
 	private final PaymentUserRepository paymentUserRepository;
-
-	public UserService(AuthUserProvider authUserProvider, PaymentUserRepository paymentUserRepository) {
-		this.authUserProvider = authUserProvider;
-		this.paymentUserRepository = paymentUserRepository;
-	}
 
 	@Transactional
 	public PaymentUser findUser() {

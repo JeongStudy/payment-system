@@ -12,6 +12,7 @@ import com.system.payment.user.repository.AesKeyRepository;
 import com.system.payment.user.repository.RsaKeyPairRepository;
 import com.system.payment.util.AesKeyCryptoUtils;
 import com.system.payment.util.RsaKeyCryptoUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,15 +23,11 @@ import java.util.Base64;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class CryptoService {
 
 	private final AesKeyRepository aesKeyRepository;
 	private final RsaKeyPairRepository rsaKeyPairRepository;
-
-	public CryptoService(AesKeyRepository aesKeyRepository, RsaKeyPairRepository rsaKeyPairRepository) {
-		this.aesKeyRepository = aesKeyRepository;
-		this.rsaKeyPairRepository = rsaKeyPairRepository;
-	}
 
 	@Transactional
 	public AesKeyResponse generateAesKey() {

@@ -9,26 +9,18 @@ import com.system.payment.user.model.request.LoginRequest;
 import com.system.payment.user.model.request.SignUpRequest;
 import com.system.payment.user.repository.PaymentUserRepository;
 import com.system.payment.util.JwtUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
 	private final PaymentUserRepository paymentUserRepository;
 	private final CryptoService cryptoService;
 	private final CredentialService credentialService;
 	private final JwtUtils jwtUtils;
-
-	public AuthService(PaymentUserRepository paymentUserRepository,
-					   CryptoService cryptoService,
-					   CredentialService credentialService,
-					   JwtUtils jwtUtils) {
-		this.paymentUserRepository = paymentUserRepository;
-		this.cryptoService = cryptoService;
-		this.credentialService = credentialService;
-		this.jwtUtils = jwtUtils;
-	}
 
 	@Transactional
 	public void signUp(SignUpRequest request) {
