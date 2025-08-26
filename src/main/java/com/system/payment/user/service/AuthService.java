@@ -8,7 +8,7 @@ import com.system.payment.user.model.reponse.LoginResponse;
 import com.system.payment.user.model.request.LoginRequest;
 import com.system.payment.user.model.request.SignUpRequest;
 import com.system.payment.user.repository.PaymentUserRepository;
-import com.system.payment.util.JwtUtil;
+import com.system.payment.util.JwtUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,16 +18,16 @@ public class AuthService {
 	private final PaymentUserRepository paymentUserRepository;
 	private final CryptoService cryptoService;
 	private final CredentialService credentialService;
-	private final JwtUtil jwtUtil;
+	private final JwtUtils jwtUtils;
 
 	public AuthService(PaymentUserRepository paymentUserRepository,
 					   CryptoService cryptoService,
 					   CredentialService credentialService,
-					   JwtUtil jwtUtil) {
+					   JwtUtils jwtUtils) {
 		this.paymentUserRepository = paymentUserRepository;
 		this.cryptoService = cryptoService;
 		this.credentialService = credentialService;
-		this.jwtUtil = jwtUtil;
+		this.jwtUtils = jwtUtils;
 	}
 
 	@Transactional
@@ -52,7 +52,7 @@ public class AuthService {
 		final String decryptedPassword = cryptoService.decryptPasswordWithAes(request.getEncPassword(), aesKey.getAesKey());
 		credentialService.verifyOrThrow(decryptedPassword, user.getEncPassword());
 
-		final String jwtToken = jwtUtil.generateToken(user.getId());
+		final String jwtToken = jwtUtils.generateToken(user.getId());
 		return LoginResponse.from(jwtToken);
 	}
 }

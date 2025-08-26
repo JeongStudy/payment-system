@@ -13,7 +13,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 @Component
-public class JwtUtil {
+public class JwtUtils {
 	@Value("${jwt.secret}")
 	private String SECRET;
 

@@ -2,7 +2,7 @@ package com.system.payment.filter;
 
 import com.system.payment.config.security.PaymentServerAuthenticationEntryPoint;
 import com.system.payment.user.model.dto.SimpleUserDetails;
-import com.system.payment.util.JwtUtil;
+import com.system.payment.util.JwtUtils;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -22,11 +22,11 @@ import java.util.List;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-	private final JwtUtil jwtUtil;
+	private final JwtUtils jwtUtils;
 	private final PaymentServerAuthenticationEntryPoint paymentServerAuthenticationEntryPoint;
 
-	public JwtAuthenticationFilter(JwtUtil jwtUtil, PaymentServerAuthenticationEntryPoint paymentServerAuthenticationEntryPoint) {
-		this.jwtUtil = jwtUtil;
+	public JwtAuthenticationFilter(JwtUtils jwtUtils, PaymentServerAuthenticationEntryPoint paymentServerAuthenticationEntryPoint) {
+		this.jwtUtils = jwtUtils;
 		this.paymentServerAuthenticationEntryPoint = paymentServerAuthenticationEntryPoint;
 	}
 
@@ -44,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		String token = authHeader.substring(7);
 
 		try {
-			Claims claims = jwtUtil.parseClaims(token);
+			Claims claims = jwtUtils.parseClaims(token);
 			Integer userId = claims.get("user_id", Integer.class);
 
 			UserDetails userDetails = new SimpleUserDetails(userId);
