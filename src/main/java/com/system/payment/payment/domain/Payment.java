@@ -3,9 +3,9 @@ package com.system.payment.payment.domain;
 import com.system.payment.common.domain.BaseEntity;
 import com.system.payment.exception.ErrorCode;
 import com.system.payment.exception.PaymentServerBadRequestException;
-import com.system.payment.exception.PaymentServerNotFoundException;
 import com.system.payment.payment.domain.converter.PaymentResultCodeConverter;
 import com.system.payment.payment.model.dto.PaymentDetailItem;
+import com.system.payment.payment.validator.PaymentItemValidator;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -109,20 +109,17 @@ public class Payment extends BaseEntity {
 
 		if (totalAmount <= 0)
 			throw new PaymentServerBadRequestException(ErrorCode.PAYMENT_TOTAL_AMOUNT_MUST_BE_POSITIVE);
+		PaymentItemValidator.validateAndVerifyTotal(items, totalAmount);
 		PaymentResultCode paymentResultCode = PaymentResultCode.WAITING;
 		Payment payment = new Payment(userRef, referenceRef, methodRef, paymentType, totalAmount, paymentResultCode, idempotencyKey, transactionId);
 		payment.addDetails(items);
 		return payment;
 	}
 
-	private List<PaymentDetail> addDetails(List<PaymentDetailItem> itemList) {
-		if (itemList == null || itemList.isEmpty())
-			throw new PaymentServerNotFoundException(ErrorCode.PAYMENT_ITEMS_NOT_FOUND);
-		for (PaymentDetailItem item : itemList) {
-			this.details.add(PaymentDetail
-					.create(ItemRef.of(item.getItemId(), item.getItemType()), item.getItemAmount()));
-		}
-		return this.details;
+	private void addDetails(List<PaymentDetailItem> itemList) {
+		itemList.stream()
+				.map(item -> PaymentDetail.create(ItemRef.of(item.getItemId(), item.getItemType()), item.getItemAmount()))
+				.forEach(this.details::add);
 	}
 
 	public void changeResultCodeRequested() {
