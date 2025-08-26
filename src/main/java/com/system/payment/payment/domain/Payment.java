@@ -99,7 +99,7 @@ public class Payment extends BaseEntity {
 
 
 	public static Payment create(PaymentUserRef userRef,
-								 ReferenceRef referenceRef,     // 필요 없으면 null 허용
+								 ReferenceRef referenceRef,
 								 PaymentMethodRef methodRef,
 								 PaymentType paymentType,
 								 int totalAmount,
@@ -126,32 +126,4 @@ public class Payment extends BaseEntity {
 		this.paymentResultCode = PaymentResultCode.REQUESTED;
 		this.requestedTimestamp = LocalDateTime.now();
 	}
-
-//
-//	public void markCompleted() {
-//		this.paymentResultCode = PaymentResultCode.COMPLETED;
-//		this.approvedTimestamp = LocalDateTime.now();
-//		// (옵션) 총액 검증: sum(details.amount) == totalAmount
-//		// validateTotals();
-//	}
-//
-//	public void markFailed(String code, String message) {
-//		this.paymentResultCode = PaymentResultCode.FAILED;
-//		this.errorCode = code;
-//		this.errorMessage = message;
-//		this.failedTimestamp = LocalDateTime.now();
-//	}
-//
-//	public void markCanceled(String reason) {
-//		this.paymentResultCode = PaymentResultCode.CANCELED;
-//		this.canceledTimestamp = LocalDateTime.now();
-//		this.errorMessage = reason;
-//	}
-//
-//	private void validateTotals() {
-//		int sum = details.stream().mapToInt(PaymentDetail::getAmount).sum();
-//		if (!Objects.equals(sum, this.totalAmount)) {
-//			throw new IllegalStateException("상세 금액 합계와 총액이 불일치");
-//		}
-//	}
 }
