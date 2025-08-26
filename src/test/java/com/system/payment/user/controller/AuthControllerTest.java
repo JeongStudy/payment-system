@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.system.payment.payment.service.PaymentProducer;
 import com.system.payment.user.model.request.LoginRequest;
 import com.system.payment.user.model.request.SignUpRequest;
-import com.system.payment.util.AesKeyCryptoUtil;
+import com.system.payment.util.AesKeyCryptoUtils;
 import com.system.payment.util.RsaKeyCryptoUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -118,7 +118,7 @@ class AuthControllerTest {
 		logger.info("");
 
 		// 4. 평문 비밀번호 AES 키로 암호화
-		String encPassword = AesKeyCryptoUtil.encryptPasswordWithAesKey(password, aesKey);
+		String encPassword = AesKeyCryptoUtils.encryptPasswordWithAesKey(password, aesKey);
 
 		// 5. SignUpRequest 회원가입 요청 정보 생성
 		SignUpRequest request = SignUpRequest.builder()
@@ -171,7 +171,7 @@ class AuthControllerTest {
 		String encAesKey = RsaKeyCryptoUtil.encryptAesKeyWithRsaPublicKey(aesKey, publicKey);
 
 		// 4. 평문 비밀번호 AES 키로 암호화
-		String encPassword = AesKeyCryptoUtil.encryptPasswordWithAesKey(password, aesKey);
+		String encPassword = AesKeyCryptoUtils.encryptPasswordWithAesKey(password, aesKey);
 
 		// 5. 이미 가입된 이메일 사용 (ex. 회원가입 테스트 후 그 데이터로 테스트)
 
