@@ -1,4 +1,4 @@
-package com.system.payment.config.security;
+package com.system.payment.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.system.payment.exception.ErrorCode;
