@@ -58,11 +58,8 @@ class AuthControllerTest {
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 
-	@Value("${sql.init-sign-up-secret-sql}")
+	@Value("${sql.init-sign-up-secret-sql:}")
 	String initSignUpSql;
-
-	@Value("${sql.init-card-register-secret-sql}")
-	String initCardRegisterSql;
 
 	private static final Logger logger = LoggerFactory.getLogger(AuthControllerTest.class);
 
@@ -150,7 +147,8 @@ class AuthControllerTest {
 		jdbcTemplate.execute("DELETE FROM payment.payment_user_card");
 		jdbcTemplate.execute("DELETE FROM payment.payment_user");
 		jdbcTemplate.execute("ALTER TABLE payment.payment_user ALTER COLUMN id RESTART WITH 1");
-		jdbcTemplate.execute(initSignUpSql);
+		if(!initSignUpSql.isEmpty()) jdbcTemplate.execute(initSignUpSql);
+		else this.signup_flow_with_crypto();
 
 		changeTestEmailAndPassword();
 
