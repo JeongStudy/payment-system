@@ -15,7 +15,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class InicisPgClientService {
 
-    private final StringUtil stringUtil;
 
     // TODO: RestTemplate/WebClient 주입
     // TODO: @ConfigurationProperties 로 mid/apiKey/url 등 주입
@@ -61,14 +60,14 @@ public class InicisPgClientService {
             );
         }
 
-        String authCode = stringUtil.randomDigits(6);
+        String authCode = StringUtil.randomDigits(6);
         var res = new InicisBillingApproveResponse(
                 "00",                                  // 성공
                 "Simulator: approval ok",
                 payDate,
                 payTime,
                 authCode,                              // payAuthCode
-                "SIM-" + payDate + payTime + "-" + stringUtil.randomDigits(4), // tid
+                "SIM-" + payDate + payTime + "-" + StringUtil.randomDigits(4), // tid
                 price,
                 "CC01",
                 "00",

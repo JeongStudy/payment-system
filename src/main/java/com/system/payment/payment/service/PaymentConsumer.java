@@ -26,11 +26,6 @@ public class PaymentConsumer {
     private final PaymentProcessService paymentProcessService;
     private final PaymentIdempotencyGuard idempotencyGuard;
 
-    // Util 클래스
-    private final IdGeneratorUtil idGeneratorUtil;
-    private final StringUtil stringUtil;
-    private final KafkaUtil kafkaUtil;
-
     public static final String HDR_TRACE_ID = "X-Trace-Id";
     public static final String HDR_SPAN_ID  = "X-Span-Id";
     public static final String HDR_CORR_ID  = "X-Correlation-Id";
@@ -60,14 +55,14 @@ public class PaymentConsumer {
         // TODO: 서비스 위임
 
         // 1) 헤더 추출(null/byte[] 안전)
-        String traceId = kafkaUtil.extractKafkaHeader(headers, HDR_TRACE_ID);
-        String spanId  = kafkaUtil.extractKafkaHeader(headers, HDR_SPAN_ID);
-        String corrId  = kafkaUtil.extractKafkaHeader(headers, HDR_CORR_ID);
+        String traceId = KafkaUtil.extractKafkaHeader(headers, HDR_TRACE_ID);
+        String spanId  = KafkaUtil.extractKafkaHeader(headers, HDR_SPAN_ID);
+        String corrId  = KafkaUtil.extractKafkaHeader(headers, HDR_CORR_ID);
 
         // 1-1) 기본값 보정
-        traceId = stringUtil.orDefault(traceId, idGeneratorUtil.UUIDGenerate()); // 없으면 새 UUID 생성
-        spanId  = stringUtil.orDefault(spanId,  "span-" + idGeneratorUtil.UUIDGenerate().substring(0, 8));
-        corrId  = stringUtil.orDefault(corrId,  "corr-" + idGeneratorUtil.UUIDGenerate().substring(0, 8));
+        traceId = StringUtil.orDefault(traceId, IdGeneratorUtil.UUIDGenerate()); // 없으면 새 UUID 생성
+        spanId  = StringUtil.orDefault(spanId,  "span-" + IdGeneratorUtil.UUIDGenerate().substring(0, 8));
+        corrId  = StringUtil.orDefault(corrId,  "corr-" + IdGeneratorUtil.UUIDGenerate().substring(0, 8));
 
         // 2) 메시지 안전 파싱(null 안전)
         String idempotencyKey = Optional.ofNullable(msg).map(PaymentRequestedMessageV1::envelope)
@@ -95,13 +90,13 @@ public class PaymentConsumer {
             }
 
             log.info("[CONSUME] key={}, partition={}, offset={}, provider={}, mid={}",
-                    stringUtil.safe(key), partition, offset,
+                    StringUtil.safe(key), partition, offset,
                     external != null ? external.provider() : null,
                     approval != null ? approval.getMid() : null
             );
 
             // 5) 밸리데이션 (필수 필드 누락 시 재시도 무의미 → swallow)
-            kafkaUtil.validateMessagePayload(idempotencyKey, txId, external, approval);
+            KafkaUtil.validateMessagePayload(idempotencyKey, txId, external, approval);
 
             // 6) 멱등성 가드
             if (!idempotencyGuard.tryAcquire(idempotencyKey)) {

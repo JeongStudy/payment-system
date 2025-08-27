@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -11,20 +12,20 @@ import java.util.concurrent.ThreadLocalRandom;
 @RequiredArgsConstructor
 public class StringUtil {
 
-    private final ObjectMapper objectMapper;
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public String safe(String s) { return s == null ? "" : s; }
+    public static String safe(String s) { return s == null ? "" : s; }
 
-    public String orDefault(String v, String def) { return (v == null || v.isBlank()) ? def : v; }
+    public static String orDefault(String v, String def) { return (v == null || v.isBlank()) ? def : v; }
 
-    public String randomDigits(int n) {
+    public static String randomDigits(int n) {
         ThreadLocalRandom r = ThreadLocalRandom.current();
         StringBuilder sb = new StringBuilder(n);
         for (int i = 0; i < n; i++) sb.append(r.nextInt(10));
         return sb.toString();
     }
 
-    public String toJsonSafe(Object o) {
+    public static String toJsonSafe(Object o) {
         try {
             return objectMapper.writeValueAsString(o);
         } catch (JsonProcessingException e) {

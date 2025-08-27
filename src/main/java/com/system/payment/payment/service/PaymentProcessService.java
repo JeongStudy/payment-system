@@ -36,7 +36,6 @@ public class PaymentProcessService {
     private final InicisPgClientService inicisPgClientService;      // 시뮬레이터/PG 퍼사드
     private final PaymentRepository paymentRepository;
     private final PaymentHistoryRepository paymentHistoryRepository;
-    private final StringUtil stringUtil;
 
     /**
      * 결제 승인 프로세스
@@ -86,7 +85,7 @@ public class PaymentProcessService {
             return;
         }
 
-        final String prevDataJson = stringUtil.toJsonSafe(payment);
+        final String prevDataJson = StringUtil.toJsonSafe(payment);
         final PaymentResultCode prevCode = payment.getPaymentResultCode();
 
         // 2) WAITING -> REQUESTED (최초 요청 흔적)
@@ -144,8 +143,8 @@ public class PaymentProcessService {
                                 String prevDataJson,
                                 Object externalResponse,
                                 String txId) {
-        String newDataJson = stringUtil.toJsonSafe(payment);
-        String externalJson = stringUtil.toJsonSafe(externalResponse);
+        String newDataJson = StringUtil.toJsonSafe(payment);
+        String externalJson = StringUtil.toJsonSafe(externalResponse);
 
         PaymentHistory history = PaymentHistory.builder()
                 .payment(payment)

@@ -24,7 +24,6 @@ public class InicisService {
 
     private final InicisClient inicisClient;
     private final PaymentUserCardRepository paymentUserCardRepository;
-    private final IdGeneratorUtil idGeneratorUtil;
 
     // 데모 테스트 고정 파라미터
     private final String price = "0";
@@ -54,7 +53,7 @@ public class InicisService {
         String buyerEmail = request.getBuyerEmail();
         String goodName = request.getGoodName();
 
-        String timestamp = idGeneratorUtil.timestampGenerate();
+        String timestamp = IdGeneratorUtil.timestampGenerate();
         String signatureText = String.format("oid=%s&price=%s&timestamp=%s", oid, price, timestamp);
         String signature = HashUtils.sha256(signatureText);
 
@@ -107,7 +106,7 @@ public class InicisService {
         String authUrl = request.getAuthUrl();
         String mid = request.getMid();
         String authToken = request.getAuthToken();
-        String timestamp = idGeneratorUtil.timestampGenerate();
+        String timestamp = IdGeneratorUtil.timestampGenerate();
 
         String signatureText = String.format("authToken=%s&timestamp=%s", authToken, timestamp);
         String signature = HashUtils.sha256(signatureText);
