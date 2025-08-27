@@ -1,5 +1,6 @@
 package com.system.payment.util;
 
+import com.system.payment.exception.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -63,6 +64,42 @@ public class Response<T> {
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
+	public static <T> ResponseEntity<Response<T>> fail(HttpStatus httpStatus, ErrorCode code) {
+		Response<T> body = Response.<T>builder()
+				.status(code.getStatus())
+				.message(code.getMessage())
+				.build();
+		return ResponseEntity.status(httpStatus).body(body);
+	}
+
+	public static <T> ResponseEntity<Response<T>> badRequest(ErrorCode code) {
+		return fail(HttpStatus.BAD_REQUEST, code);
+	}
+
+	public static <T> ResponseEntity<Response<T>> badRequest(ErrorCode code, BindingResult bindingResult) {
+		Response<T> body = Response.<T>builder()
+				.status(code.getStatus())
+				.message(code.getMessage())
+				.errors(Error.of(bindingResult))
+				.build();
+		return ResponseEntity.badRequest().body(body);
+	}
+
+	public static <T> ResponseEntity<Response<T>> unauthorized(ErrorCode code) {
+		return fail(HttpStatus.UNAUTHORIZED, code);
+	}
+
+	public static <T> ResponseEntity<Response<T>> notFound(ErrorCode code) {
+		return fail(HttpStatus.NOT_FOUND, code);
+	}
+
+	public static <T> ResponseEntity<Response<T>> conflict(ErrorCode code) {
+		return fail(HttpStatus.CONFLICT, code);
+	}
+
+	public static <T> ResponseEntity<Response<T>> internalServerError(ErrorCode code) {
+		return fail(HttpStatus.INTERNAL_SERVER_ERROR, code);
+	}
 
 	@Getter
 	@NoArgsConstructor

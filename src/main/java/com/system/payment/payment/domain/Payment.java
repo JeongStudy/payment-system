@@ -6,6 +6,7 @@ import com.system.payment.exception.PaymentServerBadRequestException;
 import com.system.payment.exception.PaymentServerNotFoundException;
 import com.system.payment.payment.domain.converter.PaymentResultCodeConverter;
 import com.system.payment.payment.model.dto.PaymentDetailItem;
+import com.system.payment.payment.validator.PaymentItemValidator;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -100,7 +101,7 @@ public class Payment extends BaseEntity {
 
 
 	public static Payment create(PaymentUserRef userRef,
-								 ReferenceRef referenceRef,     // 필요 없으면 null 허용
+								 ReferenceRef referenceRef,
 								 PaymentMethodRef methodRef,
 								 PaymentType paymentType,
 								 int totalAmount,
@@ -110,20 +111,17 @@ public class Payment extends BaseEntity {
 
 		if (totalAmount <= 0)
 			throw new PaymentServerBadRequestException(ErrorCode.PAYMENT_TOTAL_AMOUNT_MUST_BE_POSITIVE);
+		PaymentItemValidator.validateAndVerifyTotal(items, totalAmount);
 		PaymentResultCode paymentResultCode = PaymentResultCode.WAITING;
 		Payment payment = new Payment(userRef, referenceRef, methodRef, paymentType, totalAmount, paymentResultCode, idempotencyKey, transactionId);
 		payment.addDetails(items);
 		return payment;
 	}
 
-	private List<PaymentDetail> addDetails(List<PaymentDetailItem> itemList) {
-		if (itemList == null || itemList.isEmpty())
-			throw new PaymentServerNotFoundException(ErrorCode.PAYMENT_ITEMS_NOT_FOUND);
-		for (PaymentDetailItem item : itemList) {
-			this.details.add(PaymentDetail
-					.create(ItemRef.of(item.getItemId(), item.getItemType()), item.getItemAmount()));
-		}
-		return this.details;
+	private void addDetails(List<PaymentDetailItem> itemList) {
+		itemList.stream()
+				.map(item -> PaymentDetail.create(ItemRef.of(item.getItemId(), item.getItemType()), item.getItemAmount()))
+				.forEach(this.details::add);
 	}
 
 	public void changeResultCodeRequested() {
@@ -131,27 +129,6 @@ public class Payment extends BaseEntity {
 		this.requestedTimestamp = LocalDateTime.now();
 	}
 
-//
-//	public void markCompleted() {
-//		this.paymentResultCode = PaymentResultCode.COMPLETED;
-//		this.approvedTimestamp = LocalDateTime.now();
-//		// (옵션) 총액 검증: sum(details.amount) == totalAmount
-//		// validateTotals();
-//	}
-//
-//	public void markFailed(String code, String message) {
-//		this.paymentResultCode = PaymentResultCode.FAILED;
-//		this.errorCode = code;
-//		this.errorMessage = message;
-//		this.failedTimestamp = LocalDateTime.now();
-//	}
-//
-//	public void markCanceled(String reason) {
-//		this.paymentResultCode = PaymentResultCode.CANCELED;
-//		this.canceledTimestamp = LocalDateTime.now();
-//		this.errorMessage = reason;
-//	}
-//
 	private void validateTotals() {
 		int sum = details.stream().mapToInt(PaymentDetail::getAmount).sum();
 		if (!Objects.equals(sum, this.totalAmount)) {

@@ -10,8 +10,9 @@ import com.system.payment.user.model.request.EncryptAesKeyRequest;
 import com.system.payment.user.model.request.EncryptPasswordRequest;
 import com.system.payment.user.repository.AesKeyRepository;
 import com.system.payment.user.repository.RsaKeyPairRepository;
-import com.system.payment.util.AesKeyCryptoUtil;
-import com.system.payment.util.RsaKeyCryptoUtil;
+import com.system.payment.util.AesKeyCryptoUtils;
+import com.system.payment.util.RsaKeyCryptoUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,15 +23,11 @@ import java.util.Base64;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class CryptoService {
 
 	private final AesKeyRepository aesKeyRepository;
 	private final RsaKeyPairRepository rsaKeyPairRepository;
-
-	public CryptoService(AesKeyRepository aesKeyRepository, RsaKeyPairRepository rsaKeyPairRepository) {
-		this.aesKeyRepository = aesKeyRepository;
-		this.rsaKeyPairRepository = rsaKeyPairRepository;
-	}
 
 	@Transactional
 	public AesKeyResponse generateAesKey() {
@@ -51,7 +48,7 @@ public class CryptoService {
 		try {
 			keyGen = KeyPairGenerator.getInstance("RSA");
 		} catch (NoSuchAlgorithmException e) {
-			throw new CryptoException(ErrorCode.RSA_KEY_GENERATION_FAIL);
+			throw new CryptoException(ErrorCode.RSA_KEY_PAIR_GENERATION_FAIL);
 		}
 
 		keyGen.initialize(2048);
@@ -72,7 +69,7 @@ public class CryptoService {
         RsaKeyPair rsaKeyPair = rsaKeyPairRepository.getByPublicKeyOrThrow(rsaPublicKey);
         rsaKeyPair.validateNotExpired();
 
-        String aesKeyPlain = RsaKeyCryptoUtil
+        String aesKeyPlain = RsaKeyCryptoUtils
                 .decryptEncryptedAesKeyWithRsaPrivateKey(encAesKey, rsaKeyPair.getPrivateKey());
 
         AesKey aesKey = aesKeyRepository.getByAesKeyOrThrow(aesKeyPlain);
@@ -82,14 +79,14 @@ public class CryptoService {
     }
 
     public String decryptPasswordWithAes(String encPassword, String aesKeyPlain) {
-        return AesKeyCryptoUtil.decryptPasswordWithAesKey(encPassword, aesKeyPlain);
+        return AesKeyCryptoUtils.decryptPasswordWithAesKey(encPassword, aesKeyPlain);
     }
 
 	public String encryptPasswordWithAesKey(EncryptPasswordRequest encryptPasswordRequest){
-		return AesKeyCryptoUtil.encryptPasswordWithAesKey(encryptPasswordRequest.getPassword(), encryptPasswordRequest.getAesKey());
+		return AesKeyCryptoUtils.encryptPasswordWithAesKey(encryptPasswordRequest.getPassword(), encryptPasswordRequest.getAesKey());
 	}
 
 	public String encryptAesKeyWithRsaPublicKey(EncryptAesKeyRequest encryptAesKeyRequest){
-		return RsaKeyCryptoUtil.encryptAesKeyWithRsaPublicKey(encryptAesKeyRequest.getAesKey(), encryptAesKeyRequest.getRsaPublicKey());
+		return RsaKeyCryptoUtils.encryptAesKeyWithRsaPublicKey(encryptAesKeyRequest.getAesKey(), encryptAesKeyRequest.getRsaPublicKey());
 	}
 }

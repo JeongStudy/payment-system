@@ -12,7 +12,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
-public class RsaKeyCryptoUtil {
+public class RsaKeyCryptoUtils {
 
     public static String encryptAesKeyWithRsaPublicKey(String aesKey, String base64PublicKey) {
         try {

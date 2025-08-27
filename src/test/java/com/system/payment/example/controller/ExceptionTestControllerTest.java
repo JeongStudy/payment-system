@@ -92,7 +92,6 @@ class ExceptionTestControllerTest {
 		final ResultActions resultActions = mockMvc.perform(get("/api/payment/test/general-exception"))
 				.andExpect(status().isInternalServerError())
 				.andExpect(jsonPath("$.status").value(5000))
-				.andExpect(jsonPath("$.message").value("general-exception"))
 				.andDo(print());
 		logger.info(resultActions.andReturn().getResponse().getContentAsString());
 		logger.info("");

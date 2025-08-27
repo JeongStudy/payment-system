@@ -14,11 +14,11 @@ public enum ErrorCode {
     UNAUTHORIZED(4000, "Unauthorized"),
     SERVER_ERROR(5000, "Server Error"),
     SERVER_NULL_POINTER_ERROR(5001, "Server Null Pointer Error"),
-    RSA_KEY_GENERATION_FAIL(5002, "An internal server error occurred during RSA key generation."),
+    RSA_KEY_PAIR_GENERATION_FAIL(5002, "An internal server error occurred during RSA key pair generation."),
     FAILED_TO_DECRYPT_AES_KEY_WITH_RSA_KEY(5003, "Failed to decrypt AES key with RSA Key."),
-    FAILED_TO_ENCRYPT_AES_KEY_WITH_RSA_KEY(5003, "Failed to encrypt AES key with RSA Key."),
-    FAILED_TO_DECRYPT_PASSWORD_WITH_AES_KEY(5003, "Failed to decrypt password with AES key."),
-    FAILED_TO_ENCRYPT_PASSWORD_WITH_AES_KEY(5003, "Failed to encrypt password with AES key."),
+    FAILED_TO_ENCRYPT_AES_KEY_WITH_RSA_KEY(5004, "Failed to encrypt AES key with RSA Key."),
+    FAILED_TO_DECRYPT_PASSWORD_WITH_AES_KEY(5005, "Failed to decrypt password with AES key."),
+    FAILED_TO_ENCRYPT_PASSWORD_WITH_AES_KEY(5006, "Failed to encrypt password with AES key."),
 
 
     USER_NOT_EXIST(1001, "사용자가 존재하지 않습니다."),

@@ -20,7 +20,6 @@ public record PaymentRequestedMessageV1<A>(
 ) {
     /** 메시지 스키마 버전/토픽/헤더 키 상수 */
     public static final String SCHEMA_VERSION = "v1";
-    public static final String TOPIC = "payment.requested.v1";
 
     /** 권장 헤더 키(예시) */
     public static final class Headers {

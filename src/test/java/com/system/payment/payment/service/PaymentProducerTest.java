@@ -10,12 +10,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 
 import java.net.InetAddress;
 import java.time.LocalDateTime;
 
-import static com.system.payment.payment.service.PaymentProducer.PAYMENT_REQUESTED_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -27,6 +27,9 @@ class PaymentProducerTest {
 
 	@InjectMocks
 	PaymentProducer producer;
+
+	@Value("${payment.request.topic}")
+	private String PAYMENT_REQUESTED_TOPIC;
 
 	private static Payment mockPaymentDeep() {
 		// 깊은 스텁으로 중간 객체 타입을 알 필요 없이 체이닝 메서드 스텁 가능

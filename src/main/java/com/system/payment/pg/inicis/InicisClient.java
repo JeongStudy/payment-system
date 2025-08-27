@@ -17,7 +17,7 @@ import org.springframework.web.client.RestTemplate;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-class InicisClient{
+public class InicisClient{
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;

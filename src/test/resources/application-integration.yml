@@ -47,3 +47,14 @@ logging:
 
 jwt:
   secret: ${JWT_SECRET}
+
+sql:
+  init-sign-up-secret-sql: ${INIT_SIGN_UP_SECRET_SQL}
+  init-card-register-secret-sql: ${INIT_CARD_REGISTER_SECRET_SQL}
+
+payment:
+  request:
+    topic: payment.requested.v1
+  inicis:
+    mid: INIBillTst
+    api-key: q9G7rX1pT5vL2cN8
