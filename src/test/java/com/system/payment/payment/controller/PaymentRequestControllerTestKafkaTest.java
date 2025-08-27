@@ -6,6 +6,8 @@ import com.system.payment.payment.domain.outbox.EventType;
 import com.system.payment.payment.domain.outbox.OutboxEvent;
 import com.system.payment.payment.repository.OutboxEventRepository;
 import com.system.payment.payment.scheduler.OutboxPublishWorker;
+import com.system.payment.payment.service.PaymentConsumer;
+import com.system.payment.payment.service.PaymentProducer;
 import com.system.payment.user.model.request.LoginRequest;
 import com.system.payment.util.AesKeyCryptoUtils;
 import com.system.payment.util.RsaKeyCryptoUtils;
@@ -52,16 +54,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @EmbeddedKafka(partitions = 2, topics = {"payment.requested.v1"})
-class PaymentRequestControllerKafkaTest {
+public class PaymentRequestControllerTestKafkaTest {
 
 	@Autowired
 	MockMvc mockMvc;
+
 	@Autowired
 	ObjectMapper objectMapper;
+
 	@Autowired
 	OutboxEventRepository outboxEventRepository;
+
 	@Autowired
 	TestSink testSink;
+
 	@Autowired
 	OutboxPublishWorker outboxPublishWorker;
 
@@ -74,16 +80,22 @@ class PaymentRequestControllerKafkaTest {
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 
+	@Autowired
+	public PaymentConsumer paymentConsumer;
+
+	@Autowired
+	public PaymentProducer paymentProducer;
+
 	@Value("${sql.init-sign-up-secret-sql}")
-	String initSignUpSql;
+	public String initSignUpSql;
 
 	@Value("${sql.init-card-register-secret-sql}")
-	String initCardRegisterSql;
+	public String initCardRegisterSql;
 
 	@Value("${payment.request.topic}")
 	private String PAYMENT_REQUESTED_TOPIC;
 
-	private static final Logger logger = LoggerFactory.getLogger(PaymentRequestControllerKafkaTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(PaymentRequestControllerTestKafkaTest.class);
 
 	@DynamicPropertySource
 	static void kafkaProps(DynamicPropertyRegistry r) {
@@ -138,6 +150,10 @@ class PaymentRequestControllerKafkaTest {
 
 	@BeforeAll
 	void setUp() {
+		jdbcTemplate.execute("DELETE FROM payment.payment_user_card");
+		jdbcTemplate.execute("DELETE FROM payment.payment_user");
+		jdbcTemplate.execute("ALTER TABLE payment.payment_user_card ALTER COLUMN id RESTART WITH 1");
+		jdbcTemplate.execute("ALTER TABLE payment.payment_user ALTER COLUMN id RESTART WITH 1");
 		jdbcTemplate.execute(initSignUpSql);
 		jdbcTemplate.execute(initCardRegisterSql);
 		this.email = "test1234@naver.com";

@@ -14,16 +14,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class KafkaUtil {
 
-    private StringUtil stringUtil;
-
-    public String extractKafkaHeader(Map<String, Object> headers, String key) {
+    public static String extractKafkaHeader(Map<String, Object> headers, String key) {
         Object v = headers.get(key);
         if (v == null) return null;
         if (v instanceof byte[] arr) return new String(arr, StandardCharsets.UTF_8);
         return String.valueOf(v);
     }
 
-    public void validateMessagePayload(
+    public static void validateMessagePayload(
             String idempotencyKey,
             String txId,
             PaymentRequestedMessageV1.Payload.External<InicisBillingApproval> external,
@@ -37,7 +35,7 @@ public class KafkaUtil {
                 || approval.getMid() == null || approval.getMid().isBlank()) {
 
             log.warn("[VALIDATION] invalid payload: idempotencyKey={}, txId={}, external={}, provider={}, approval={}, mid={}",
-                    stringUtil.safe(idempotencyKey), stringUtil.safe(txId),
+                    StringUtil.safe(idempotencyKey), StringUtil.safe(txId),
                     external != null, (external != null ? external.provider() : null),
                     (approval != null), (approval != null ? approval.getMid() : null));
 

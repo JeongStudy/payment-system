@@ -25,7 +25,6 @@ public class CardService {
     private final BillingAuthProviderRegistry registry;
     private final PaymentUserRepository paymentUserRepository;
     private final PaymentUserCardRepository paymentUserCardRepository;
-    private final IdGeneratorUtil idGeneratorUtil;
 
     /**
      * user_id를 기준으로 카드 리스트 조회
@@ -52,7 +51,7 @@ public class CardService {
     public PGAuthParamsResponse getBillingAuthParams(Integer userId,CardAuthRequest request) {
         PaymentUser user = paymentUserRepository.getReferenceById(userId);
         PgCompany pgCompany = PgCompany.from(request.getPgCompany());
-        String oid = idGeneratorUtil.oidGenerate();
+        String oid = IdGeneratorUtil.oidGenerate();
 
         savePendingCard(user, oid, pgCompany);
 

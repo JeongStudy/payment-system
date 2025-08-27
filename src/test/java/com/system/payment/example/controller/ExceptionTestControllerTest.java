@@ -1,15 +1,16 @@
 package com.system.payment.example.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.system.payment.payment.service.PaymentConsumer;
 import com.system.payment.payment.service.PaymentProducer;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 //@ActiveProfiles("integration")
-class ExceptionTestControllerTest {
+public class ExceptionTestControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -37,10 +38,17 @@ class ExceptionTestControllerTest {
 	private ObjectMapper objectMapper;
 
 	@MockitoBean
-	private PaymentProducer paymentProducer;  // 메시지 발행 막기
+	public PaymentConsumer paymentConsumer;
 
 	@MockitoBean
-	private KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry; // Listener 자체 Mock
+	public PaymentProducer paymentProducer;
+
+	@Value("${sql.init-sign-up-secret-sql}")
+	public String initSignUpSql;
+
+	@Value("${sql.init-card-register-secret-sql}")
+	public String initCardRegisterSql;
+
 
 	private static final Logger logger = LoggerFactory.getLogger(ExceptionTestControllerTest.class);
 
