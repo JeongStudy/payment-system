@@ -2,13 +2,17 @@ package com.system.payment.util;
 
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 public class IdGeneratorUtil {
-    public String oidGenerate() {
+    public static String oidGenerate() {
         return "DemoTest_" + System.currentTimeMillis();
     }
 
-    public String timestampGenerate() {
+    public static String UUIDGenerate() { return UUID.randomUUID().toString(); }
+
+    public static String timestampGenerate() {
         return String.valueOf(System.currentTimeMillis());
     }
 }

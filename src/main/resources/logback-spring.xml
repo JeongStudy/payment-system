@@ -9,7 +9,9 @@
     <property name="ERR_LOG_FILE_NAME" value="err_log"/>
 
     <!-- 로그 패턴 설정 -->
-    <property name="LOG_PATTERN" value="%-5level %d{yy-MM-dd HH:mm:ss} [%logger{0}:%line] - %msg%n"/>
+<!--    <property name="LOG_PATTERN" value="%-5level %d{yy-MM-dd HH:mm:ss} [%logger{0}:%line] - %msg%n"/>-->
+    <property name="LOG_PATTERN"
+              value="%-5level %d{yy-MM-dd HH:mm:ss} [%X{traceId} %X{spanId} %X{corrId}] [%logger{0}:%line] - %msg%n"/>
 
     <!-- 콘솔에 로그 출력 (색상 구분) -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">

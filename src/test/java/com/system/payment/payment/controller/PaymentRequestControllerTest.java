@@ -8,6 +8,7 @@ import com.system.payment.payment.domain.outbox.EventType;
 import com.system.payment.payment.domain.outbox.OutboxEvent;
 import com.system.payment.payment.repository.OutboxEventRepository;
 import com.system.payment.payment.scheduler.OutboxPublishWorker;
+import com.system.payment.payment.service.PaymentConsumer;
 import com.system.payment.payment.service.PaymentProducer;
 import com.system.payment.user.domain.PaymentUser;
 import com.system.payment.user.model.request.LoginRequest;
@@ -47,29 +48,35 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(properties = "spring.task.scheduling.enabled=false")
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-class PaymentRequestControllerTest {
+public class PaymentRequestControllerTest  {
 
 	@Autowired
 	MockMvc mockMvc;
+
 	@Autowired
 	ObjectMapper objectMapper;
+
 	@Autowired
 	OutboxEventRepository outboxEventRepository;
 
 	@Autowired
 	OutboxPublishWorker outboxPublishWorker;
 
-	@MockitoBean
-	private PaymentProducer paymentProducer;
-
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 
+	@MockitoBean
+	public PaymentConsumer paymentConsumer;
+
+	@MockitoBean
+	public PaymentProducer paymentProducer;
+
 	@Value("${sql.init-sign-up-secret-sql}")
-	String initSignUpSql;
+	public String initSignUpSql;
 
 	@Value("${sql.init-card-register-secret-sql}")
-	String initCardRegisterSql;
+	public String initCardRegisterSql;
+
 
 	private static final Logger logger = LoggerFactory.getLogger(PaymentRequestControllerTest.class);
 
@@ -80,6 +87,10 @@ class PaymentRequestControllerTest {
 
 	@BeforeAll
 	void setUp() {
+		jdbcTemplate.execute("DELETE FROM payment.payment_user_card");
+		jdbcTemplate.execute("DELETE FROM payment.payment_user");
+		jdbcTemplate.execute("ALTER TABLE payment.payment_user_card ALTER COLUMN id RESTART WITH 1");
+		jdbcTemplate.execute("ALTER TABLE payment.payment_user ALTER COLUMN id RESTART WITH 1");
 		jdbcTemplate.execute(initSignUpSql);
 		jdbcTemplate.execute(initCardRegisterSql);
 		this.email = "test1234@naver.com";

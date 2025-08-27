@@ -2,6 +2,7 @@ package com.system.payment.user.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.system.payment.payment.service.PaymentConsumer;
 import com.system.payment.payment.service.PaymentProducer;
 import com.system.payment.user.model.request.LoginRequest;
 import com.system.payment.user.model.request.SignUpRequest;
@@ -19,7 +20,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 //@ActiveProfiles("integration")
-class AuthControllerTest {
+public class AuthControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -50,16 +50,20 @@ class AuthControllerTest {
 	private ObjectMapper objectMapper;
 
 	@MockitoBean
-	private PaymentProducer paymentProducer;  // 메시지 발행 막기
+	public PaymentConsumer paymentConsumer;
 
 	@MockitoBean
-	private KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry; // Listener 자체 Mock
+	public PaymentProducer paymentProducer;
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 
-	@Value("${sql.init-sign-up-secret-sql:}")
-	String initSignUpSql;
+	@Value("${sql.init-sign-up-secret-sql}")
+	public String initSignUpSql;
+
+	@Value("${sql.init-card-register-secret-sql}")
+	public String initCardRegisterSql;
+
 
 	private static final Logger logger = LoggerFactory.getLogger(AuthControllerTest.class);
 
@@ -146,8 +150,9 @@ class AuthControllerTest {
 //		this.signup_flow_with_crypto();
 		jdbcTemplate.execute("DELETE FROM payment.payment_user_card");
 		jdbcTemplate.execute("DELETE FROM payment.payment_user");
+		jdbcTemplate.execute("ALTER TABLE payment.payment_user_card ALTER COLUMN id RESTART WITH 1");
 		jdbcTemplate.execute("ALTER TABLE payment.payment_user ALTER COLUMN id RESTART WITH 1");
-		if(!initSignUpSql.isEmpty()) jdbcTemplate.execute(initSignUpSql);
+		if (!initSignUpSql.isEmpty()) jdbcTemplate.execute(initSignUpSql);
 		else this.signup_flow_with_crypto();
 
 		changeTestEmailAndPassword();
