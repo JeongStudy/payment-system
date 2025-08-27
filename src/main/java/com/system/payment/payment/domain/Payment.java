@@ -3,6 +3,7 @@ package com.system.payment.payment.domain;
 import com.system.payment.common.domain.BaseEntity;
 import com.system.payment.exception.ErrorCode;
 import com.system.payment.exception.PaymentServerBadRequestException;
+import com.system.payment.exception.PaymentServerNotFoundException;
 import com.system.payment.payment.domain.converter.PaymentResultCodeConverter;
 import com.system.payment.payment.model.dto.PaymentDetailItem;
 import com.system.payment.payment.validator.PaymentItemValidator;
@@ -15,6 +16,7 @@ import lombok.experimental.SuperBuilder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "payment", schema = "payment")
@@ -125,5 +127,26 @@ public class Payment extends BaseEntity {
 	public void changeResultCodeRequested() {
 		this.paymentResultCode = PaymentResultCode.REQUESTED;
 		this.requestedTimestamp = LocalDateTime.now();
+	}
+
+	private void validateTotals() {
+		int sum = details.stream().mapToInt(PaymentDetail::getAmount).sum();
+		if (!Objects.equals(sum, this.totalAmount)) {
+			throw new IllegalStateException("상세 금액 합계와 총액이 불일치");
+		}
+	}
+
+	public void markCompleted(String tid, LocalDateTime approvedAt) {
+		this.paymentResultCode = PaymentResultCode.COMPLETED;
+		this.externalPaymentId = tid;              // TID
+		this.approvedTimestamp = approvedAt != null ? approvedAt : LocalDateTime.now();
+		validateTotals();
+	}
+
+	public void markFailed(String code, String message, LocalDateTime failedAt) {
+		this.paymentResultCode = PaymentResultCode.FAILED;
+		this.errorCode = code;
+		this.errorMessage = message;
+		this.failedTimestamp = failedAt != null ? failedAt : LocalDateTime.now();
 	}
 }

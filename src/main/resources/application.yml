@@ -35,12 +35,19 @@ spring:
       group-id: local-group
       auto-offset-reset: latest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      # 역직렬화 안전장치: ErrorHandlingDeserializer로 감싸기
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        # ErrorHandlingDeserializer가 실제로 사용할 delegate 지정
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.trusted.packages: "com.system.payment.*"
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: "com.system.payment.payment.model.dto.PaymentRequestedMessageV1"
       heartbeat-interval-ms: 3000
       session-timeout-ms: 30000
-      max-poll-interval-ms: 300000
-      properties:
-        spring.json.trusted.packages: '*'
+      max-poll-interval-ms: 600000
+      max-poll-records: 1
+      isolation-level: read_committed
     jmx:
       enabled: false
 logging:
