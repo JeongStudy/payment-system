@@ -10,9 +10,9 @@ import com.system.payment.user.model.request.SignUpRequest;
 import com.system.payment.user.repository.AesKeyRepository;
 import com.system.payment.user.repository.PaymentUserRepository;
 import com.system.payment.user.repository.RsaKeyPairRepository;
-import com.system.payment.util.AesKeyCryptoUtil;
-import com.system.payment.util.JwtUtil;
-import com.system.payment.util.RsaKeyCryptoUtil;
+import com.system.payment.util.AesKeyCryptoUtils;
+import com.system.payment.util.JwtUtils;
+import com.system.payment.util.RsaKeyCryptoUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,7 +56,7 @@ class AuthServiceTest {
 	private PasswordEncoder passwordEncoder;
 
 	@Mock
-	private JwtUtil jwtUtil;
+	private JwtUtils jwtUtils;
 
 	@InjectMocks
 	private AuthService authService;
@@ -71,7 +71,7 @@ class AuthServiceTest {
 		try {
 			keyGen = KeyPairGenerator.getInstance("RSA");
 		} catch (NoSuchAlgorithmException e) {
-			throw new CryptoException(ErrorCode.RSA_KEY_GENERATION_FAIL);
+			throw new CryptoException(ErrorCode.RSA_KEY_PAIR_GENERATION_FAIL);
 		}
 		keyGen.initialize(2048);
 		KeyPair pair = keyGen.generateKeyPair();
@@ -86,9 +86,9 @@ class AuthServiceTest {
 		AesKey aesKey = AesKey.create(aesKeyStr);
 
 		// AES 대칭키 RSA 공개키 암호화, 비밀번호 암호화된 AES 대칭키로 AES 암호화
-		String encAesKey = RsaKeyCryptoUtil.encryptAesKeyWithRsaPublicKey(aesKeyStr, publicKey);
+		String encAesKey = RsaKeyCryptoUtils.encryptAesKeyWithRsaPublicKey(aesKeyStr, publicKey);
 		String password = "manager0";
-		String encPassword = AesKeyCryptoUtil.encryptPasswordWithAesKey(password, aesKeyStr);
+		String encPassword = AesKeyCryptoUtils.encryptPasswordWithAesKey(password, aesKeyStr);
 
 		// 회원 가입 요청 객체 생성
 		SignUpRequest request = SignUpRequest.builder()
@@ -103,11 +103,11 @@ class AuthServiceTest {
 				.build();
 
 //		// AES 대칭키 복호화 확인
-//		String decryptedAesKey = RsaKeyCryptoUtil.decryptEncryptedAesKeyWithRsaPrivateKey(encAesKey, privateKey);
+//		String decryptedAesKey = RsaKeyCryptoUtils.decryptEncryptedAesKeyWithRsaPrivateKey(encAesKey, privateKey);
 //		assert decryptedAesKey.equals(aesKeyStr);
 //
 //		// 평문 비밀번호 확인
-//		String decryptedPassword = AesKeyCryptoUtil.decryptPasswordWithAesKey(encPassword, aesKeyStr);
+//		String decryptedPassword = AesKeyCryptoUtils.decryptPasswordWithAesKey(encPassword, aesKeyStr);
 //		assert decryptedPassword.equals(password);
 
 		// region given-when-then
@@ -142,7 +142,7 @@ class AuthServiceTest {
 		try {
 			keyGen = KeyPairGenerator.getInstance("RSA");
 		} catch (NoSuchAlgorithmException e) {
-			throw new CryptoException(ErrorCode.RSA_KEY_GENERATION_FAIL);
+			throw new CryptoException(ErrorCode.RSA_KEY_PAIR_GENERATION_FAIL);
 		}
 		keyGen.initialize(2048);
 		KeyPair pair = keyGen.generateKeyPair();
@@ -157,9 +157,9 @@ class AuthServiceTest {
 		AesKey aesKey = AesKey.create(aesKeyStr);
 
 		// AES 대칭키 RSA 공개키 암호화, 비밀번호 암호화된 AES 대칭키로 AES 암호화
-		String encAesKey = RsaKeyCryptoUtil.encryptAesKeyWithRsaPublicKey(aesKeyStr, publicKey);
+		String encAesKey = RsaKeyCryptoUtils.encryptAesKeyWithRsaPublicKey(aesKeyStr, publicKey);
 		String password = "manager0";
-		String encPassword = AesKeyCryptoUtil.encryptPasswordWithAesKey(password, aesKeyStr);
+		String encPassword = AesKeyCryptoUtils.encryptPasswordWithAesKey(password, aesKeyStr);
 
         // signUp 내부에서 쓰인 Crypto/Credential 동작은 여기선 검증 대상 아님이라 생략 가능
 
@@ -190,7 +190,7 @@ class AuthServiceTest {
         doNothing().when(credentialService).verifyOrThrow(eq(password), eq("bcrypt-hash"));
 
         // JWT
-        given(jwtUtil.generateToken(any()))
+        given(jwtUtils.generateToken(any()))
                 .willReturn("jwt-token");
 
         // when
@@ -202,7 +202,7 @@ class AuthServiceTest {
         verify(cryptoService, times(1)).resolveValidAesKey(eq(publicKey), eq(encAesKey));
         verify(cryptoService, times(1)).decryptPasswordWithAes(eq(encPassword), eq(aesKeyStr));
         verify(credentialService, times(1)).verifyOrThrow(eq(password), eq("bcrypt-hash"));
-        verify(jwtUtil, times(1)).generateToken(any());
+        verify(jwtUtils, times(1)).generateToken(any());
 
 	}
 }

@@ -2,6 +2,7 @@ package com.system.payment.payment.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.system.payment.payment.domain.outbox.EventType;
 import com.system.payment.payment.domain.outbox.OutboxEvent;
 import com.system.payment.payment.repository.OutboxEventRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,7 +67,7 @@ class OutboxServiceTest {
 		OutboxEvent saved = captor.getValue();
 
 		assertThat(saved).isNotNull();
-		assertThat(saved.getEventType()).isEqualTo("PAYMENT_REQUESTED_V1"); // from service
+		assertThat(saved.getEventType()).isEqualTo(EventType.PAYMENT_REQUESTED_V1); // from service
 		assertThat(saved.getEventKey()).isEqualTo(txId);                    // txId -> eventKey
 		assertThat(saved.getPayload()).isNotBlank();
 

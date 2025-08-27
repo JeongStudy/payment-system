@@ -13,7 +13,7 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
 
-public class AesKeyCryptoUtil {
+public class AesKeyCryptoUtils {
 
 	public static String encryptPasswordWithAesKey(String password, String aesKey) {
 		try {

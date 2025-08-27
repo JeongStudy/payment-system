@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.system.payment.payment.service.PaymentProducer;
 import com.system.payment.user.model.request.LoginRequest;
 import com.system.payment.user.model.request.SignUpRequest;
-import com.system.payment.util.AesKeyCryptoUtil;
-import com.system.payment.util.RsaKeyCryptoUtil;
+import com.system.payment.util.AesKeyCryptoUtils;
+import com.system.payment.util.RsaKeyCryptoUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -58,11 +58,8 @@ class AuthControllerTest {
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 
-	@Value("${sql.init-sign-up-secret-sql}")
+	@Value("${sql.init-sign-up-secret-sql:}")
 	String initSignUpSql;
-
-	@Value("${sql.init-card-register-secret-sql}")
-	String initCardRegisterSql;
 
 	private static final Logger logger = LoggerFactory.getLogger(AuthControllerTest.class);
 
@@ -113,12 +110,12 @@ class AuthControllerTest {
 		logger.info("");
 
 		// 3. AES 키를 RSA 공개키로 암호화
-		String encAesKey = RsaKeyCryptoUtil.encryptAesKeyWithRsaPublicKey(aesKey, publicKey);
+		String encAesKey = RsaKeyCryptoUtils.encryptAesKeyWithRsaPublicKey(aesKey, publicKey);
 
 		logger.info("");
 
 		// 4. 평문 비밀번호 AES 키로 암호화
-		String encPassword = AesKeyCryptoUtil.encryptPasswordWithAesKey(password, aesKey);
+		String encPassword = AesKeyCryptoUtils.encryptPasswordWithAesKey(password, aesKey);
 
 		// 5. SignUpRequest 회원가입 요청 정보 생성
 		SignUpRequest request = SignUpRequest.builder()
@@ -147,9 +144,11 @@ class AuthControllerTest {
 
 		// 0. 회원가입
 //		this.signup_flow_with_crypto();
+		jdbcTemplate.execute("DELETE FROM payment.payment_user_card");
 		jdbcTemplate.execute("DELETE FROM payment.payment_user");
 		jdbcTemplate.execute("ALTER TABLE payment.payment_user ALTER COLUMN id RESTART WITH 1");
-		jdbcTemplate.execute(initSignUpSql);
+		if(!initSignUpSql.isEmpty()) jdbcTemplate.execute(initSignUpSql);
+		else this.signup_flow_with_crypto();
 
 		changeTestEmailAndPassword();
 
@@ -168,10 +167,10 @@ class AuthControllerTest {
 		String aesKey = aesResponse.at("/data/aesKey").asText();
 
 		// 3. AES 키를 RSA 공개키로 암호화
-		String encAesKey = RsaKeyCryptoUtil.encryptAesKeyWithRsaPublicKey(aesKey, publicKey);
+		String encAesKey = RsaKeyCryptoUtils.encryptAesKeyWithRsaPublicKey(aesKey, publicKey);
 
 		// 4. 평문 비밀번호 AES 키로 암호화
-		String encPassword = AesKeyCryptoUtil.encryptPasswordWithAesKey(password, aesKey);
+		String encPassword = AesKeyCryptoUtils.encryptPasswordWithAesKey(password, aesKey);
 
 		// 5. 이미 가입된 이메일 사용 (ex. 회원가입 테스트 후 그 데이터로 테스트)
 

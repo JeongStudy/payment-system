@@ -1,6 +1,7 @@
-package com.system.payment.config.security;
+package com.system.payment.config;
 
 import com.system.payment.filter.JwtAuthenticationFilter;
+import com.system.payment.filter.AuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -25,7 +26,7 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtFilter, PaymentServerAuthenticationEntryPoint paymentServerAuthenticationEntryPoint) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtFilter, AuthenticationEntryPoint authenticationEntryPoint) throws Exception {
 		http
 				.csrf(AbstractHttpConfigurer::disable)
 				.cors(cors -> cors
@@ -59,7 +60,7 @@ public class SecurityConfig {
 				)
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 				.exceptionHandling(exceptionHandling ->
-						exceptionHandling.authenticationEntryPoint(paymentServerAuthenticationEntryPoint)
+						exceptionHandling.authenticationEntryPoint(authenticationEntryPoint)
 				);
 		;
 

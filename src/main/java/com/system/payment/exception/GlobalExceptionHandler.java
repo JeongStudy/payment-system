@@ -1,6 +1,7 @@
 package com.system.payment.exception;
 
 import com.system.payment.util.Response;
+import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,121 +17,70 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(PaymentServerUnauthorizedException.class)
 	public ResponseEntity<Response<Void>> handlePaymentServerUnauthorizedException(PaymentServerUnauthorizedException e) {
-		ErrorCode errorCode = e.getErrorCode();
-		Response<Void> response = Response.<Void>builder()
-				.status(errorCode.getStatus())
-				.message(errorCode.getMessage())
-				.build();
-		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+		 return Response.unauthorized(e.getErrorCode());
 	}
 
 	@ExceptionHandler(PaymentServerBadRequestException.class)
 	public ResponseEntity<Response<Void>> handlePaymentServerBadRequestException(PaymentServerBadRequestException e) {
-		ErrorCode errorCode = e.getErrorCode();
-		Response<Void> response = Response.<Void>builder()
-				.status(errorCode.getStatus())
-				.message(errorCode.getMessage())
-				.build();
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		return Response.badRequest(e.getErrorCode());
 	}
 
 	@ExceptionHandler(PaymentServerNotFoundException.class)
 	public ResponseEntity<Response<Void>> handlePaymentServerNotFoundException(PaymentServerNotFoundException e) {
-		ErrorCode errorCode = e.getErrorCode();
-		Response<Void> response = Response.<Void>builder()
-				.status(errorCode.getStatus())
-				.message(errorCode.getMessage())
-				.build();
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+		return Response.notFound(e.getErrorCode());
 	}
 
 	@ExceptionHandler(PaymentServerConflictException.class)
 	public ResponseEntity<Response<Void>> handlePaymentServerConflictException(PaymentServerConflictException e) {
-		ErrorCode errorCode = e.getErrorCode();
-		Response<Void> response = Response.<Void>builder()
-				.status(errorCode.getStatus())
-				.message(errorCode.getMessage())
-				.build();
-		return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+		return Response.conflict(e.getErrorCode());
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<Response<Void>> handleValidationExceptions(MethodArgumentNotValidException e) {
 		BindingResult bindingResult = e.getBindingResult();
-		Response<Void> response = Response.<Void>builder()
-				.status(ErrorCode.BAD_REQUEST_PARAM.getStatus())
-				.message(ErrorCode.BAD_REQUEST_PARAM.getMessage())
-				.errors(Response.Error.of(bindingResult))
-				.build();
-		return ResponseEntity.badRequest().body(response);
+		return Response.badRequest(ErrorCode.BAD_REQUEST_PARAM, bindingResult);
 	}
 
-	// validation 실패 (Form 등)
 	@ExceptionHandler(BindException.class)
 	public ResponseEntity<Response<Void>> handleBindException(BindException e) {
 		BindingResult bindingResult = e.getBindingResult();
-		Response<Void> response = Response.<Void>builder()
-				.status(ErrorCode.BAD_REQUEST_PARAM.getStatus())
-				.message(ErrorCode.BAD_REQUEST_PARAM.getMessage())
-				.errors(Response.Error.of(bindingResult))
-				.build();
-		return ResponseEntity.badRequest().body(response);
+		return Response.badRequest(ErrorCode.BAD_REQUEST_PARAM, bindingResult);
 	}
 
 	@ExceptionHandler(CryptoException.class)
 	public ResponseEntity<Response<Void>> handleRsaKeyGenerateException(CryptoException e) {
 		log.error("CryptoException 발생", e);
-		ErrorCode errorCode = e.getErrorCode();
-
-		Response<Void> response = Response.<Void>builder()
-				.status(errorCode.getStatus())
-				.message(errorCode.getMessage())
-				.build();
-
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		return Response.internalServerError(e.getErrorCode());
 	}
 
-	// IllegalArgumentException 처리 (직접 throw 등)
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<Response<Void>> handleIllegalArgument(IllegalArgumentException e) {
 		log.error("IllegalArgumentException 발생", e);
-		Response<Void> response = Response.<Void>builder()
-				.status(ErrorCode.BAD_REQUEST_PARAM.getStatus())
-				.message(e.getMessage())
-				.build();
-		return ResponseEntity.badRequest().body(response);
+		return Response.badRequest(ErrorCode.BAD_REQUEST_PARAM);
 	}
 
-	// NullPointerException만 따로 분리
+	@ExceptionHandler(JwtException.class)
+	public ResponseEntity<Response<Void>> handleJwtException(JwtException e) {
+		log.error("JwtException 발생", e);
+		return Response.internalServerError(ErrorCode.SERVER_ERROR);
+	}
+
 	@ExceptionHandler(NullPointerException.class)
 	public ResponseEntity<Response<Void>> handleNullPointerException(NullPointerException e) {
 		log.error("NullPointerException 발생", e);
-		Response<Void> response = Response.<Void>builder()
-				.status(ErrorCode.SERVER_NULL_POINTER_ERROR.getStatus())
-				.message(ErrorCode.SERVER_NULL_POINTER_ERROR.getMessage())
-				.build();
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		return Response.internalServerError(ErrorCode.SERVER_NULL_POINTER_ERROR);
 	}
 
 	@ExceptionHandler(PgResponseParseException.class)
 	public ResponseEntity<Response<Void>> handlePgResponseParseException(PgResponseParseException e) {
 		log.error("PG 응답 파싱 실패", e);
-		ErrorCode errorCode = e.getErrorCode();
-		Response<Void> response = Response.<Void>builder()
-				.status(errorCode.getStatus())
-				.message(errorCode.getMessage())
-				.build();
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		return Response.internalServerError(e.getErrorCode());
 	}
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Response<Void>> handleGeneralException(Exception e) {
 		log.error("서버 내부 일반 오류 발생", e);
-		Response<Void> response = Response.<Void>builder()
-				.status(ErrorCode.SERVER_ERROR.getStatus())
-				.message(e.getMessage() != null ? e.getMessage() : ErrorCode.SERVER_ERROR.getMessage())
-				.build();
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		return Response.internalServerError(ErrorCode.SERVER_ERROR);
 	}
 
 }

@@ -1,4 +1,4 @@
-package com.system.payment.payment.service;
+package com.system.payment.payment.validator;
 
 import com.system.payment.exception.ErrorCode;
 import com.system.payment.exception.PaymentServerInternalServerErrorException;
@@ -16,14 +16,8 @@ public final class PaymentItemValidator {
 		if (items == null || items.isEmpty()) {
 			throw new PaymentServerNotFoundException(ErrorCode.PAYMENT_ITEMS_NOT_FOUND);
 		}
-
-		long total = 0L;
-
-		for (PaymentDetailItem it : items) {
-			total += it.getItemAmount();
-		}
-
-		if ((int) total != requestedAmount) {
+		int total = items.stream().mapToInt(PaymentDetailItem::getItemAmount).sum();
+		if (total != requestedAmount) {
 			throw new PaymentServerInternalServerErrorException(ErrorCode.PAYMENT_INVALID_ITEM_SUM_AMOUNT_AND_TOTAL_AMOUNT);
 		}
 	}
