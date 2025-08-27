@@ -1,6 +1,7 @@
 package com.system.payment.payment.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.system.payment.payment.domain.outbox.EventType;
 import com.system.payment.payment.domain.outbox.OutboxEvent;
 import com.system.payment.payment.domain.outbox.PaymentRequestedArgs;
 import com.system.payment.payment.repository.OutboxEventRepository;
@@ -17,12 +18,13 @@ public class OutboxService {
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	@Transactional
-	public Integer enqueuePaymentRequested(Integer paymentId, String txId, Integer userId, String methodType, Integer methodId, String productName) {
+	public Integer enqueuePaymentRequested(Integer paymentId, String txId, Integer userId,
+										   String methodType, Integer methodId, String productName) {
 		try {
 			var args = new PaymentRequestedArgs(paymentId, txId, userId, methodType, methodId, productName);
 			String json = objectMapper.writeValueAsString(args);
 			var e = OutboxEvent.builder()
-					.eventType("PAYMENT_REQUESTED_V1")
+					.eventType(EventType.PAYMENT_REQUESTED_V1)
 					.eventKey(txId)
 					.payload(json)
 					.build();

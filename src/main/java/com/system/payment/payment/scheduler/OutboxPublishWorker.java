@@ -2,6 +2,7 @@ package com.system.payment.payment.scheduler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.system.payment.card.repository.PaymentUserCardRepository;
+import com.system.payment.payment.domain.outbox.EventType;
 import com.system.payment.payment.domain.outbox.PaymentRequestedArgs;
 import com.system.payment.payment.repository.OutboxEventRepository;
 import com.system.payment.payment.repository.PaymentRepository;
@@ -43,7 +44,7 @@ public class OutboxPublishWorker {
 
 		// 가드: 대상 상태/타입만 처리
 		if (!"PENDING".equals(e.getStatus())) return;
-		if (!"PAYMENT_REQUESTED_V1".equals(e.getEventType())) return;
+		if (!EventType.PAYMENT_REQUESTED_V1.equals(e.getEventType())) return;
 
 		try {
 			String raw = e.getPayload();

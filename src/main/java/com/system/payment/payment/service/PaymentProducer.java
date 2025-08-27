@@ -12,6 +12,7 @@ import com.system.payment.util.TimeUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
@@ -28,14 +29,16 @@ import java.util.concurrent.CompletableFuture;
 public class PaymentProducer {
 	private final KafkaTemplate<String, Object> kafkaTemplate;
 
-	private static final DateTimeFormatter TS_FMT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-	private static final ObjectMapper JSON = new ObjectMapper().registerModule(new JavaTimeModule());
-	//mid 예시
-	private static final String mid = "INIBillTst";
-	private static final String iniApiKey = "q9G7rX1pT5vL2cN8";
+	@Value("${payment.inicis.mid}")
+	private String mid;
+	@Value("${payment.inicis.api-key}")
+	private String iniApiKey;
+	@Value("${payment.request.topic}")
+	private String PAYMENT_REQUESTED_TOPIC;
 	private static final String url = "https://c5af73f84ead.ngrok-free.app";
 
-	public static final String PAYMENT_REQUESTED_TOPIC = "payment.requested.v1";
+	private static final DateTimeFormatter TS_FMT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+	private static final ObjectMapper JSON = new ObjectMapper().registerModule(new JavaTimeModule());
 
 	private static final Logger logger = LoggerFactory.getLogger(PaymentProducer.class);
 
@@ -50,7 +53,7 @@ public class PaymentProducer {
 
 		InicisBillingApproval inicisBillingApproval = buildInicisBillingApproval(
 				payment, paymentUser, paymentUserCard,
-				clientIp, mid, iniApiKey, url, productName
+				clientIp, productName
 		);
 
 		PaymentRequestedMessageV1<InicisBillingApproval> message =
@@ -80,7 +83,7 @@ public class PaymentProducer {
 
 	private InicisBillingApproval buildInicisBillingApproval(
 			Payment payment, PaymentUser user, PaymentUserCard card,
-			String clientIp, String mid, String iniApiKey, String url, String goodName
+			String clientIp, String goodName
 	) {
 		String timestamp = LocalDateTime.now(ZoneId.of("Asia/Seoul")).format(TS_FMT);
 		String type = "billing";
