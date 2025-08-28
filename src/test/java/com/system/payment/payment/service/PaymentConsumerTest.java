@@ -109,7 +109,6 @@ class PaymentConsumerTest {
             // then
             mocked.verify(() -> KafkaUtil.validateMessagePayload(eq(IDEM_KEY), eq(TX_ID), any(), any()));
             verify(paymentProcessService).process(eq(msg));
-            verify(idempotencyGuard).markSuccess(IDEM_KEY);
         }
     }
 
@@ -128,7 +127,6 @@ class PaymentConsumerTest {
             // then
             mocked.verify(() -> KafkaUtil.validateMessagePayload(eq(IDEM_KEY), eq(TX_ID), any(), any()));
             verify(paymentProcessService).process(eq(msg));
-            verify(idempotencyGuard).markSuccess(IDEM_KEY);
         }
     }
 
@@ -162,12 +160,11 @@ class PaymentConsumerTest {
                     .thenThrow(new PaymentValidationException(ErrorCode.PAYMENT_VALIDATION_MISSING_FIELD));
 
             // when & then
-            assertDoesNotThrow(() ->
-                    consumer.onMessage(msg, RECEIVED_KEY, RECEIVED_PARTITION, OFFSET, headers)
-            );
+            assertThrows(PaymentValidationException.class,
+                    () -> consumer.onMessage(msg, RECEIVED_KEY, RECEIVED_PARTITION, OFFSET, headers));
+
             verify(paymentProcessService, never()).process(any());
             verify(idempotencyGuard, never()).tryAcquire(any());
-            verify(idempotencyGuard, never()).markSuccess(any());
         }
     }
 
@@ -181,9 +178,9 @@ class PaymentConsumerTest {
                     .thenThrow(new PaymentValidationException(ErrorCode.PAYMENT_VALIDATION_MISSING_FIELD));
 
             // when & then
-            assertDoesNotThrow(() ->
-                    consumer.onMessage(null, RECEIVED_KEY, RECEIVED_PARTITION, OFFSET, headers)
-            );
+            assertThrows(PaymentValidationException.class,
+                    () -> consumer.onMessage(null, RECEIVED_KEY, RECEIVED_PARTITION, OFFSET, headers));
+
             verify(paymentProcessService, never()).process(any());
         }
     }
@@ -202,7 +199,6 @@ class PaymentConsumerTest {
             RuntimeException ex = assertThrows(RuntimeException.class,
                     () -> consumer.onMessage(msg, RECEIVED_KEY, RECEIVED_PARTITION, OFFSET, headers));
             assertEquals("error", ex.getMessage());
-            verify(idempotencyGuard, never()).markSuccess(any());
         }
     }
 }
