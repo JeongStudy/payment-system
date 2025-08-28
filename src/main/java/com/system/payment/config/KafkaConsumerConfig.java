@@ -27,11 +27,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class KafkaConsumerConfig {
 
-    // TODO: bootstrap-servers, group-id 등은 application-{profile}.yml로 관리
-    // TODO: ConsumerFactory<String, ?> 빈 정의 (Deserializer/TrustedPackages 등)
-    // TODO: ConcurrentKafkaListenerContainerFactory<String, ?> 빈 정의 (concurrency, 에러핸들러, ack-mode 등)
-    // TODO: CommonErrorHandler / SeekToCurrentErrorHandler / DeadLetterPublishingRecoverer 등 필요 시 추가
-
     private final KafkaProperties kafkaProperties;
     private final KafkaTemplate<Object, Object> kafkaTemplate; // DLT 발행에 필요
 
@@ -39,11 +34,16 @@ public class KafkaConsumerConfig {
     public ConsumerFactory<String, PaymentRequestedMessageV1<InicisBillingApproval>> paymentConsumerFactory() {
         Map<String, Object> props = kafkaProperties.buildConsumerProperties(null);
 
-        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 10 * 60_000);
-        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 1);
-        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 15_000);
-        props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 3_000);
-        props.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, "read_committed");
+        /*
+            FIXME:
+            기본적으로 yml 설정이 적용되지만, 덮어씌어지는 설정
+            현재는 값이 같아서 코드로 적을 필요가 없음
+         */
+        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 10 * 60_000); // poll() 호출 사이의 최대 허용 시간
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 1); // poll() 호출 시 가져올 최대 메시지 수
+        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 15_000); // 컨슈머가 브로커에게 신호를 보내지 않고 이 시간 이상 지나면 세션 끊김
+        props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 3_000); // 컨슈머가 브로커에게 신호를 보내는 주기
+        props.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, "read_committed"); // 트랜잭션이 커밋된 메시지만 읽음
         return new DefaultKafkaConsumerFactory<>(props);
     }
 

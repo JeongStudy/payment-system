@@ -49,11 +49,6 @@ public class PaymentConsumer {
             @Header(KafkaHeaders.OFFSET) long offset,
             @Headers Map<String, Object> headers
     ) {
-
-        // TODO: 헤더/트레이싱/밸리데이션/로그
-        // TODO: 멱등성/중복처리 가드
-        // TODO: 서비스 위임
-
         // 1) 헤더 추출(null/byte[] 안전)
         String traceId = KafkaUtil.extractKafkaHeader(headers, HDR_TRACE_ID);
         String spanId  = KafkaUtil.extractKafkaHeader(headers, HDR_SPAN_ID);
@@ -107,11 +102,12 @@ public class PaymentConsumer {
             // 7) 실제 처리
             paymentProcessService.process(msg);
 
-            // 8) 성공 마킹
-            idempotencyGuard.markSuccess(idempotencyKey);
+            // 8) 성공 마킹 (중복 row가 발생하지 않기 때문에 굳이 처리 필요 없음
+            // idempotencyGuard.markSuccess(idempotencyKey);
 
         } catch (PaymentValidationException | IllegalArgumentException e) {
             log.error("[VALIDATION] invalid message: {}", e.getMessage());
+            throw e;
         } catch (Exception e) {
             log.error("[PROCESS] unexpected error", e);
             throw e;
