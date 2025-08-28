@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.system.payment.exception.ErrorCode;
 import com.system.payment.exception.PaymentServerNotFoundException;
 import com.system.payment.exception.PaymentValidationException;
+import com.system.payment.exception.TransientPgException;
 import com.system.payment.payment.domain.Payment;
 import com.system.payment.payment.domain.PaymentDetail;
 import com.system.payment.payment.domain.PaymentHistory;
@@ -94,43 +95,50 @@ public class PaymentProcessService {
         }
 
         // 3) PG 승인 호출
-        InicisBillingApproveResponse res = inicisPgClientService.approve(approval);
+        try{
+            InicisBillingApproveResponse res = inicisPgClientService.approve(approval);
+            Objects.requireNonNull(res, "PG approve response is null");
 
-        // 4) 응답 분기
-        if (!res.isSuccess()) {
-            // 비즈니스 실패(거절/한도초과/잔액부족 등) → 확정 커밋(예외 던지지 않음)
-            for (PaymentDetail d : payment.getDetails()) {
-                d.markFailed();
+            // 4) 응답 분기
+            if (!res.isSuccess()) {
+                // 비즈니스 실패(거절/한도초과/잔액부족 등) → 확정 커밋(예외 던지지 않음)
+                for (PaymentDetail d : payment.getDetails()) {
+                    d.markFailed();
+                }
+                payment.markFailed(res.resultCode(), res.resultMsg(), LocalDateTime.now());
+
+                saveHistory( // 같은 트랜잭션으로도 충분하면 이 메서드 사용
+                        payment, prevCode, PaymentResultCode.FAILED,
+                        "KAFKA_CONSUMER", "INICIS_BILLING_APPROVE_FAIL: " + res.resultMsg(),
+                        prevDataJson, res, txId
+                );
+
+                log.warn("[PROCESS][PG-BIZ-FAIL] paymentId={}, txId={}, code={}, msg={}",
+                        paymentId, txId, res.resultCode(), res.resultMsg());
+
+                // 정상 종료(커밋) → 컨슈머 오프셋 커밋 → 재시도/중복 처리 방지
+                return;
             }
-            payment.markFailed(res.resultCode(), res.resultMsg(), LocalDateTime.now());
 
-            saveHistory( // 같은 트랜잭션으로도 충분하면 이 메서드 사용
-                    payment, prevCode, PaymentResultCode.FAILED,
-                    "KAFKA_CONSUMER", "INICIS_BILLING_APPROVE_FAIL: " + res.resultMsg(),
+            // 5) 성공 처리
+            for (PaymentDetail d : payment.getDetails()) {
+                d.markCompleted();
+            }
+            payment.markCompleted(res.tid(), res.approvedAt());
+
+            saveHistory(
+                    payment, prevCode, PaymentResultCode.COMPLETED,
+                    "KAFKA_CONSUMER", "INICIS_BILLING_APPROVE_OK",
                     prevDataJson, res, txId
             );
 
-            log.warn("[PROCESS][PG-BIZ-FAIL] paymentId={}, txId={}, code={}, msg={}",
-                    paymentId, txId, res.resultCode(), res.resultMsg());
-
-            // 정상 종료(커밋) → 컨슈머 오프셋 커밋 → 재시도/중복 처리 방지
-            return;
+            log.info("[PROCESS][PG-OK] paymentId={}, txId={}, tid={}, approvedAt={}",
+                    paymentId, txId, res.tid(), res.approvedAt());
+        }catch(TransientPgException e){
+            log.error("[PROCESS][PG-TRANSIENT] paymentId={}, txId={}, code={}, msg={}",
+                    paymentId, txId, e.getErrorCode().name(), e.getErrorCode().getMessage(), e);
+            throw e;
         }
-
-        // 5) 성공 처리
-        for (PaymentDetail d : payment.getDetails()) {
-            d.markCompleted();
-        }
-        payment.markCompleted(res.tid(), res.approvedAt());
-
-        saveHistory(
-                payment, prevCode, PaymentResultCode.COMPLETED,
-                "KAFKA_CONSUMER", "INICIS_BILLING_APPROVE_OK",
-                prevDataJson, res, txId
-        );
-
-        log.info("[PROCESS][PG-OK] paymentId={}, txId={}, tid={}, approvedAt={}",
-                paymentId, txId, res.tid(), res.approvedAt());
     }
 
     private void saveHistory(Payment payment,
