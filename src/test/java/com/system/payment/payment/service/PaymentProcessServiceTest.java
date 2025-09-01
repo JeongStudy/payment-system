@@ -40,10 +40,10 @@ class PaymentProcessServiceTest {
     InicisPgClientService inicisPgClientService;
 
     @Mock
-    PaymentRepository paymentRepository;
+    PaymentHistoryService paymentHistoryService;
 
     @Mock
-    PaymentHistoryRepository paymentHistoryRepository;
+    PaymentRepository paymentRepository;
 
     @InjectMocks PaymentProcessService paymentProcessService;
 
@@ -100,7 +100,7 @@ class PaymentProcessServiceTest {
 
         // then
         verify(inicisPgClientService, never()).approve(any());
-        verify(paymentHistoryRepository, never()).save(any());
+        verify(paymentHistoryService, never()).recordRequested(any(), any(), any(), any(), any(), any(), any());
     }
 
     @Test
@@ -118,7 +118,7 @@ class PaymentProcessServiceTest {
 
         // then
         verify(inicisPgClientService, never()).approve(any());
-        verify(paymentHistoryRepository, never()).save(any());
+        verify(paymentHistoryService, never()).recordRequested(any(), any(), any(), any(), any(), any(), any());
     }
 
     @Test
@@ -145,7 +145,7 @@ class PaymentProcessServiceTest {
         // then
         verify(payment).changeResultCodeRequested();      // 전이 수행 확인
         verify(d1).markFailed();                          // 실패 처리
-        verify(paymentHistoryRepository).save(any());     // 히스토리 저장
+        verify(paymentHistoryService).recordRequested(any(), any(), any(), any(), any(), any(), any());
     }
 
     @Test
@@ -174,7 +174,7 @@ class PaymentProcessServiceTest {
         verify(d1).markFailed();
         verify(d2).markFailed();
         verify(payment).markFailed(eq(ERROR_CODE), eq(ERROR_MSG), any(LocalDateTime.class));
-        verify(paymentHistoryRepository).save(any(PaymentHistory.class));
+        verify(paymentHistoryService).recordFailed(any(), any(), any(), any(), any(), any(), any());
     }
 
     @Test
@@ -204,7 +204,7 @@ class PaymentProcessServiceTest {
         verify(d1).markCompleted();
         verify(d2).markCompleted();
         verify(payment).markCompleted(eq(TID), any(LocalDateTime.class));
-        verify(paymentHistoryRepository).save(any(PaymentHistory.class));
+        verify(paymentHistoryService).recordCompleted(any(), any(), any(), any(), any(), any(), any());
     }
 
     @Test
@@ -220,8 +220,10 @@ class PaymentProcessServiceTest {
         assertThrows(TransientPgException.class, () -> paymentProcessService.process(msg));
 
         verify(payment).changeResultCodeRequested();
+        verify(paymentHistoryService).recordRequested(any(), any(), any(), any(),any(), any(), isNull());
         verify(payment, never()).markCompleted(anyString(), any());
         verify(payment, never()).markFailed(anyString(), anyString(), any());
-        verify(paymentHistoryRepository, never()).save(any());
+        verify(paymentHistoryService, never()).recordFailed(any(), any(), any(), any(), any(), any(), any());
+        verify(paymentHistoryService, never()).recordCompleted(any(), any(), any(), any(), any(), any(), any());
     }
 }

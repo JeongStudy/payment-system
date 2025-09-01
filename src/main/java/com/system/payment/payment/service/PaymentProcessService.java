@@ -1,14 +1,10 @@
 package com.system.payment.payment.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.system.payment.exception.ErrorCode;
-import com.system.payment.exception.PaymentServerNotFoundException;
 import com.system.payment.exception.PaymentValidationException;
 import com.system.payment.exception.TransientPgException;
 import com.system.payment.payment.domain.Payment;
 import com.system.payment.payment.domain.PaymentDetail;
-import com.system.payment.payment.domain.PaymentHistory;
 import com.system.payment.payment.domain.PaymentResultCode;
 import com.system.payment.payment.model.dto.InicisBillingApproval;
 import com.system.payment.payment.model.dto.InicisBillingApproveResponse;
@@ -19,14 +15,11 @@ import com.system.payment.util.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.net.SocketTimeoutException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 @Service
@@ -35,6 +28,7 @@ public class PaymentProcessService {
 
 
     private final InicisPgClientService inicisPgClientService;      // 시뮬레이터/PG 퍼사드
+    private final PaymentHistoryService paymentHistoryService;
     private final PaymentRepository paymentRepository;
     private final PaymentHistoryRepository paymentHistoryRepository;
 
@@ -92,6 +86,16 @@ public class PaymentProcessService {
         // 2) WAITING -> REQUESTED (최초 요청 흔적)
         if (prevCode == PaymentResultCode.WAITING) {
             payment.changeResultCodeRequested();  // 상태 + requestedTimestamp 세팅
+
+            paymentHistoryService.recordRequested(
+                    payment,
+                    prevCode,
+                    prevDataJson,
+                    txId,
+                    "KAFKA_CONSUMER",
+                    "WAITING -> REQUESTED",
+                    null
+            );
         }
 
         // 3) PG 승인 호출
@@ -107,10 +111,14 @@ public class PaymentProcessService {
                 }
                 payment.markFailed(res.resultCode(), res.resultMsg(), LocalDateTime.now());
 
-                saveHistory( // 같은 트랜잭션으로도 충분하면 이 메서드 사용
-                        payment, prevCode, PaymentResultCode.FAILED,
-                        "KAFKA_CONSUMER", "INICIS_BILLING_APPROVE_FAIL: " + res.resultMsg(),
-                        prevDataJson, res, txId
+                paymentHistoryService.recordFailed(
+                        payment,
+                        prevCode,
+                        prevDataJson,
+                        txId,
+                        "KAFKA_CONSUMER",
+                        "INICIS_BILLING_APPROVE_FAIL: " + res.resultMsg(),
+                        res // externalResponse
                 );
 
                 log.warn("[PROCESS][PG-BIZ-FAIL] paymentId={}, txId={}, code={}, msg={}",
@@ -126,10 +134,14 @@ public class PaymentProcessService {
             }
             payment.markCompleted(res.tid(), res.approvedAt());
 
-            saveHistory(
-                    payment, prevCode, PaymentResultCode.COMPLETED,
-                    "KAFKA_CONSUMER", "INICIS_BILLING_APPROVE_OK",
-                    prevDataJson, res, txId
+            paymentHistoryService.recordCompleted(
+                    payment,
+                    prevCode,
+                    prevDataJson,
+                    txId,
+                    "KAFKA_CONSUMER",
+                    "INICIS_BILLING_APPROVE_OK",
+                    res // externalResponse
             );
 
             log.info("[PROCESS][PG-OK] paymentId={}, txId={}, tid={}, approvedAt={}",
@@ -139,34 +151,5 @@ public class PaymentProcessService {
                     paymentId, txId, e.getErrorCode().name(), e.getErrorCode().getMessage(), e);
             throw e;
         }
-    }
-
-    private void saveHistory(Payment payment,
-                                PaymentResultCode prevCode,
-                                PaymentResultCode newCode,
-                                // TODO: changedBy를 Enum으로 관리하는 것 검토
-                                String changedBy,
-                                // TODO: reason을 res.resultMsg()를 같이 사용할 지 검토
-                                String reason,
-                                String prevDataJson,
-                                Object externalResponse,
-                                String txId) {
-        String newDataJson = StringUtil.toJsonSafe(payment);
-        String externalJson = StringUtil.toJsonSafe(externalResponse);
-
-        PaymentHistory history = PaymentHistory.builder()
-                .payment(payment)
-                .prevResultCode(prevCode != null ? prevCode.getCode() : null)
-                .newResultCode(newCode.getCode())
-                .changedAt(LocalDateTime.now())
-                .changedBy(changedBy)
-                .changedReason(reason)
-                .prevData(prevDataJson)     // JSONB
-                .newData(newDataJson)       // JSONB
-                .externalResponse(externalJson) // JSONB
-                .transactionId(txId)
-                .build();
-
-        paymentHistoryRepository.save(history);
     }
 }
