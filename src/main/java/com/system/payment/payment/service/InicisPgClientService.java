@@ -46,7 +46,7 @@ public class InicisPgClientService {
         // ===============================================================
 
         // ---- 기존 비즈니스 실패/성공 분기 ----
-        boolean fail = moid.contains("FAIL") || (!price.isEmpty() && price.charAt(price.length() - 1) == '9');
+        boolean fail = moid.contains("FAIL");
 
         LocalDateTime now = LocalDateTime.now();
         String payDate = "%04d%02d%02d".formatted(now.getYear(), now.getMonthValue(), now.getDayOfMonth());

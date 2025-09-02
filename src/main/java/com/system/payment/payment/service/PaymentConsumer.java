@@ -38,8 +38,8 @@ public class PaymentConsumer {
     private static final String MDC_IDEMPOTENCY_KEY = "idempotencyKey";
 
     @KafkaListener(
-            topics = "payment.requested.v1",
-            groupId = "payment-request-consumer",
+            topics = "${payment.request.topic}",
+            groupId = "${spring.kafka.consumer.group-id}",
             containerFactory = "paymentKafkaListenerContainerFactory"
     )
     public void onMessage(
@@ -69,8 +69,22 @@ public class PaymentConsumer {
                 payload = msg != null ? msg.payload() : null;
         PaymentRequestedMessageV1.Payload.External<InicisBillingApproval>
                 external = payload != null ? payload.external() : null;
+
+        Object approvalRaw = external != null ? external.approval() : null;
+        if (approvalRaw == null) {
+            log.info("approval is null");
+        } else {
+            log.info("approval.getClass() = {}", approvalRaw.getClass().getName());
+
+            if (approvalRaw instanceof InicisBillingApproval approval) {
+                log.info("✅ approval.mid = {}", approval.getMid());
+            } else {
+                log.warn("❌ approval is not of type InicisBillingApproval");
+            }
+        }
         InicisBillingApproval
                 approval = external != null ? external.approval() : null;
+
 
         // 4) MDC에 넣기 (try/finally로 반드시 clear)
         try {
@@ -91,7 +105,12 @@ public class PaymentConsumer {
             );
 
             // 5) 밸리데이션 (필수 필드 누락 시 재시도 무의미 → swallow)
-            KafkaUtil.validateMessagePayload(idempotencyKey, txId, external, approval);
+            try{
+                KafkaUtil.validateMessagePayload(idempotencyKey, txId, external, approval);
+            }catch(Exception e){
+                log.warn("❌ validate 실패 → idempotencyGuard 진입 안함", e);
+                throw e;
+            }
 
             // 6) 멱등성 가드
             if (!idempotencyGuard.tryAcquire(idempotencyKey)) {

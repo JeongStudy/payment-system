@@ -58,6 +58,7 @@ public class PaymentProcessService {
      */
     @Transactional
     public void process(PaymentRequestedMessageV1<InicisBillingApproval> message) {
+        log.error("🔥 실제 process() 호출됨");
         // 0) 메시지 검증
         InicisBillingApproval approval = Optional.ofNullable(message)
                 .map(PaymentRequestedMessageV1::payload)
