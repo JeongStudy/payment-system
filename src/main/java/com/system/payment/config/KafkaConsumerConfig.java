@@ -7,6 +7,8 @@ import com.system.payment.payment.model.dto.InicisBillingApproval;
 import com.system.payment.payment.model.dto.PaymentRequestedMessageV1;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.serialization.ByteArrayDeserializer;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +19,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.ExponentialBackOffWithMaxRetries;
+import org.springframework.kafka.support.converter.JsonMessageConverter;
 import org.springframework.kafka.support.serializer.DeserializationException;
 import org.springframework.web.client.HttpServerErrorException;
 
@@ -44,6 +47,9 @@ public class KafkaConsumerConfig {
         props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 15_000); // 컨슈머가 브로커에게 신호를 보내지 않고 이 시간 이상 지나면 세션 끊김
         props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 3_000); // 컨슈머가 브로커에게 신호를 보내는 주기
         props.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, "read_committed"); // 트랜잭션이 커밋된 메시지만 읽음
+
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class);
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
@@ -60,6 +66,7 @@ public class KafkaConsumerConfig {
     }
 
     /** 재시도/비재시도 구분 + 백오프 + DLT */
+    // TODO: DLT/재시도 테스트 로직 작성 필요
     @Bean
     public DefaultErrorHandler paymentErrorHandler(DeadLetterPublishingRecoverer recoverer) {
         var backOff = new ExponentialBackOffWithMaxRetries(5); // 총 5회
@@ -103,6 +110,8 @@ public class KafkaConsumerConfig {
 
         // 순서 보장이 중요 → 과도한 동시성 금지
         factory.setConcurrency(3);
+
+        factory.setRecordMessageConverter(new JsonMessageConverter());
 
         // (선택) 수동 ACK 쓸 경우
         // factory.getContainerProperties().setAckMode(AckMode.MANUAL);
