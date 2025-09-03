@@ -1,6 +1,7 @@
 package com.system.payment.config;
 
 import com.system.payment.exception.PaymentDeclinedException;
+import com.system.payment.exception.PaymentStateTransitionException;
 import com.system.payment.exception.PaymentValidationException;
 import com.system.payment.exception.TransientPgException;
 import com.system.payment.payment.model.dto.InicisBillingApproval;
@@ -80,6 +81,7 @@ public class KafkaConsumerConfig {
         errorHandler.addNotRetryableExceptions(
                 PaymentValidationException.class,
                 PaymentDeclinedException.class,
+                PaymentStateTransitionException.class,
                 IllegalArgumentException.class
         );
 

@@ -38,7 +38,9 @@ public enum ErrorCode {
     PG_TIMEOUT(1012, "PG 타임아웃 오류입니다."),
     PG_CONN_RESET(1013, "PG 연결이 리셋되었습니다."),
     PG_HTTP_503(1014, "PG 서버가 유효하지 않습니다."),
-    PG_JSON_ERROR(1015, " PG 응답 파싱 오류가 발생하였습니다.");
+    PG_JSON_ERROR(1015, " PG 응답 파싱 오류가 발생하였습니다."),
+    PAYMENT_STATE_INVALID(1016, "결제 상태 전이가 허용되지 않습니다."),
+    PAYMENT_STATE_INVALID_AMOUNT(1017, "결제 금액 합계 검증에 실패했습니다.")
     ;
 
     private final int status;

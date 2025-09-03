@@ -143,7 +143,7 @@ class PaymentProcessServiceTest {
         paymentProcessService.process(msg);
 
         // then
-        verify(payment).changeResultCodeRequested();      // 전이 수행 확인
+        verify(payment).markRequested();      // 전이 수행 확인
         verify(d1).markFailed();                          // 실패 처리
         verify(paymentHistoryService).recordRequested(any(), any(), any(), any(), any(), any(), any());
     }
@@ -200,7 +200,7 @@ class PaymentProcessServiceTest {
         paymentProcessService.process(msg);
 
         // then
-        verify(payment).changeResultCodeRequested();
+        verify(payment).markRequested();
         verify(d1).markCompleted();
         verify(d2).markCompleted();
         verify(payment).markCompleted(eq(TID), any(LocalDateTime.class));
@@ -219,7 +219,7 @@ class PaymentProcessServiceTest {
 
         assertThrows(TransientPgException.class, () -> paymentProcessService.process(msg));
 
-        verify(payment).changeResultCodeRequested();
+        verify(payment).markRequested();
         verify(paymentHistoryService).recordRequested(any(), any(), any(), any(),any(), any(), isNull());
         verify(payment, never()).markCompleted(anyString(), any());
         verify(payment, never()).markFailed(anyString(), anyString(), any());

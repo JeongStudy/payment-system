@@ -58,7 +58,6 @@ public class PaymentProcessService {
      */
     @Transactional
     public void process(PaymentRequestedMessageV1<InicisBillingApproval> message) {
-        log.error("🔥 실제 process() 호출됨");
         // 0) 메시지 검증
         InicisBillingApproval approval = Optional.ofNullable(message)
                 .map(PaymentRequestedMessageV1::payload)
@@ -86,7 +85,7 @@ public class PaymentProcessService {
 
         // 2) WAITING -> REQUESTED (최초 요청 흔적)
         if (prevCode == PaymentResultCode.WAITING) {
-            payment.changeResultCodeRequested();  // 상태 + requestedTimestamp 세팅
+            payment.markRequested();  // 상태 + requestedTimestamp 세팅
 
             paymentHistoryService.recordRequested(
                     payment,

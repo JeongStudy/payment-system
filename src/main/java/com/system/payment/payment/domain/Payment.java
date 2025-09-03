@@ -4,6 +4,7 @@ import com.system.payment.common.domain.BaseEntity;
 import com.system.payment.exception.ErrorCode;
 import com.system.payment.exception.PaymentServerBadRequestException;
 import com.system.payment.exception.PaymentServerNotFoundException;
+import com.system.payment.exception.PaymentStateTransitionException;
 import com.system.payment.payment.domain.converter.PaymentResultCodeConverter;
 import com.system.payment.payment.model.dto.PaymentDetailItem;
 import com.system.payment.payment.validator.PaymentItemValidator;
@@ -124,29 +125,38 @@ public class Payment extends BaseEntity {
 				.forEach(this.details::add);
 	}
 
-	public void changeResultCodeRequested() {
+	public void markRequested() {
+		requireState(PaymentResultCode.WAITING);
 		this.paymentResultCode = PaymentResultCode.REQUESTED;
 		this.requestedTimestamp = LocalDateTime.now();
+	}
+
+	public void markCompleted(String tid, LocalDateTime approvedAt) {
+		requireState(PaymentResultCode.REQUESTED);
+		validateTotals();
+		this.paymentResultCode = PaymentResultCode.COMPLETED;
+		this.externalPaymentId = tid;              // TID
+		this.approvedTimestamp = approvedAt != null ? approvedAt : LocalDateTime.now();
+	}
+
+	public void markFailed(String code, String message, LocalDateTime failedAt) {
+		requireState(PaymentResultCode.REQUESTED);
+		this.paymentResultCode = PaymentResultCode.FAILED;
+		this.errorCode = code;
+		this.errorMessage = message;
+		this.failedTimestamp = failedAt != null ? failedAt : LocalDateTime.now();
 	}
 
 	private void validateTotals() {
 		int sum = details.stream().mapToInt(PaymentDetail::getAmount).sum();
 		if (!Objects.equals(sum, this.totalAmount)) {
-			throw new IllegalStateException("상세 금액 합계와 총액이 불일치");
+			throw new PaymentStateTransitionException(ErrorCode.PAYMENT_STATE_INVALID_AMOUNT);
 		}
 	}
 
-	public void markCompleted(String tid, LocalDateTime approvedAt) {
-		this.paymentResultCode = PaymentResultCode.COMPLETED;
-		this.externalPaymentId = tid;              // TID
-		this.approvedTimestamp = approvedAt != null ? approvedAt : LocalDateTime.now();
-		validateTotals();
-	}
-
-	public void markFailed(String code, String message, LocalDateTime failedAt) {
-		this.paymentResultCode = PaymentResultCode.FAILED;
-		this.errorCode = code;
-		this.errorMessage = message;
-		this.failedTimestamp = failedAt != null ? failedAt : LocalDateTime.now();
+	private void requireState(PaymentResultCode code) {
+		if (this.paymentResultCode != code) {
+			throw new PaymentStateTransitionException(ErrorCode.PAYMENT_STATE_INVALID);
+		}
 	}
 }
