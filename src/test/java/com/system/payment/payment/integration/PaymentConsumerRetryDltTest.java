@@ -29,6 +29,7 @@ import static org.mockito.Mockito.*;
         "spring.kafka.listener.concurrency=1"
 })
 @ActiveProfiles("test")
+// H2/PostgreSQL DB로 충분히 테스트 가능
 class PaymentConsumerRetryDltTest extends KafkaIntegrationTestSupport {
 
     @Override protected String topic() { return "payment.requested.v1"; }

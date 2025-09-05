@@ -69,8 +69,8 @@ public class PaymentProcessService {
         final String txId = message.identifiers().transactionId();
 
         // 1) 결제 로드
-        // TODO: 비관적 락, 2-단계 패턴 고민중
-        Payment payment = paymentRepository.findById(paymentId)
+        // 비관적 락
+        Payment payment = paymentRepository.findByIdForUpdate(paymentId)
                 .orElseThrow(() -> new PaymentValidationException(ErrorCode.PAYMENT_ITEMS_NOT_FOUND));
 
         // 멱등성/중복 처리 가드
