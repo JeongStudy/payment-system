@@ -20,7 +20,8 @@ import static org.assertj.core.api.Assertions.*;
 @ActiveProfiles("test")
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class PaymentJpaTest {
+// H2/PostgreSQL DB로 충분히 테스트 가능
+class PaymentJpaTransitionTest {
 
     // 최소 부트 설정: 베이스 패키지/자동설정/JPA 스캔/감사 켜기
     @org.springframework.boot.SpringBootConfiguration
@@ -201,6 +202,29 @@ class PaymentJpaTest {
         em.clear();
         var reloaded = paymentRepository.findById(saved.getId()).orElseThrow();
         assertThat(reloaded.getPaymentResultCode()).isEqualTo(PaymentResultCode.REQUESTED);
+        assertThat(reloaded.getApprovedTimestamp()).isNull();
+        assertThat(reloaded.getExternalPaymentId()).isNull();
+    }
+
+
+    @Test
+    @DisplayName("전이 가드: WAITING에서 COMPLETED 직접 전이는 거부")
+    void WAITING에서_COMPLETED_직접전이_거부() {
+        // given
+        var payment = newPaymentWithDetails(3000, 1000, 1000, 1000);
+        var saved = paymentRepository.saveAndFlush(payment);
+        assertThat(saved.getPaymentResultCode()).isEqualTo(PaymentResultCode.WAITING);
+
+        // when & then: WAITING에서 바로 COMPLETED 시도 → 예외 & 롤백
+        assertThatThrownBy(() -> {
+            saved.markCompleted(TID_1, LocalDateTime.now());
+            paymentRepository.saveAndFlush(saved);
+        }).isInstanceOf(PaymentStateTransitionException.class);
+
+        // and then: DB 왕복 후 상태/메타 유지(여전히 WAITING, 승인 메타 없음)
+        em.clear();
+        var reloaded = paymentRepository.findById(saved.getId()).orElseThrow();
+        assertThat(reloaded.getPaymentResultCode()).isEqualTo(PaymentResultCode.WAITING);
         assertThat(reloaded.getApprovedTimestamp()).isNull();
         assertThat(reloaded.getExternalPaymentId()).isNull();
     }

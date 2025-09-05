@@ -1,12 +1,14 @@
 package com.system.payment.payment.integration;
 
+import com.system.payment.payment.service.PaymentConsumer;
 import com.system.payment.payment.service.PaymentIdempotencyGuard;
 import com.system.payment.payment.service.PaymentProcessService;
-import com.system.payment.util.KafkaIntegrationTestSupport;
 import com.system.payment.util.IdGeneratorUtil;
+import com.system.payment.util.KafkaIntegrationTestSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -17,6 +19,7 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 @EmbeddedKafka(partitions = 2, topics = {"payment.requested.v1"})
 @ActiveProfiles("test")
+// H2/PostgreSQL DB로 충분히 테스트 가능
 class PaymentConsumerTest extends KafkaIntegrationTestSupport {
 
     @Override protected String topic() { return "payment.requested.v1"; }
