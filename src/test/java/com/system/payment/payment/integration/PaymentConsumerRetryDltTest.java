@@ -6,6 +6,7 @@ import com.system.payment.payment.service.PaymentIdempotencyGuard;
 import com.system.payment.payment.service.PaymentProcessService;
 import com.system.payment.util.KafkaIntegrationTestSupport;
 import com.system.payment.util.IdGeneratorUtil;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.test.context.EmbeddedKafka;
@@ -13,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,8 +43,8 @@ class PaymentConsumerRetryDltTest extends KafkaIntegrationTestSupport {
     PaymentIdempotencyGuard idempotencyGuard;
 
     @Test
-    @DisplayName("컨슈머 비재시도: 밸리데이션 실패 → process 미호출, 즉시 DLT")
-    void 비재시도_밸리데이션_실패() {
+    @DisplayName("컨슈머 비재시도: idemKey 공백 → process 미호출, 즉시 DLT")
+    void 비재시도_idem_공백() {
         // given
         when(idempotencyGuard.tryAcquire(any())).thenReturn(true); // 호출되면 안 되지만 안전망
 

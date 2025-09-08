@@ -1,6 +1,5 @@
 package com.system.payment.payment.integration;
 
-import com.system.payment.payment.service.PaymentConsumer;
 import com.system.payment.payment.service.PaymentIdempotencyGuard;
 import com.system.payment.payment.service.PaymentProcessService;
 import com.system.payment.util.IdGeneratorUtil;
@@ -8,7 +7,6 @@ import com.system.payment.util.KafkaIntegrationTestSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
