@@ -194,6 +194,7 @@ class PaymentJpaTransitionTest {
         assertThat(reloadPayment.getExternalPaymentId()).isNull();
     }
 
+    // FIXME: COMPLETED 상태에서 REQUESTED, FAILED으로 변경은 막았는데 아래 테스트가 필요한지 검토 필요
     @Test
     @DisplayName("중복 승인 방지: COMPLETED 상태에서 다시 markCompleted 호출 시 예외 및 메타 불변")
     void 중복승인_예외_및_메타불변() {
