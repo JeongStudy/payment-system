@@ -34,7 +34,13 @@ public enum ErrorCode {
     PAYMENT_ITEMS_NOT_FOUND(1008, "결제 아이템이 비어 있습니다."),
     PAYMENT_INVALID_ITEM_SUM_AMOUNT_AND_TOTAL_AMOUNT(1009, "아이템 합계와 요청 금액이 일치하지 않습니다."),
     PAYMENT_TOTAL_AMOUNT_MUST_BE_POSITIVE(1010, "결제 총액은 0보다 커야 합니다."),
-    PAYMENT_VALIDATION_MISSING_FIELD(1011, "결제 요청 메시지에 필수 값이 누락되었거나 잘못되었습니다.")
+    PAYMENT_VALIDATION_MISSING_FIELD(1011, "결제 요청 메시지에 필수 값이 누락되었거나 잘못되었습니다."),
+    PG_TIMEOUT(1012, "PG 타임아웃 오류입니다."),
+    PG_CONN_RESET(1013, "PG 연결이 리셋되었습니다."),
+    PG_HTTP_503(1014, "PG 서버가 유효하지 않습니다."),
+    PG_JSON_ERROR(1015, " PG 응답 파싱 오류가 발생하였습니다."),
+    PAYMENT_STATE_INVALID(1016, "결제 상태 전이가 허용되지 않습니다."),
+    PAYMENT_STATE_INVALID_AMOUNT(1017, "결제 금액 합계 검증에 실패했습니다.")
     ;
 
     private final int status;

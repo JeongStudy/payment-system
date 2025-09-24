@@ -1,13 +1,10 @@
 package com.system.payment.payment.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.system.payment.exception.ErrorCode;
-import com.system.payment.exception.PaymentServerNotFoundException;
 import com.system.payment.exception.PaymentValidationException;
+import com.system.payment.exception.TransientPgException;
 import com.system.payment.payment.domain.Payment;
 import com.system.payment.payment.domain.PaymentDetail;
-import com.system.payment.payment.domain.PaymentHistory;
 import com.system.payment.payment.domain.PaymentResultCode;
 import com.system.payment.payment.model.dto.InicisBillingApproval;
 import com.system.payment.payment.model.dto.InicisBillingApproveResponse;
@@ -18,14 +15,11 @@ import com.system.payment.util.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.net.SocketTimeoutException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 @Service
@@ -34,6 +28,7 @@ public class PaymentProcessService {
 
 
     private final InicisPgClientService inicisPgClientService;      // 시뮬레이터/PG 퍼사드
+    private final PaymentHistoryService paymentHistoryService;
     private final PaymentRepository paymentRepository;
     private final PaymentHistoryRepository paymentHistoryRepository;
 
@@ -74,8 +69,8 @@ public class PaymentProcessService {
         final String txId = message.identifiers().transactionId();
 
         // 1) 결제 로드
-        // TODO: 비관적 락, 2-단계 패턴 고민중
-        Payment payment = paymentRepository.findById(paymentId)
+        // 비관적 락
+        Payment payment = paymentRepository.findByIdForUpdate(paymentId)
                 .orElseThrow(() -> new PaymentValidationException(ErrorCode.PAYMENT_ITEMS_NOT_FOUND));
 
         // 멱등성/중복 처리 가드
@@ -90,75 +85,71 @@ public class PaymentProcessService {
 
         // 2) WAITING -> REQUESTED (최초 요청 흔적)
         if (prevCode == PaymentResultCode.WAITING) {
-            payment.changeResultCodeRequested();  // 상태 + requestedTimestamp 세팅
+            payment.markRequested();  // 상태 + requestedTimestamp 세팅
+
+            paymentHistoryService.recordRequested(
+                    payment,
+                    prevCode,
+                    prevDataJson,
+                    txId,
+                    "KAFKA_CONSUMER",
+                    "WAITING -> REQUESTED",
+                    null
+            );
         }
 
         // 3) PG 승인 호출
-        InicisBillingApproveResponse res = inicisPgClientService.approve(approval);
+        try{
+            InicisBillingApproveResponse res = inicisPgClientService.approve(approval);
+            Objects.requireNonNull(res, "PG approve response is null");
 
-        // 4) 응답 분기
-        if (!res.isSuccess()) {
-            // 비즈니스 실패(거절/한도초과/잔액부족 등) → 확정 커밋(예외 던지지 않음)
-            for (PaymentDetail d : payment.getDetails()) {
-                d.markFailed();
+            // 4) 응답 분기
+            if (!res.isSuccess()) {
+                // 비즈니스 실패(거절/한도초과/잔액부족 등) → 확정 커밋(예외 던지지 않음)
+                for (PaymentDetail d : payment.getDetails()) {
+                    d.markFailed();
+                }
+                payment.markFailed(res.resultCode(), res.resultMsg(), LocalDateTime.now());
+
+                paymentHistoryService.recordFailed(
+                        payment,
+                        prevCode,
+                        prevDataJson,
+                        txId,
+                        "KAFKA_CONSUMER",
+                        "INICIS_BILLING_APPROVE_FAIL: " + res.resultMsg(),
+                        res // externalResponse
+                );
+
+                log.warn("[PROCESS][PG-BIZ-FAIL] paymentId={}, txId={}, code={}, msg={}",
+                        paymentId, txId, res.resultCode(), res.resultMsg());
+
+                // 정상 종료(커밋) → 컨슈머 오프셋 커밋 → 재시도/중복 처리 방지
+                return;
             }
-            payment.markFailed(res.resultCode(), res.resultMsg(), LocalDateTime.now());
 
-            saveHistory( // 같은 트랜잭션으로도 충분하면 이 메서드 사용
-                    payment, prevCode, PaymentResultCode.FAILED,
-                    "KAFKA_CONSUMER", "INICIS_BILLING_APPROVE_FAIL: " + res.resultMsg(),
-                    prevDataJson, res, txId
+            // 5) 성공 처리
+            for (PaymentDetail d : payment.getDetails()) {
+                d.markCompleted();
+            }
+            payment.markCompleted(res.tid(), res.approvedAt());
+
+            paymentHistoryService.recordCompleted(
+                    payment,
+                    prevCode,
+                    prevDataJson,
+                    txId,
+                    "KAFKA_CONSUMER",
+                    "INICIS_BILLING_APPROVE_OK",
+                    res // externalResponse
             );
 
-            log.warn("[PROCESS][PG-BIZ-FAIL] paymentId={}, txId={}, code={}, msg={}",
-                    paymentId, txId, res.resultCode(), res.resultMsg());
-
-            // 정상 종료(커밋) → 컨슈머 오프셋 커밋 → 재시도/중복 처리 방지
-            return;
+            log.info("[PROCESS][PG-OK] paymentId={}, txId={}, tid={}, approvedAt={}",
+                    paymentId, txId, res.tid(), res.approvedAt());
+        }catch(TransientPgException e){
+            log.error("[PROCESS][PG-TRANSIENT] paymentId={}, txId={}, code={}, msg={}",
+                    paymentId, txId, e.getErrorCode().name(), e.getErrorCode().getMessage(), e);
+            throw e;
         }
-
-        // 5) 성공 처리
-        for (PaymentDetail d : payment.getDetails()) {
-            d.markCompleted();
-        }
-        payment.markCompleted(res.tid(), res.approvedAt());
-
-        saveHistory(
-                payment, prevCode, PaymentResultCode.COMPLETED,
-                "KAFKA_CONSUMER", "INICIS_BILLING_APPROVE_OK",
-                prevDataJson, res, txId
-        );
-
-        log.info("[PROCESS][PG-OK] paymentId={}, txId={}, tid={}, approvedAt={}",
-                paymentId, txId, res.tid(), res.approvedAt());
-    }
-
-    private void saveHistory(Payment payment,
-                                PaymentResultCode prevCode,
-                                PaymentResultCode newCode,
-                                // TODO: changedBy를 Enum으로 관리하는 것 검토
-                                String changedBy,
-                                // TODO: reason을 res.resultMsg()를 같이 사용할 지 검토
-                                String reason,
-                                String prevDataJson,
-                                Object externalResponse,
-                                String txId) {
-        String newDataJson = StringUtil.toJsonSafe(payment);
-        String externalJson = StringUtil.toJsonSafe(externalResponse);
-
-        PaymentHistory history = PaymentHistory.builder()
-                .payment(payment)
-                .prevResultCode(prevCode != null ? prevCode.getCode() : null)
-                .newResultCode(newCode.getCode())
-                .changedAt(LocalDateTime.now())
-                .changedBy(changedBy)
-                .changedReason(reason)
-                .prevData(prevDataJson)     // JSONB
-                .newData(newDataJson)       // JSONB
-                .externalResponse(externalJson) // JSONB
-                .transactionId(txId)
-                .build();
-
-        paymentHistoryRepository.save(history);
     }
 }
