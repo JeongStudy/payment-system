@@ -82,4 +82,28 @@ public class PaymentHistory extends BaseEntity {
 				transactionId
 		);
 	}
+
+	public static PaymentHistory createFull(
+			Payment payment,
+			String prevResultCode,
+			String newResultCode,
+			LocalDateTime changedAt,
+			String changedBy,
+			String changedReason,
+			String prevData,
+			String newData,
+			String externalResponse,
+			String transactionId
+	) {
+		PaymentHistory paymentHistory = new PaymentHistory(
+				payment, newResultCode, changedAt, changedBy, changedReason, newData, transactionId
+		);
+
+		paymentHistory.prevResultCode = prevResultCode;
+		paymentHistory.prevData = prevData;
+		paymentHistory.externalResponse = externalResponse;
+
+		return paymentHistory;
+	}
+
 }
