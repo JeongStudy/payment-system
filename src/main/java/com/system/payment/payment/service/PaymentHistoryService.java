@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -62,8 +63,11 @@ public class PaymentHistoryService {
 	private void recordTransition(Payment payment, PaymentResultCode prevCode,
 								  String prevDataJson, String txId,
 								  String changedBy, String reason, Object externalResponse) {
-		String newDataJson = StringUtils.toJsonSafe(payment);
-		String externalJson = StringUtils.toJsonSafe(externalResponse);
+//		String newDataJson = StringUtils.toJsonSafe(payment);
+//		String externalJson = StringUtils.toJsonSafe(externalResponse);
+
+		String newDataJson = Optional.ofNullable(StringUtils.toJsonSafe(payment)).orElse("{}");
+		String externalJson = Optional.ofNullable(StringUtils.toJsonSafe(externalResponse)).orElse("{}");
 
 		paymentHistoryRepository.save(
 				PaymentHistory.createFull(
