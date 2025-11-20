@@ -1,10 +1,10 @@
-package com.system.payment.payment.service;
+package com.system.payment.outbox.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.system.payment.payment.domain.outbox.EventType;
-import com.system.payment.payment.domain.outbox.OutboxEvent;
-import com.system.payment.payment.domain.outbox.PaymentRequestedArgs;
-import com.system.payment.payment.repository.OutboxEventRepository;
+import com.system.payment.outbox.domain.constant.EventType;
+import com.system.payment.outbox.domain.entity.OutboxEvent;
+import com.system.payment.outbox.model.dto.PaymentRequestedArgs;
+import com.system.payment.outbox.repository.OutboxEventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

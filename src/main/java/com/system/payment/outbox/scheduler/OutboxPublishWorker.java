@@ -1,12 +1,12 @@
-package com.system.payment.payment.scheduler;
+package com.system.payment.outbox.scheduler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.system.payment.card.repository.PaymentUserCardRepository;
-import com.system.payment.payment.domain.outbox.EventType;
-import com.system.payment.payment.domain.outbox.PaymentRequestedArgs;
-import com.system.payment.payment.repository.OutboxEventRepository;
+import com.system.payment.outbox.domain.constant.EventType;
+import com.system.payment.outbox.model.dto.PaymentRequestedArgs;
+import com.system.payment.outbox.repository.OutboxEventRepository;
 import com.system.payment.payment.repository.PaymentRepository;
-import com.system.payment.payment.service.OutboxService;
+import com.system.payment.outbox.service.OutboxService;
 import com.system.payment.payment.service.PaymentProducer;
 import com.system.payment.user.repository.PaymentUserRepository;
 import com.system.payment.user.service.UserService;

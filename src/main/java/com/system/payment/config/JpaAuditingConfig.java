@@ -1,4 +1,4 @@
-package com.system.payment.common.config;
+package com.system.payment.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;

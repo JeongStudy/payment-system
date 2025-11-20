@@ -5,6 +5,7 @@ import com.system.payment.card.repository.PaymentUserCardRepository;
 import com.system.payment.common.dto.response.ErrorCode;
 import com.system.payment.common.exception.PaymentServerConflictException;
 import com.system.payment.common.exception.PaymentServerNotFoundException;
+import com.system.payment.outbox.service.OutboxService;
 import com.system.payment.payment.domain.*;
 import com.system.payment.payment.model.dto.PaymentDetailItem;
 import com.system.payment.payment.model.request.CreatePaymentRequest;

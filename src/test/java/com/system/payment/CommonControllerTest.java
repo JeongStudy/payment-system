@@ -1,6 +1,6 @@
 //package com.system.payment;
 //
-//import com.system.payment.payment.repository.OutboxEventRepository;
+//import com.system.payment.outbox.repository.OutboxEventRepository;
 //import com.system.payment.payment.scheduler.OutboxPublishWorker;
 //import com.system.payment.payment.service.InicisPgClientService;
 //import com.system.payment.payment.service.PaymentProcessService;
