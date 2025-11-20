@@ -77,23 +77,49 @@ public abstract class KafkaIntegrationTestSupport {
 
     @DynamicPropertySource
     static void dynamicKafkaProps(DynamicPropertyRegistry r) {
-        r.add("spring.kafka.bootstrap-servers", () -> System.getProperty("spring.embedded.kafka.brokers"));
+        r.add("spring.kafka.bootstrap-servers",
+                () -> System.getProperty("spring.embedded.kafka.brokers"));
 
         // Producer
-        r.add("spring.kafka.producer.key-serializer", () -> "org.apache.kafka.common.serialization.StringSerializer");
-        r.add("spring.kafka.producer.value-serializer", () -> "org.springframework.kafka.support.serializer.JsonSerializer");
-        r.add("spring.kafka.producer.properties.spring.json.add.type.headers", () -> "true");
+        r.add("spring.kafka.producer.key-serializer",
+                () -> "org.apache.kafka.common.serialization.StringSerializer");
+        r.add("spring.kafka.producer.value-serializer",
+                () -> "org.springframework.kafka.support.serializer.JsonSerializer");
+        r.add("spring.kafka.producer.properties.spring.json.add.type.headers",
+                () -> "true");
+
+        // yml의 producer.properties.* 매핑
+        r.add("spring.kafka.producer.properties.partitioner.class",
+				() -> "com.system.payment.payment.producer.partitioner.ConsistentHashPartitioner");
+		r.add("spring.kafka.producer.properties.enable.idempotence",
+				() -> "true");
+		r.add("spring.kafka.producer.properties.acks",
+				() -> "all");
+		r.add("spring.kafka.producer.properties.retries",
+				() -> "3");
+		r.add("spring.kafka.producer.properties.max.in.flight.requests.per.connection",
+				() -> "5");
 
         // Consumer (ByteArray + JsonMessageConverter 경로)
-        r.add("spring.kafka.consumer.group-id", () -> "payment-consumer-" + IdGeneratorUtils.UUIDGenerate());
-        r.add("spring.kafka.consumer.auto-offset-reset", () -> "earliest");
-        r.add("spring.kafka.consumer.key-deserializer", () -> "org.apache.kafka.common.serialization.StringDeserializer");
-        r.add("spring.kafka.consumer.value-deserializer", () -> "org.apache.kafka.common.serialization.ByteArrayDeserializer");
+        r.add("spring.kafka.consumer.group-id",
+                () -> "payment-consumer");
+        r.add("spring.kafka.consumer.auto-offset-reset",
+                () -> "latest");
+        r.add("spring.kafka.consumer.key-deserializer",
+                () -> "org.apache.kafka.common.serialization.StringDeserializer");
+        r.add("spring.kafka.consumer.value-deserializer",
+                () -> "org.apache.kafka.common.serialization.ByteArrayDeserializer");
+        r.add("spring.kafka.consumer.properties.spring.json.trusted.packages",
+                () -> "*");
+
 
         // 타임아웃/하트비트
-        r.add("spring.kafka.consumer.properties.heartbeat.interval.ms", () -> "3000");
-        r.add("spring.kafka.consumer.properties.session.timeout.ms", () -> "30000");
-        r.add("spring.kafka.consumer.properties.max.poll.interval.ms", () -> "300000");
+        r.add("spring.kafka.consumer.properties.heartbeat.interval.ms",
+                () -> "3000");
+        r.add("spring.kafka.consumer.properties.session.timeout.ms",
+                () -> "30000");
+        r.add("spring.kafka.consumer.properties.max.poll.interval.ms",
+                () -> "300000");
     }
 
     // ------ 메시지 빌더 ------
