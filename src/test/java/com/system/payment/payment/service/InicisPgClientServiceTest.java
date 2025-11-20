@@ -1,9 +1,10 @@
 package com.system.payment.payment.service;
 
 import com.system.payment.common.exception.TransientPgException;
-import com.system.payment.payment.model.dto.InicisBillingApproval;
-import com.system.payment.payment.model.dto.InicisBillingApproveResponse;
-import com.system.payment.pg.inicis.InicisClient;
+import com.system.payment.pg.inicis.model.request.InicisBillingApproval;
+import com.system.payment.pg.inicis.model.response.InicisBillingApproveResponse;
+import com.system.payment.pg.inicis.client.InicisClient;
+import com.system.payment.pg.inicis.service.InicisPgClientService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

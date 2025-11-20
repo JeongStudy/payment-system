@@ -4,7 +4,7 @@ import com.system.payment.common.exception.PaymentDeclinedException;
 import com.system.payment.common.exception.PaymentStateTransitionException;
 import com.system.payment.common.exception.PaymentValidationException;
 import com.system.payment.common.exception.TransientPgException;
-import com.system.payment.payment.model.dto.InicisBillingApproval;
+import com.system.payment.pg.inicis.model.request.InicisBillingApproval;
 import com.system.payment.payment.model.dto.PaymentRequestedMessageV1;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;

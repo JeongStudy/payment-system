@@ -1,7 +1,6 @@
 package com.system.payment.common.util;
 
-import com.system.payment.common.util.IdGeneratorUtils;
-import com.system.payment.payment.model.dto.InicisBillingApproval;
+import com.system.payment.pg.inicis.model.request.InicisBillingApproval;
 import com.system.payment.payment.model.dto.PaymentRequestedMessageV1;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

@@ -1,10 +1,11 @@
-package com.system.payment.payment.service;
+package com.system.payment.pg.inicis.service;
 
 import com.system.payment.common.exception.TransientPgException;
-import com.system.payment.payment.model.dto.InicisBillingApproval;
-import com.system.payment.payment.model.dto.InicisBillingApproveResponse;
-import com.system.payment.pg.inicis.InicisClient;
+import com.system.payment.pg.inicis.model.request.InicisBillingApproval;
+import com.system.payment.pg.inicis.model.response.InicisBillingApproveResponse;
 import com.system.payment.common.util.StringUtils;
+import com.system.payment.pg.inicis.client.InicisClient;
+import com.system.payment.pg.inicis.PgSimErrorTrigger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

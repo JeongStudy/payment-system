@@ -1,4 +1,4 @@
-package com.system.payment.payment.service;
+package com.system.payment.pg.inicis;
 
 import com.system.payment.common.dto.response.ErrorCode;
 
