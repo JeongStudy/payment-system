@@ -1,4 +1,4 @@
-package com.system.payment.outbox.scheduler;
+package com.system.payment.outbox.worker;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.system.payment.card.repository.PaymentUserCardRepository;

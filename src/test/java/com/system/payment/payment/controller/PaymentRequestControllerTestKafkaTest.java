@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.system.payment.outbox.domain.constant.EventType;
 import com.system.payment.outbox.domain.entity.OutboxEvent;
 import com.system.payment.outbox.repository.OutboxEventRepository;
-import com.system.payment.outbox.scheduler.OutboxPublishWorker;
+import com.system.payment.outbox.worker.OutboxPublishWorker;
 import com.system.payment.payment.consumner.PaymentConsumer;
 import com.system.payment.payment.producer.PaymentProducer;
 import com.system.payment.user.model.request.LoginRequest;
