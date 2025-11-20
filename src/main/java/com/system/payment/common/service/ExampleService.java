@@ -1,6 +1,5 @@
 package com.system.payment.common.service;
 
-import com.system.payment.common.dto.response.ExampleResponse;
 import com.system.payment.common.repository.ExampleRepository;
 import org.springframework.stereotype.Service;
 
