@@ -1,6 +1,7 @@
 package com.system.payment.common.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.system.payment.common.dto.response.Response;
 import com.system.payment.user.model.dto.SimpleUserDetails;
 import com.system.payment.util.JwtUtils;
 import io.jsonwebtoken.Claims;
@@ -108,7 +109,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.setContentType("application/json;charset=UTF-8");
 
-			var body = com.system.payment.util.Response.<Void>builder()
+			var body = Response.<Void>builder()
 					.status(500)
 					.message("서버 내부 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.")
 					.data(null)

@@ -1,6 +1,7 @@
 package com.system.payment.common.exception;
 
-import com.system.payment.util.Response;
+import com.system.payment.common.dto.response.ErrorCode;
+import com.system.payment.common.dto.response.Response;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

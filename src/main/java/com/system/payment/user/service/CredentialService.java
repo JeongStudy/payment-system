@@ -1,6 +1,6 @@
 package com.system.payment.user.service;
 
-import com.system.payment.common.exception.ErrorCode;
+import com.system.payment.common.dto.response.ErrorCode;
 import com.system.payment.common.exception.PaymentServerUnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

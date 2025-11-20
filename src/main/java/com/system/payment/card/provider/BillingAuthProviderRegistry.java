@@ -1,7 +1,7 @@
 package com.system.payment.card.provider;
 
 import com.system.payment.card.domain.PgCompany;
-import com.system.payment.common.exception.ErrorCode;
+import com.system.payment.common.dto.response.ErrorCode;
 import com.system.payment.common.exception.PaymentServerBadRequestException;
 import org.springframework.stereotype.Component;
 

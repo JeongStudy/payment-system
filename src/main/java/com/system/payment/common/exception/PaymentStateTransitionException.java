@@ -1,5 +1,6 @@
 package com.system.payment.common.exception;
 
+import com.system.payment.common.dto.response.ErrorCode;
 import lombok.Getter;
 
 @Getter

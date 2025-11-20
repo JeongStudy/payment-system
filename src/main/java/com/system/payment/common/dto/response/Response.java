@@ -1,6 +1,5 @@
-package com.system.payment.util;
+package com.system.payment.common.dto.response;
 
-import com.system.payment.common.exception.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
