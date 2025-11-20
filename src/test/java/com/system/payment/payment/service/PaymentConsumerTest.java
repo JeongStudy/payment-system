@@ -1,10 +1,11 @@
 package com.system.payment.payment.service;
 
-import com.system.payment.exception.ErrorCode;
-import com.system.payment.exception.PaymentValidationException;
-import com.system.payment.payment.model.dto.InicisBillingApproval;
-import com.system.payment.payment.model.dto.PaymentRequestedMessageV1;
-import com.system.payment.util.KafkaUtil;
+import com.system.payment.common.dto.response.ErrorCode;
+import com.system.payment.common.exception.PaymentValidationException;
+import com.system.payment.payment.consumner.PaymentConsumer;
+import com.system.payment.pg.inicis.model.request.InicisBillingApproval;
+import com.system.payment.payment.producer.message.PaymentRequestedMessageV1;
+import com.system.payment.common.util.KafkaUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,11 +14,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.kafka.test.EmbeddedKafkaBroker;
-import org.springframework.kafka.test.utils.ContainerTestUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -99,12 +96,12 @@ class PaymentConsumerTest {
 
     @Test
     void 성공_정상흐름_헤더존재_멱등성획득_프로세스호출_성공마킹() {
-        try (MockedStatic<KafkaUtil> mocked = mockStatic(KafkaUtil.class)) {
+        try (MockedStatic<KafkaUtils> mocked = mockStatic(KafkaUtils.class)) {
             // given
             Map<String, Object> headers = baseHeaders();
-            mocked.when(() -> KafkaUtil.extractKafkaHeader(eq(headers), eq(PaymentConsumer.HDR_TRACE_ID))).thenReturn(HDR_TRACE_ID);
-            mocked.when(() -> KafkaUtil.extractKafkaHeader(eq(headers), eq(PaymentConsumer.HDR_SPAN_ID))).thenReturn(HDR_SPAN_ID);
-            mocked.when(() -> KafkaUtil.extractKafkaHeader(eq(headers), eq(PaymentConsumer.HDR_CORR_ID))).thenReturn(HDR_CORR_ID);
+            mocked.when(() -> KafkaUtils.extractKafkaHeader(eq(headers), eq(PaymentConsumer.HDR_TRACE_ID))).thenReturn(HDR_TRACE_ID);
+            mocked.when(() -> KafkaUtils.extractKafkaHeader(eq(headers), eq(PaymentConsumer.HDR_SPAN_ID))).thenReturn(HDR_SPAN_ID);
+            mocked.when(() -> KafkaUtils.extractKafkaHeader(eq(headers), eq(PaymentConsumer.HDR_CORR_ID))).thenReturn(HDR_CORR_ID);
             when(idempotencyGuard.tryAcquire(IDEM_KEY)).thenReturn(true);
             PaymentRequestedMessageV1<InicisBillingApproval> msg = mockMessage(IDEM_KEY, TX_ID, PROVIDER, MID);
 
@@ -112,17 +109,17 @@ class PaymentConsumerTest {
             consumer.onMessage(msg, RECEIVED_KEY, RECEIVED_PARTITION, OFFSET, headers);
 
             // then
-            mocked.verify(() -> KafkaUtil.validateMessagePayload(eq(IDEM_KEY), eq(TX_ID), any(), any()));
+            mocked.verify(() -> KafkaUtils.validateMessagePayload(eq(IDEM_KEY), eq(TX_ID), any(), any()));
             verify(paymentProcessService).process(eq(msg));
         }
     }
 
     @Test
     void 헤더없음_기본값보정_UUID로채움_정상처리() {
-        try (MockedStatic<KafkaUtil> mocked = mockStatic(KafkaUtil.class)) {
+        try (MockedStatic<KafkaUtils> mocked = mockStatic(KafkaUtils.class)) {
             // given
             Map<String, Object> headers = baseHeaders();
-            mocked.when(() -> KafkaUtil.extractKafkaHeader(eq(headers), anyString())).thenReturn(null);
+            mocked.when(() -> KafkaUtils.extractKafkaHeader(eq(headers), anyString())).thenReturn(null);
             when(idempotencyGuard.tryAcquire(IDEM_KEY)).thenReturn(true);
             PaymentRequestedMessageV1<InicisBillingApproval> msg = mockMessage(IDEM_KEY, TX_ID, PROVIDER, MID);
 
@@ -130,17 +127,17 @@ class PaymentConsumerTest {
             consumer.onMessage(msg, RECEIVED_KEY, RECEIVED_PARTITION, OFFSET, headers);
 
             // then
-            mocked.verify(() -> KafkaUtil.validateMessagePayload(eq(IDEM_KEY), eq(TX_ID), any(), any()));
+            mocked.verify(() -> KafkaUtils.validateMessagePayload(eq(IDEM_KEY), eq(TX_ID), any(), any()));
             verify(paymentProcessService).process(eq(msg));
         }
     }
 
     @Test
     void 멱등성중복_tryAcquire_false_프로세스미호출() {
-        try (MockedStatic<KafkaUtil> mocked = mockStatic(KafkaUtil.class)) {
+        try (MockedStatic<KafkaUtils> mocked = mockStatic(KafkaUtils.class)) {
             // given
             Map<String, Object> headers = baseHeaders();
-            mocked.when(() -> KafkaUtil.extractKafkaHeader(eq(headers), anyString())).thenReturn(null);
+            mocked.when(() -> KafkaUtils.extractKafkaHeader(eq(headers), anyString())).thenReturn(null);
             PaymentRequestedMessageV1<InicisBillingApproval> msg = mockMessage(IDEM_KEY, TX_ID, PROVIDER, MID);
             when(idempotencyGuard.tryAcquire(IDEM_KEY)).thenReturn(false);
 
@@ -148,7 +145,7 @@ class PaymentConsumerTest {
             consumer.onMessage(msg, RECEIVED_KEY, RECEIVED_PARTITION, OFFSET, headers);
 
             // then
-            mocked.verify(() -> KafkaUtil.validateMessagePayload(eq(IDEM_KEY), eq(TX_ID), any(), any()));
+            mocked.verify(() -> KafkaUtils.validateMessagePayload(eq(IDEM_KEY), eq(TX_ID), any(), any()));
             verify(paymentProcessService, never()).process(any());
             verify(idempotencyGuard, never()).markSuccess(any());
         }
@@ -156,12 +153,12 @@ class PaymentConsumerTest {
 
     @Test
     void 밸리데이션실패_PaymentValidationException_삼키고_리턴() {
-        try (MockedStatic<KafkaUtil> mocked = mockStatic(KafkaUtil.class)) {
+        try (MockedStatic<KafkaUtils> mocked = mockStatic(KafkaUtils.class)) {
             // given
             Map<String, Object> headers = baseHeaders();
-            mocked.when(() -> KafkaUtil.extractKafkaHeader(eq(headers), anyString())).thenReturn(null);
+            mocked.when(() -> KafkaUtils.extractKafkaHeader(eq(headers), anyString())).thenReturn(null);
             PaymentRequestedMessageV1<InicisBillingApproval> msg = mockMessage(null, null, null, null);
-            mocked.when(() -> KafkaUtil.validateMessagePayload(isNull(), isNull(), any(), any()))
+            mocked.when(() -> KafkaUtils.validateMessagePayload(isNull(), isNull(), any(), any()))
                     .thenThrow(new PaymentValidationException(ErrorCode.PAYMENT_VALIDATION_MISSING_FIELD));
 
             // when & then
@@ -175,11 +172,11 @@ class PaymentConsumerTest {
 
     @Test
     void 메시지_null이어도_NPE없이_밸리데이션경로탐() {
-        try (MockedStatic<KafkaUtil> mocked = mockStatic(KafkaUtil.class)) {
+        try (MockedStatic<KafkaUtils> mocked = mockStatic(KafkaUtils.class)) {
             // given
             Map<String, Object> headers = baseHeaders();
-            mocked.when(() -> KafkaUtil.extractKafkaHeader(eq(headers), anyString())).thenReturn(null);
-            mocked.when(() -> KafkaUtil.validateMessagePayload(isNull(), isNull(), isNull(), isNull()))
+            mocked.when(() -> KafkaUtils.extractKafkaHeader(eq(headers), anyString())).thenReturn(null);
+            mocked.when(() -> KafkaUtils.validateMessagePayload(isNull(), isNull(), isNull(), isNull()))
                     .thenThrow(new PaymentValidationException(ErrorCode.PAYMENT_VALIDATION_MISSING_FIELD));
 
             // when & then
@@ -192,10 +189,10 @@ class PaymentConsumerTest {
 
     @Test
     void 프로세스중_예상치못한예외_로그후_재throw() {
-        try (MockedStatic<KafkaUtil> mocked = mockStatic(KafkaUtil.class)) {
+        try (MockedStatic<KafkaUtils> mocked = mockStatic(KafkaUtils.class)) {
             // given
             Map<String, Object> headers = baseHeaders();
-            mocked.when(() -> KafkaUtil.extractKafkaHeader(eq(headers), anyString())).thenReturn(null);
+            mocked.when(() -> KafkaUtils.extractKafkaHeader(eq(headers), anyString())).thenReturn(null);
             PaymentRequestedMessageV1<InicisBillingApproval> msg = mockMessage(IDEM_KEY, TX_ID, PROVIDER, MID);
             when(idempotencyGuard.tryAcquire(IDEM_KEY)).thenReturn(true);
             doThrow(new RuntimeException("error")).when(paymentProcessService).process(any());

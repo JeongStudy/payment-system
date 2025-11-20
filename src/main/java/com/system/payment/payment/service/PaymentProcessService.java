@@ -1,17 +1,18 @@
 package com.system.payment.payment.service;
 
-import com.system.payment.exception.ErrorCode;
-import com.system.payment.exception.PaymentValidationException;
-import com.system.payment.exception.TransientPgException;
-import com.system.payment.payment.domain.Payment;
-import com.system.payment.payment.domain.PaymentDetail;
-import com.system.payment.payment.domain.PaymentResultCode;
-import com.system.payment.payment.model.dto.InicisBillingApproval;
-import com.system.payment.payment.model.dto.InicisBillingApproveResponse;
-import com.system.payment.payment.model.dto.PaymentRequestedMessageV1;
+import com.system.payment.common.dto.response.ErrorCode;
+import com.system.payment.common.exception.PaymentValidationException;
+import com.system.payment.common.exception.TransientPgException;
+import com.system.payment.payment.domain.entity.Payment;
+import com.system.payment.payment.domain.entity.PaymentDetail;
+import com.system.payment.payment.domain.constant.PaymentResultCode;
+import com.system.payment.pg.inicis.model.request.InicisBillingApproval;
+import com.system.payment.pg.inicis.model.response.InicisBillingApproveResponse;
+import com.system.payment.payment.producer.message.PaymentRequestedMessageV1;
 import com.system.payment.payment.repository.PaymentHistoryRepository;
 import com.system.payment.payment.repository.PaymentRepository;
-import com.system.payment.util.StringUtil;
+import com.system.payment.common.util.StringUtils;
+import com.system.payment.pg.inicis.service.InicisPgClientService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -80,7 +81,7 @@ public class PaymentProcessService {
             return;
         }
 
-        final String prevDataJson = StringUtil.toJsonSafe(payment);
+        final String prevDataJson = StringUtils.toJsonSafe(payment);
         final PaymentResultCode prevCode = payment.getPaymentResultCode();
 
         // 2) WAITING -> REQUESTED (최초 요청 흔적)

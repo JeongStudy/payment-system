@@ -1,7 +1,7 @@
 package com.system.payment.payment.service;
 
-import com.system.payment.payment.domain.PaymentIdempotency;
-import com.system.payment.payment.domain.PaymentState;
+import com.system.payment.payment.domain.entity.PaymentIdempotency;
+import com.system.payment.payment.domain.constant.PaymentState;
 import com.system.payment.payment.repository.PaymentIdempotencyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;

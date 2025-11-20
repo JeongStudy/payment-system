@@ -1,29 +1,33 @@
-### ❓ Type of change
+### ❓ 변경 유형(Type of change)
 
-- [ ] 📖 Documentation (updates to the documentation or readme)
-- [ ] 🐞 Bug fix (a non-breaking change that fixes an issue)
-- [ ] ⚰️ Maintain (keep in good condition or in working)
-- [ ] 👌 Enhancement (improving an existing functionality like performance)
-- [ ] ✨ New feature (a non-breaking change that adds functionality)
-- [ ] ⚠️ Breaking change (fix or feature that would cause existing functionality to change)
+- [ ] 📖 문서 수정 (README, 사용 설명서 등 문서 관련 변경)
+- [ ] 🐞 버그 수정 (기존 기능에 영향을 주지 않는 버그 수정)
+- [ ] ⚰️ 유지 보수 (코드 정리, 의존성 업데이트 등 상태 유지 목적)
+- [ ] 👌 기능 개선 (성능/사용성 등 기존 기능 개선)
+- [ ] 🛠️ 리팩토링 / 구조 개선 (내부 구조 변경, 설계 개선, 외부 동작 변화 없음)
+- [ ] ✨ 신규 기능 추가 (기존 기능과 호환되는 새로운 기능 추가)
+- [ ] ⚠️ 호환 깨지는 변경 (기존 동작에 영향을 주는 변경 사항)
 
-### 📚 Description
+### 📚 변경 내용 설명
 
-<!-- 이슈를 해결한 코드에 대해 설명해주세요. -->
+<!-- 어떤 이슈(또는 요구사항)를 어떻게 해결/구현했는지 설명해주세요. -->
+<!-- 주요 변경 포인트, 설계 의도 등을 간단히 적어주세요. -->
 
-### 📝 Checklist
+### 📝 테스트 체크리스트
 
-<!-- 테스트 코드 구성이 가능하다면 포함해주세요. -->
-<!-- 문서화가 따로 필요 없는 부분이라면 해당 항목을 삭제해주세요. -->
+<!-- 별도 문서화가 필요 없다면 관련 항목은 삭제하셔도 됩니다. -->
 
-- [ ] 🔴 Human eyes (no test)
-- [ ] 🟡 swagger or Smoke test
-- [ ] 🟢 unit test or CI test
+- [ ] 🔴 수동 확인 (로그/화면 눈으로 확인, 테스트 코드 없음)
+- [ ] 🟡 단위 테스트 (서비스/도메인 로직 중심의 단위 테스트)
+- [ ] 🟡 컨트롤러 테스트 (예: @WebMvcTest 등 HTTP 레이어 테스트)
+- [ ] 🟡 통합 테스트 (DB/외부 연동 포함 통합 시나리오 테스트)
+- [ ] 🟡 로컬 빌드·배포 테스트 (로컬 빌드 후 애플리케이션 실행/동작 확인)
+- [ ] 🟢 CI 파이프라인 테스트 (빌드/테스트/배포 파이프라인 통과)
 
-### 📸 Log/Screenshot
+### 📸 로그 / 스크린샷
 
-<!-- 로그나 테스트 스크린샷이 있을 경우 첨부해주세요. -->
+<!-- 로그나 테스트 결과, 화면 캡처가 있다면 첨부해주세요. -->
 
-🌱 before
+🌱 변경 전(before)
 
-🏡 after
+🏡 변경 후(after)

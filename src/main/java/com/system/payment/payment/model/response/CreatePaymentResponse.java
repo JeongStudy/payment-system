@@ -1,7 +1,7 @@
 package com.system.payment.payment.model.response;
 
 
-import com.system.payment.payment.domain.Payment;
+import com.system.payment.payment.domain.entity.Payment;
 import lombok.Builder;
 import lombok.Getter;
 

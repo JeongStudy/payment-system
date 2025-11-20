@@ -1,25 +1,22 @@
 package com.system.payment.payment.service;
 
-import com.system.payment.exception.ErrorCode;
-import com.system.payment.exception.PaymentValidationException;
-import com.system.payment.exception.TransientPgException;
-import com.system.payment.payment.domain.Payment;
-import com.system.payment.payment.domain.PaymentDetail;
-import com.system.payment.payment.domain.PaymentHistory;
-import com.system.payment.payment.domain.PaymentResultCode;
-import com.system.payment.payment.model.dto.InicisBillingApproval;
-import com.system.payment.payment.model.dto.InicisBillingApproveResponse;
-import com.system.payment.payment.model.dto.PaymentRequestedMessageV1;
-import com.system.payment.payment.repository.PaymentHistoryRepository;
+import com.system.payment.common.dto.response.ErrorCode;
+import com.system.payment.common.exception.PaymentValidationException;
+import com.system.payment.common.exception.TransientPgException;
+import com.system.payment.payment.domain.entity.Payment;
+import com.system.payment.payment.domain.entity.PaymentDetail;
+import com.system.payment.payment.domain.constant.PaymentResultCode;
+import com.system.payment.pg.inicis.model.request.InicisBillingApproval;
+import com.system.payment.pg.inicis.model.response.InicisBillingApproveResponse;
+import com.system.payment.payment.producer.message.PaymentRequestedMessageV1;
 import com.system.payment.payment.repository.PaymentRepository;
-import org.junit.jupiter.api.BeforeEach;
+import com.system.payment.pg.inicis.service.InicisPgClientService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.net.SocketTimeoutException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

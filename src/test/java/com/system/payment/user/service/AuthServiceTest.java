@@ -1,7 +1,7 @@
 package com.system.payment.user.service;
 
-import com.system.payment.exception.CryptoException;
-import com.system.payment.exception.ErrorCode;
+import com.system.payment.common.exception.CryptoException;
+import com.system.payment.common.dto.response.ErrorCode;
 import com.system.payment.user.domain.AesKey;
 import com.system.payment.user.domain.PaymentUser;
 import com.system.payment.user.model.reponse.LoginResponse;
@@ -10,9 +10,9 @@ import com.system.payment.user.model.request.SignUpRequest;
 import com.system.payment.user.repository.AesKeyRepository;
 import com.system.payment.user.repository.PaymentUserRepository;
 import com.system.payment.user.repository.RsaKeyPairRepository;
-import com.system.payment.util.AesKeyCryptoUtils;
-import com.system.payment.util.JwtUtils;
-import com.system.payment.util.RsaKeyCryptoUtils;
+import com.system.payment.common.util.AesKeyCryptoUtils;
+import com.system.payment.common.util.JwtUtils;
+import com.system.payment.common.util.RsaKeyCryptoUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

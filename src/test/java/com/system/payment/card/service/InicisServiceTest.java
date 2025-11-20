@@ -1,16 +1,17 @@
 package com.system.payment.card.service;
 
-import com.system.payment.card.domain.BillingKeyStatus;
-import com.system.payment.card.domain.PaymentUserCard;
+import com.system.payment.card.domain.constant.BillingKeyStatus;
+import com.system.payment.card.domain.entity.PaymentUserCard;
 import com.system.payment.card.model.request.CardAuthRequest;
-import com.system.payment.card.model.request.InicisRequest;
-import com.system.payment.card.model.response.InicisBillingAuthResponse;
-import com.system.payment.card.model.response.InicisBillingKeyResponse;
+import com.system.payment.pg.inicis.model.request.InicisRequest;
+import com.system.payment.pg.inicis.model.response.InicisBillingAuthResponse;
+import com.system.payment.pg.inicis.model.response.InicisBillingKeyResponse;
 import com.system.payment.card.repository.PaymentUserCardRepository;
-import com.system.payment.exception.PaymentServerNotFoundException;
-import com.system.payment.pg.inicis.InicisClient;
-import com.system.payment.util.HashUtils;
-import com.system.payment.util.IdGeneratorUtil;
+import com.system.payment.common.exception.PaymentServerNotFoundException;
+import com.system.payment.pg.inicis.client.InicisClient;
+import com.system.payment.common.util.HashUtils;
+import com.system.payment.common.util.IdGeneratorUtils;
+import com.system.payment.pg.inicis.service.InicisService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -79,8 +80,8 @@ class InicisServiceTest {
         set(req, "goodName", GOOD_NAME);
 
         // when
-        try (MockedStatic<IdGeneratorUtil> mocked = mockStatic(IdGeneratorUtil.class)) {
-            mocked.when(IdGeneratorUtil::timestampGenerate).thenReturn(TS);
+        try (MockedStatic<IdGeneratorUtils> mocked = mockStatic(IdGeneratorUtils.class)) {
+            mocked.when(IdGeneratorUtils::timestampGenerate).thenReturn(TS);
 
             InicisBillingAuthResponse res = inicisService.createBillingAuthParams(OID_SUCCESS, req);
 

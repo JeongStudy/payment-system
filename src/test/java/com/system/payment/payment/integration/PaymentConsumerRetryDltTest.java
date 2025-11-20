@@ -1,12 +1,11 @@
 package com.system.payment.payment.integration;
 
-import com.system.payment.exception.ErrorCode;
-import com.system.payment.exception.TransientPgException;
+import com.system.payment.common.dto.response.ErrorCode;
+import com.system.payment.common.exception.TransientPgException;
 import com.system.payment.payment.service.PaymentIdempotencyGuard;
 import com.system.payment.payment.service.PaymentProcessService;
-import com.system.payment.util.KafkaIntegrationTestSupport;
-import com.system.payment.util.IdGeneratorUtil;
-import org.apache.kafka.clients.producer.ProducerRecord;
+import com.system.payment.common.util.KafkaIntegrationTestSupport;
+import com.system.payment.common.util.IdGeneratorUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.test.context.EmbeddedKafka;
@@ -14,7 +13,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +47,7 @@ class PaymentConsumerRetryDltTest extends KafkaIntegrationTestSupport {
         when(idempotencyGuard.tryAcquire(any())).thenReturn(true); // 호출되면 안 되지만 안전망
 
         var idem = " "; // 공백 → validateMessagePayload에서 PaymentValidationException 터짐
-        var txId = "tx-" + IdGeneratorUtil.UUIDGenerate();
+        var txId = "tx-" + IdGeneratorUtils.UUIDGenerate();
 
         // when
         send(message(idem, txId, approval(SUCCESS_MOID)));
@@ -73,8 +71,8 @@ class PaymentConsumerRetryDltTest extends KafkaIntegrationTestSupport {
         doThrow(new TransientPgException(ErrorCode.PG_TIMEOUT))
                 .when(paymentProcessService).process(any());
 
-        var idem = "idem-" + IdGeneratorUtil.UUIDGenerate();
-        var txId = "tx-" + IdGeneratorUtil.UUIDGenerate();
+        var idem = "idem-" + IdGeneratorUtils.UUIDGenerate();
+        var txId = "tx-" + IdGeneratorUtils.UUIDGenerate();
 
         // when
         send(message(idem, txId, approval(SUCCESS_MOID)));

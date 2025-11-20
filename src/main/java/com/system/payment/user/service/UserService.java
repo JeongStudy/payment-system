@@ -1,8 +1,8 @@
 package com.system.payment.user.service;
 
-import com.system.payment.exception.ErrorCode;
-import com.system.payment.exception.PaymentServerUnauthorizedException;
-import com.system.payment.provider.AuthUserProvider;
+import com.system.payment.common.dto.response.ErrorCode;
+import com.system.payment.common.exception.PaymentServerUnauthorizedException;
+import com.system.payment.common.provider.AuthUserProvider;
 import com.system.payment.user.domain.PaymentUser;
 import com.system.payment.user.model.reponse.UserResponse;
 import com.system.payment.user.repository.PaymentUserRepository;

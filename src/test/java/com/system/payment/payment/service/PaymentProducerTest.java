@@ -2,8 +2,9 @@ package com.system.payment.payment.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.system.payment.card.domain.PaymentUserCard;
-import com.system.payment.payment.domain.Payment;
+import com.system.payment.card.domain.entity.PaymentUserCard;
+import com.system.payment.payment.domain.entity.Payment;
+import com.system.payment.payment.producer.PaymentProducer;
 import com.system.payment.user.domain.PaymentUser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

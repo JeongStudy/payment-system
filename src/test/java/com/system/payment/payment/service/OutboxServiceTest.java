@@ -2,9 +2,10 @@ package com.system.payment.payment.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.system.payment.payment.domain.outbox.EventType;
-import com.system.payment.payment.domain.outbox.OutboxEvent;
-import com.system.payment.payment.repository.OutboxEventRepository;
+import com.system.payment.outbox.service.OutboxService;
+import com.system.payment.outbox.domain.constant.EventType;
+import com.system.payment.outbox.domain.entity.OutboxEvent;
+import com.system.payment.outbox.repository.OutboxEventRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
