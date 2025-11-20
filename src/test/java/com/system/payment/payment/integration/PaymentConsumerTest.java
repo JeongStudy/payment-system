@@ -3,7 +3,7 @@ package com.system.payment.payment.integration;
 import com.system.payment.payment.service.PaymentIdempotencyGuard;
 import com.system.payment.payment.service.PaymentProcessService;
 import com.system.payment.common.util.IdGeneratorUtils;
-import com.system.payment.util.KafkaIntegrationTestSupport;
+import com.system.payment.common.util.KafkaIntegrationTestSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
