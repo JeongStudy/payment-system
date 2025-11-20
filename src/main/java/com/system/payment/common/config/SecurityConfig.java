@@ -1,7 +1,7 @@
 package com.system.payment.common.config;
 
-import com.system.payment.filter.JwtAuthenticationFilter;
-import com.system.payment.filter.AuthenticationEntryPoint;
+import com.system.payment.common.filter.JwtAuthenticationFilter;
+import com.system.payment.common.filter.AuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

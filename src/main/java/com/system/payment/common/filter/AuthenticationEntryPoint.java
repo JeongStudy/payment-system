@@ -1,4 +1,4 @@
-package com.system.payment.filter;
+package com.system.payment.common.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.system.payment.common.exception.ErrorCode;
