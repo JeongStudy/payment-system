@@ -1,8 +1,8 @@
 package com.system.payment.payment.validator;
 
-import com.system.payment.exception.ErrorCode;
-import com.system.payment.exception.PaymentServerInternalServerErrorException;
-import com.system.payment.exception.PaymentServerNotFoundException;
+import com.system.payment.common.exception.ErrorCode;
+import com.system.payment.common.exception.PaymentServerInternalServerErrorException;
+import com.system.payment.common.exception.PaymentServerNotFoundException;
 import com.system.payment.payment.model.dto.PaymentDetailItem;
 
 import java.util.List;

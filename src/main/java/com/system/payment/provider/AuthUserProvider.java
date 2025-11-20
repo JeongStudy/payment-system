@@ -1,7 +1,7 @@
 package com.system.payment.provider;
 
-import com.system.payment.exception.ErrorCode;
-import com.system.payment.exception.PaymentServerUnauthorizedException;
+import com.system.payment.common.exception.ErrorCode;
+import com.system.payment.common.exception.PaymentServerUnauthorizedException;
 import com.system.payment.user.model.dto.SimpleUserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

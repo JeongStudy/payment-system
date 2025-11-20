@@ -7,7 +7,7 @@ import com.system.payment.card.model.request.InicisRequest;
 import com.system.payment.card.model.response.InicisBillingAuthResponse;
 import com.system.payment.card.model.response.InicisBillingKeyResponse;
 import com.system.payment.card.repository.PaymentUserCardRepository;
-import com.system.payment.exception.PaymentServerNotFoundException;
+import com.system.payment.common.exception.PaymentServerNotFoundException;
 import com.system.payment.pg.inicis.InicisClient;
 import com.system.payment.util.HashUtils;
 import com.system.payment.util.IdGeneratorUtils;

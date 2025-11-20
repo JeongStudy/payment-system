@@ -1,9 +1,8 @@
-package com.system.payment.exception;
+package com.system.payment.common.exception;
 
 import com.system.payment.util.Response;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;

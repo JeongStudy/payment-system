@@ -1,4 +1,4 @@
-package com.system.payment.exception;
+package com.system.payment.common.exception;
 
 import lombok.Getter;
 

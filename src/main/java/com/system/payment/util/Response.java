@@ -1,6 +1,6 @@
 package com.system.payment.util;
 
-import com.system.payment.exception.ErrorCode;
+import com.system.payment.common.exception.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

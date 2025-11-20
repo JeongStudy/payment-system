@@ -1,4 +1,4 @@
-package com.system.payment.exception;
+package com.system.payment.common.exception;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
