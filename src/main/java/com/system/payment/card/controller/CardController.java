@@ -2,7 +2,6 @@ package com.system.payment.card.controller;
 
 import com.system.payment.card.model.request.CardAuthRequest;
 import com.system.payment.card.model.request.InicisRequest;
-import com.system.payment.card.model.response.InicisBillingKeyResponse;
 import com.system.payment.card.model.response.PGAuthParamsResponse;
 import com.system.payment.card.model.response.PaymentUserCardResponse;
 import com.system.payment.card.service.CardService;

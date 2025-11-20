@@ -4,7 +4,7 @@ import com.system.payment.config.TestBootConfig;
 import com.system.payment.exception.PaymentStateTransitionException;
 import com.system.payment.payment.domain.*;
 import com.system.payment.payment.repository.*;
-import com.system.payment.util.IdGeneratorUtil;
+import com.system.payment.util.IdGeneratorUtils;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -58,8 +58,8 @@ class PaymentJpaTransitionTest {
                 .paymentType(PaymentType.NORMAL)
                 .totalAmount(total)
                 .paymentResultCode(PaymentResultCode.WAITING)
-                .idempotencyKey("idem-" + IdGeneratorUtil.UUIDGenerate())
-                .transactionId("tx-" + IdGeneratorUtil.UUIDGenerate())
+                .idempotencyKey("idem-" + IdGeneratorUtils.UUIDGenerate())
+                .transactionId("tx-" + IdGeneratorUtils.UUIDGenerate())
                 .build();
 
         for (int amt : itemAmounts) {

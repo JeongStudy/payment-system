@@ -8,7 +8,7 @@ import com.system.payment.payment.domain.Payment;
 import com.system.payment.payment.domain.PaymentHistory;
 import com.system.payment.payment.domain.PaymentResultCode;
 import com.system.payment.payment.repository.PaymentHistoryRepository;
-import com.system.payment.util.StringUtil;
+import com.system.payment.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,8 +62,8 @@ public class PaymentHistoryService {
 	private void recordTransition(Payment payment, PaymentResultCode prevCode,
 								  String prevDataJson, String txId,
 								  String changedBy, String reason, Object externalResponse) {
-		String newDataJson = StringUtil.toJsonSafe(payment);
-		String externalJson = StringUtil.toJsonSafe(externalResponse);
+		String newDataJson = StringUtils.toJsonSafe(payment);
+		String externalJson = StringUtils.toJsonSafe(externalResponse);
 
 		paymentHistoryRepository.save(
 				PaymentHistory.createFull(

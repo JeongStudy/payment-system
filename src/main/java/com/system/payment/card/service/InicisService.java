@@ -11,7 +11,7 @@ import com.system.payment.exception.ErrorCode;
 import com.system.payment.exception.PaymentServerNotFoundException;
 import com.system.payment.pg.inicis.InicisClient;
 import com.system.payment.util.HashUtils;
-import com.system.payment.util.IdGeneratorUtil;
+import com.system.payment.util.IdGeneratorUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -53,7 +53,7 @@ public class InicisService {
         String buyerEmail = request.getBuyerEmail();
         String goodName = request.getGoodName();
 
-        String timestamp = IdGeneratorUtil.timestampGenerate();
+        String timestamp = IdGeneratorUtils.timestampGenerate();
         String signatureText = String.format("oid=%s&price=%s&timestamp=%s", oid, price, timestamp);
         String signature = HashUtils.sha256(signatureText);
 
@@ -106,7 +106,7 @@ public class InicisService {
         String authUrl = request.getAuthUrl();
         String mid = request.getMid();
         String authToken = request.getAuthToken();
-        String timestamp = IdGeneratorUtil.timestampGenerate();
+        String timestamp = IdGeneratorUtils.timestampGenerate();
 
         String signatureText = String.format("authToken=%s&timestamp=%s", authToken, timestamp);
         String signature = HashUtils.sha256(signatureText);

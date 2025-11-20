@@ -85,7 +85,7 @@ public abstract class KafkaIntegrationTestSupport {
         r.add("spring.kafka.producer.properties.spring.json.add.type.headers", () -> "true");
 
         // Consumer (ByteArray + JsonMessageConverter 경로)
-        r.add("spring.kafka.consumer.group-id", () -> "payment-consumer-" + IdGeneratorUtil.UUIDGenerate());
+        r.add("spring.kafka.consumer.group-id", () -> "payment-consumer-" + IdGeneratorUtils.UUIDGenerate());
         r.add("spring.kafka.consumer.auto-offset-reset", () -> "earliest");
         r.add("spring.kafka.consumer.key-deserializer", () -> "org.apache.kafka.common.serialization.StringDeserializer");
         r.add("spring.kafka.consumer.value-deserializer", () -> "org.apache.kafka.common.serialization.ByteArrayDeserializer");
@@ -131,7 +131,7 @@ public abstract class KafkaIntegrationTestSupport {
     // 특정 토픽에서 1건이라도 읽히는지 폴링하여 확인
     protected ConsumerRecord<String, byte[]> pollOne(String topic, Duration timeout) {
         Map<String, Object> props = KafkaTestUtils.consumerProps(
-                "test-consumer-" + IdGeneratorUtil.UUIDGenerate(), "false", embeddedKafka);
+                "test-consumer-" + IdGeneratorUtils.UUIDGenerate(), "false", embeddedKafka);
         props.put("key.deserializer", StringDeserializer.class);
         props.put("value.deserializer", ByteArrayDeserializer.class);
 
