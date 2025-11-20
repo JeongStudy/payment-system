@@ -3,7 +3,7 @@ package com.system.payment.common.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.system.payment.common.dto.response.Response;
 import com.system.payment.user.model.dto.SimpleUserDetails;
-import com.system.payment.util.JwtUtils;
+import com.system.payment.common.util.JwtUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;

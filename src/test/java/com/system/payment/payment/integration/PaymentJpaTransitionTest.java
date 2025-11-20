@@ -4,7 +4,7 @@ import com.system.payment.common.config.TestBootConfig;
 import com.system.payment.common.exception.PaymentStateTransitionException;
 import com.system.payment.payment.domain.*;
 import com.system.payment.payment.repository.*;
-import com.system.payment.util.IdGeneratorUtils;
+import com.system.payment.common.util.IdGeneratorUtils;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

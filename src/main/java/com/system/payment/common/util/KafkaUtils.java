@@ -1,4 +1,4 @@
-package com.system.payment.util;
+package com.system.payment.common.util;
 
 import com.system.payment.common.dto.response.ErrorCode;
 import com.system.payment.common.exception.PaymentValidationException;

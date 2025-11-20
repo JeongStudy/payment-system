@@ -1,4 +1,4 @@
-package com.system.payment.util;
+package com.system.payment.common.util;
 
 import org.springframework.stereotype.Component;
 

@@ -11,7 +11,7 @@ import com.system.payment.card.provider.BillingAuthProviderRegistry;
 import com.system.payment.card.repository.PaymentUserCardRepository;
 import com.system.payment.user.domain.PaymentUser;
 import com.system.payment.user.repository.PaymentUserRepository;
-import com.system.payment.util.IdGeneratorUtils;
+import com.system.payment.common.util.IdGeneratorUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

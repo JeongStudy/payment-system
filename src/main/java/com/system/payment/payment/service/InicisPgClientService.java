@@ -4,7 +4,7 @@ import com.system.payment.common.exception.TransientPgException;
 import com.system.payment.payment.model.dto.InicisBillingApproval;
 import com.system.payment.payment.model.dto.InicisBillingApproveResponse;
 import com.system.payment.pg.inicis.InicisClient;
-import com.system.payment.util.StringUtils;
+import com.system.payment.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

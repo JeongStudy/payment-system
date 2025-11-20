@@ -8,7 +8,7 @@ import com.system.payment.user.model.reponse.LoginResponse;
 import com.system.payment.user.model.request.LoginRequest;
 import com.system.payment.user.model.request.SignUpRequest;
 import com.system.payment.user.repository.PaymentUserRepository;
-import com.system.payment.util.JwtUtils;
+import com.system.payment.common.util.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

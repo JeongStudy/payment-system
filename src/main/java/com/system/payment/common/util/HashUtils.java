@@ -1,4 +1,4 @@
-package com.system.payment.util;
+package com.system.payment.common.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
