@@ -1,7 +1,7 @@
 package com.system.payment.common.util;
 
 import com.system.payment.pg.inicis.model.request.InicisBillingApproval;
-import com.system.payment.payment.model.dto.PaymentRequestedMessageV1;
+import com.system.payment.payment.producer.message.PaymentRequestedMessageV1;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;

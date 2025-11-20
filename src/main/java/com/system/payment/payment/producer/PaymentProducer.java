@@ -5,7 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.system.payment.card.domain.PaymentUserCard;
 import com.system.payment.payment.domain.entity.Payment;
 import com.system.payment.pg.inicis.model.request.InicisBillingApproval;
-import com.system.payment.payment.model.dto.PaymentRequestedMessageV1;
+import com.system.payment.payment.producer.message.PaymentRequestedMessageV1;
 import com.system.payment.user.domain.PaymentUser;
 import com.system.payment.common.util.HashUtils;
 import com.system.payment.common.util.TimeUtils;

@@ -8,7 +8,7 @@ import com.system.payment.payment.domain.entity.PaymentDetail;
 import com.system.payment.payment.domain.constant.PaymentResultCode;
 import com.system.payment.pg.inicis.model.request.InicisBillingApproval;
 import com.system.payment.pg.inicis.model.response.InicisBillingApproveResponse;
-import com.system.payment.payment.model.dto.PaymentRequestedMessageV1;
+import com.system.payment.payment.producer.message.PaymentRequestedMessageV1;
 import com.system.payment.payment.repository.PaymentRepository;
 import com.system.payment.pg.inicis.service.InicisPgClientService;
 import org.junit.jupiter.api.DisplayName;
