@@ -1,4 +1,4 @@
-package com.system.payment.card.model.response;
+package com.system.payment.pg.inicis.model.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

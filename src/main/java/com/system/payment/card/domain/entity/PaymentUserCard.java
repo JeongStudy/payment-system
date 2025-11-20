@@ -1,5 +1,7 @@
-package com.system.payment.card.domain;
+package com.system.payment.card.domain.entity;
 
+import com.system.payment.card.domain.constant.BillingKeyStatus;
+import com.system.payment.pg.common.PgCompany;
 import com.system.payment.common.domain.entity.BaseEntity;
 import com.system.payment.user.domain.PaymentUser;
 import jakarta.persistence.*;

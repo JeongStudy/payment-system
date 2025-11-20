@@ -1,6 +1,6 @@
 package com.system.payment.card.model.response;
 
-import com.system.payment.card.domain.PaymentUserCard;
+import com.system.payment.card.domain.entity.PaymentUserCard;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

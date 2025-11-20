@@ -1,4 +1,4 @@
-package com.system.payment.card.domain;
+package com.system.payment.pg.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

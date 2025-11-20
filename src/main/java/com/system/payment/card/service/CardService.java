@@ -1,12 +1,12 @@
 package com.system.payment.card.service;
 
-import com.system.payment.card.domain.BillingKeyStatus;
-import com.system.payment.card.domain.PaymentUserCard;
-import com.system.payment.card.domain.PgCompany;
+import com.system.payment.card.domain.constant.BillingKeyStatus;
+import com.system.payment.card.domain.entity.PaymentUserCard;
+import com.system.payment.pg.common.PgCompany;
 import com.system.payment.card.model.request.CardAuthRequest;
-import com.system.payment.card.model.response.PGAuthParamsResponse;
+import com.system.payment.pg.common.PGAuthParamsResponse;
 import com.system.payment.card.model.response.PaymentUserCardResponse;
-import com.system.payment.card.provider.BillingAuthProviderRegistry;
+import com.system.payment.pg.common.BillingAuthProviderRegistry;
 import com.system.payment.card.repository.PaymentUserCardRepository;
 import com.system.payment.user.domain.PaymentUser;
 import com.system.payment.user.repository.PaymentUserRepository;

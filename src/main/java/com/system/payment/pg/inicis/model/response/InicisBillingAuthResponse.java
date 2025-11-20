@@ -1,6 +1,7 @@
-package com.system.payment.card.model.response;
+package com.system.payment.pg.inicis.model.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.system.payment.pg.common.PGAuthParamsResponse;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.AllArgsConstructor;

@@ -1,11 +1,11 @@
-package com.system.payment.card.service;
+package com.system.payment.pg.inicis.service;
 
-import com.system.payment.card.domain.BillingKeyStatus;
-import com.system.payment.card.domain.PaymentUserCard;
+import com.system.payment.card.domain.constant.BillingKeyStatus;
+import com.system.payment.card.domain.entity.PaymentUserCard;
 import com.system.payment.card.model.request.CardAuthRequest;
-import com.system.payment.card.model.request.InicisRequest;
-import com.system.payment.card.model.response.InicisBillingAuthResponse;
-import com.system.payment.card.model.response.InicisBillingKeyResponse;
+import com.system.payment.pg.inicis.model.request.InicisRequest;
+import com.system.payment.pg.inicis.model.response.InicisBillingAuthResponse;
+import com.system.payment.pg.inicis.model.response.InicisBillingKeyResponse;
 import com.system.payment.card.repository.PaymentUserCardRepository;
 import com.system.payment.common.dto.response.ErrorCode;
 import com.system.payment.common.exception.PaymentServerNotFoundException;

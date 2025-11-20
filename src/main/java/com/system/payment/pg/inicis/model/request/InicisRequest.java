@@ -1,4 +1,4 @@
-package com.system.payment.card.model.request;
+package com.system.payment.pg.inicis.model.request;
 
 import lombok.Getter;
 import lombok.Setter;
