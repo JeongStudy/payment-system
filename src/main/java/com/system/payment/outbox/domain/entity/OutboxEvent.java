@@ -1,6 +1,7 @@
-package com.system.payment.payment.domain.outbox;
+package com.system.payment.outbox.domain.entity;
 
 import com.system.payment.common.domain.entity.BaseEntity;
+import com.system.payment.outbox.domain.constant.EventType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;

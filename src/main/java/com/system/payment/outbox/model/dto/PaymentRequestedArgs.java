@@ -1,4 +1,4 @@
-package com.system.payment.payment.domain.outbox;
+package com.system.payment.outbox.model.dto;
 
 public record PaymentRequestedArgs(
 		Integer paymentId,

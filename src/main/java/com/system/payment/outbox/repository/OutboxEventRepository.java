@@ -1,6 +1,6 @@
-package com.system.payment.payment.repository;
+package com.system.payment.outbox.repository;
 
-import com.system.payment.payment.domain.outbox.OutboxEvent;
+import com.system.payment.outbox.domain.entity.OutboxEvent;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

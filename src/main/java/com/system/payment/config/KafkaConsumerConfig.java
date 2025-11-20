@@ -1,4 +1,4 @@
-package com.system.payment.common.config;
+package com.system.payment.config;
 
 import com.system.payment.common.exception.PaymentDeclinedException;
 import com.system.payment.common.exception.PaymentStateTransitionException;
