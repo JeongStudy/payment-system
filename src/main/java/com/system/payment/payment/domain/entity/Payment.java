@@ -3,6 +3,8 @@ package com.system.payment.payment.domain.entity;
 import com.system.payment.common.domain.entity.BaseEntity;
 import com.system.payment.common.dto.response.ErrorCode;
 import com.system.payment.common.exception.PaymentServerBadRequestException;
+import com.system.payment.common.exception.PaymentServerInternalServerErrorException;
+import com.system.payment.common.exception.PaymentServerNotFoundException;
 import com.system.payment.common.exception.PaymentStateTransitionException;
 import com.system.payment.payment.domain.constant.PaymentResultCode;
 import com.system.payment.payment.domain.constant.PaymentType;
@@ -12,7 +14,6 @@ import com.system.payment.payment.domain.vo.PaymentMethodRef;
 import com.system.payment.payment.domain.vo.PaymentUserRef;
 import com.system.payment.payment.domain.vo.ReferenceRef;
 import com.system.payment.payment.model.dto.PaymentDetailItem;
-import com.system.payment.payment.validator.PaymentItemValidator;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -117,11 +118,24 @@ public class Payment extends BaseEntity {
 
 		if (totalAmount <= 0)
 			throw new PaymentServerBadRequestException(ErrorCode.PAYMENT_TOTAL_AMOUNT_MUST_BE_POSITIVE);
-		PaymentItemValidator.validateAndVerifyTotal(items, totalAmount);
+		validateAndVerifyTotal(items, totalAmount);
 		PaymentResultCode paymentResultCode = PaymentResultCode.WAITING;
 		Payment payment = new Payment(userRef, referenceRef, methodRef, paymentType, totalAmount, paymentResultCode, idempotencyKey, transactionId);
 		payment.addDetails(items);
 		return payment;
+	}
+
+	private static void validateAndVerifyTotal(
+			List<PaymentDetailItem> items,
+			int requestedAmount
+	) {
+		if (items == null || items.isEmpty()) {
+			throw new PaymentServerNotFoundException(ErrorCode.PAYMENT_ITEMS_NOT_FOUND);
+		}
+		int total = items.stream().mapToInt(PaymentDetailItem::getItemAmount).sum();
+		if (total != requestedAmount) {
+			throw new PaymentServerInternalServerErrorException(ErrorCode.PAYMENT_INVALID_ITEM_SUM_AMOUNT_AND_TOTAL_AMOUNT);
+		}
 	}
 
 	private void addDetails(List<PaymentDetailItem> itemList) {
