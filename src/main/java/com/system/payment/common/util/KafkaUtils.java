@@ -3,7 +3,7 @@ package com.system.payment.common.util;
 import com.system.payment.common.dto.response.ErrorCode;
 import com.system.payment.common.exception.PaymentValidationException;
 import com.system.payment.pg.inicis.model.request.InicisBillingApproval;
-import com.system.payment.payment.model.dto.PaymentRequestedMessageV1;
+import com.system.payment.payment.producer.message.PaymentRequestedMessageV1;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

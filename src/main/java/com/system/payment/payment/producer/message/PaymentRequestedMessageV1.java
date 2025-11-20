@@ -1,4 +1,4 @@
-package com.system.payment.payment.model.dto;
+package com.system.payment.payment.producer.message;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
