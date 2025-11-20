@@ -1,4 +1,4 @@
-package com.system.payment.example.controller;
+package com.system.payment.common.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

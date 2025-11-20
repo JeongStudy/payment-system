@@ -1,4 +1,4 @@
-package com.system.payment.example.controller;
+package com.system.payment.common.controller;
 
 import com.system.payment.common.exception.ErrorCode;
 import com.system.payment.common.exception.PaymentServerBadRequestException;
