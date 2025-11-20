@@ -1,6 +1,6 @@
 package com.system.payment.payment.integration;
 
-import com.system.payment.config.TestBootConfig;
+import com.system.payment.common.config.TestBootConfig;
 import com.system.payment.common.exception.PaymentStateTransitionException;
 import com.system.payment.payment.domain.*;
 import com.system.payment.payment.repository.*;

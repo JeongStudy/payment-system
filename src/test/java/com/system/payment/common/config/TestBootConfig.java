@@ -1,4 +1,4 @@
-package com.system.payment.config;
+package com.system.payment.common.config;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
