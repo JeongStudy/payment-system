@@ -1,4 +1,4 @@
-package com.system.payment.pg.inicis;
+package com.system.payment.pg.inicis.domain.constant;
 
 import com.system.payment.common.dto.response.ErrorCode;
 
