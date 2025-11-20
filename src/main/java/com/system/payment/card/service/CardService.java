@@ -10,7 +10,7 @@ import com.system.payment.card.provider.BillingAuthProviderRegistry;
 import com.system.payment.card.repository.PaymentUserCardRepository;
 import com.system.payment.user.domain.PaymentUser;
 import com.system.payment.user.repository.PaymentUserRepository;
-import com.system.payment.util.IdGeneratorUtils;
+import com.system.payment.common.util.IdGeneratorUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;

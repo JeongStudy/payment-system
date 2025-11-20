@@ -7,7 +7,7 @@ import com.system.payment.payment.repository.PaymentDetailRepository;
 import com.system.payment.payment.repository.PaymentIdempotencyRepository;
 import com.system.payment.payment.repository.PaymentRepository;
 import com.system.payment.payment.service.PaymentIdempotencyGuard;
-import com.system.payment.util.IdGeneratorUtils;
+import com.system.payment.common.util.IdGeneratorUtils;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

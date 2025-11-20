@@ -1,4 +1,4 @@
-package com.system.payment.util;
+package com.system.payment.common.util;
 
 import java.time.Instant;
 import java.time.LocalDateTime;

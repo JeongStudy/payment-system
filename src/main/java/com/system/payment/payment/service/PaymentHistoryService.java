@@ -8,7 +8,7 @@ import com.system.payment.payment.domain.Payment;
 import com.system.payment.payment.domain.PaymentHistory;
 import com.system.payment.payment.domain.PaymentResultCode;
 import com.system.payment.payment.repository.PaymentHistoryRepository;
-import com.system.payment.util.StringUtils;
+import com.system.payment.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

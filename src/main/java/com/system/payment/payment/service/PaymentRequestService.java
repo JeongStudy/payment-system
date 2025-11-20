@@ -17,7 +17,7 @@ import com.system.payment.user.domain.PaymentUser;
 import com.system.payment.user.service.CredentialService;
 import com.system.payment.user.service.CryptoService;
 import com.system.payment.user.service.UserService;
-import com.system.payment.util.KeyGeneratorUtils;
+import com.system.payment.common.util.KeyGeneratorUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;

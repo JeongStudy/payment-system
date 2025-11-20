@@ -4,7 +4,7 @@ import com.system.payment.common.dto.response.ErrorCode;
 import com.system.payment.common.exception.PaymentValidationException;
 import com.system.payment.payment.model.dto.InicisBillingApproval;
 import com.system.payment.payment.model.dto.PaymentRequestedMessageV1;
-import com.system.payment.util.KafkaUtils;
+import com.system.payment.common.util.KafkaUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
