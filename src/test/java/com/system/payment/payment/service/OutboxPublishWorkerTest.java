@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.system.payment.card.domain.PaymentUserCard;
 import com.system.payment.card.repository.PaymentUserCardRepository;
 import com.system.payment.outbox.service.OutboxService;
-import com.system.payment.payment.domain.Payment;
+import com.system.payment.payment.domain.entity.Payment;
 import com.system.payment.outbox.domain.constant.EventType;
 import com.system.payment.outbox.domain.entity.OutboxEvent;
 import com.system.payment.outbox.model.dto.PaymentRequestedArgs;

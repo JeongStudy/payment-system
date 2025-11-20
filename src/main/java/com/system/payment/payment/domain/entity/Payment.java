@@ -1,10 +1,16 @@
-package com.system.payment.payment.domain;
+package com.system.payment.payment.domain.entity;
 
 import com.system.payment.common.domain.entity.BaseEntity;
 import com.system.payment.common.dto.response.ErrorCode;
 import com.system.payment.common.exception.PaymentServerBadRequestException;
 import com.system.payment.common.exception.PaymentStateTransitionException;
+import com.system.payment.payment.domain.constant.PaymentResultCode;
+import com.system.payment.payment.domain.constant.PaymentType;
 import com.system.payment.payment.domain.converter.PaymentResultCodeConverter;
+import com.system.payment.payment.domain.vo.ItemRef;
+import com.system.payment.payment.domain.vo.PaymentMethodRef;
+import com.system.payment.payment.domain.vo.PaymentUserRef;
+import com.system.payment.payment.domain.vo.ReferenceRef;
 import com.system.payment.payment.model.dto.PaymentDetailItem;
 import com.system.payment.payment.validator.PaymentItemValidator;
 import jakarta.persistence.*;

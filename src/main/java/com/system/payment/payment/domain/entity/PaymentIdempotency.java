@@ -1,6 +1,7 @@
-package com.system.payment.payment.domain;
+package com.system.payment.payment.domain.entity;
 
 import com.system.payment.common.domain.entity.BaseEntity;
+import com.system.payment.payment.domain.constant.PaymentState;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

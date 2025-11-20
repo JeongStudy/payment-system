@@ -2,7 +2,13 @@ package com.system.payment.payment.integration;
 
 import com.system.payment.common.config.TestBootConfig;
 import com.system.payment.common.exception.PaymentStateTransitionException;
-import com.system.payment.payment.domain.*;
+import com.system.payment.payment.domain.constant.*;
+import com.system.payment.payment.domain.entity.Payment;
+import com.system.payment.payment.domain.entity.PaymentDetail;
+import com.system.payment.payment.domain.vo.ItemRef;
+import com.system.payment.payment.domain.vo.PaymentMethodRef;
+import com.system.payment.payment.domain.vo.PaymentUserRef;
+import com.system.payment.payment.domain.vo.ReferenceRef;
 import com.system.payment.payment.repository.PaymentDetailRepository;
 import com.system.payment.payment.repository.PaymentIdempotencyRepository;
 import com.system.payment.payment.repository.PaymentRepository;

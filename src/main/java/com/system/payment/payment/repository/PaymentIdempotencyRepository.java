@@ -1,6 +1,6 @@
 package com.system.payment.payment.repository;
 
-import com.system.payment.payment.domain.PaymentIdempotency;
+import com.system.payment.payment.domain.entity.PaymentIdempotency;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
