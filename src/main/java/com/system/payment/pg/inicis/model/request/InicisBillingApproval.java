@@ -1,4 +1,4 @@
-package com.system.payment.payment.model.dto;
+package com.system.payment.pg.inicis.model.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

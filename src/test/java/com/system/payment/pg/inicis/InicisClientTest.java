@@ -3,6 +3,7 @@ package com.system.payment.pg.inicis;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.system.payment.card.model.response.InicisBillingKeyResponse;
 import com.system.payment.common.exception.PgResponseParseException;
+import com.system.payment.pg.inicis.client.InicisClient;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

@@ -8,7 +8,7 @@ import com.system.payment.card.model.response.InicisBillingAuthResponse;
 import com.system.payment.card.model.response.InicisBillingKeyResponse;
 import com.system.payment.card.repository.PaymentUserCardRepository;
 import com.system.payment.common.exception.PaymentServerNotFoundException;
-import com.system.payment.pg.inicis.InicisClient;
+import com.system.payment.pg.inicis.client.InicisClient;
 import com.system.payment.common.util.HashUtils;
 import com.system.payment.common.util.IdGeneratorUtils;
 import org.junit.jupiter.api.DisplayName;

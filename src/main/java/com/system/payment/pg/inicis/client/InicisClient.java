@@ -1,11 +1,11 @@
-package com.system.payment.pg.inicis;
+package com.system.payment.pg.inicis.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.system.payment.card.model.response.InicisBillingKeyResponse;
 import com.system.payment.common.dto.response.ErrorCode;
 import com.system.payment.common.exception.PgResponseParseException;
-import com.system.payment.payment.model.dto.InicisBillingApproval;
-import com.system.payment.payment.model.dto.InicisBillingApproveResponse;
+import com.system.payment.pg.inicis.model.request.InicisBillingApproval;
+import com.system.payment.pg.inicis.model.response.InicisBillingApproveResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;

@@ -2,7 +2,7 @@
 //
 //import com.system.payment.outbox.repository.OutboxEventRepository;
 //import com.system.payment.payment.scheduler.OutboxPublishWorker;
-//import com.system.payment.payment.service.InicisPgClientService;
+//import com.system.payment.pg.inicis.service.InicisPgClientService;
 //import com.system.payment.payment.service.PaymentProcessService;
 //import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 //import org.springframework.kafka.test.EmbeddedKafkaBroker;
