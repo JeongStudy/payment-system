@@ -1,10 +1,9 @@
-package com.system.payment.filter;
+package com.system.payment.common.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.system.payment.user.model.dto.SimpleUserDetails;
 import com.system.payment.util.JwtUtils;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.FilterChain;
