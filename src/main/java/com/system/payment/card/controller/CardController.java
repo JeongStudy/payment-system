@@ -6,7 +6,7 @@ import com.system.payment.card.model.response.PGAuthParamsResponse;
 import com.system.payment.card.model.response.PaymentUserCardResponse;
 import com.system.payment.card.service.CardService;
 import com.system.payment.card.service.InicisService;
-import com.system.payment.provider.AuthUserProvider;
+import com.system.payment.common.provider.AuthUserProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
