@@ -1,4 +1,4 @@
-package com.system.payment.payment.service;
+package com.system.payment.outbox.worker;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.system.payment.card.domain.entity.PaymentUserCard;
@@ -11,7 +11,6 @@ import com.system.payment.outbox.model.dto.PaymentRequestedArgs;
 import com.system.payment.outbox.repository.OutboxEventRepository;
 import com.system.payment.payment.producer.PaymentProducer;
 import com.system.payment.payment.repository.PaymentRepository;
-import com.system.payment.outbox.worker.OutboxPublishWorker;
 import com.system.payment.user.domain.PaymentUser;
 import com.system.payment.user.repository.PaymentUserRepository;
 import com.system.payment.user.service.UserService;
