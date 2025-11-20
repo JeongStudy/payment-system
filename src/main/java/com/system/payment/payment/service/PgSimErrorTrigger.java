@@ -1,6 +1,6 @@
 package com.system.payment.payment.service;
 
-import com.system.payment.common.exception.ErrorCode;
+import com.system.payment.common.dto.response.ErrorCode;
 
 public enum PgSimErrorTrigger {
     TIMEOUT(ErrorCode.PG_TIMEOUT),

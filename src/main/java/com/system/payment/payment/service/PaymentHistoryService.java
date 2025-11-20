@@ -2,7 +2,7 @@ package com.system.payment.payment.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.system.payment.common.exception.ErrorCode;
+import com.system.payment.common.dto.response.ErrorCode;
 import com.system.payment.common.exception.PaymentServerInternalServerErrorException;
 import com.system.payment.payment.domain.Payment;
 import com.system.payment.payment.domain.PaymentHistory;

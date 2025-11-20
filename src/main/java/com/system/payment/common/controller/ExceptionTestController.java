@@ -1,6 +1,6 @@
 package com.system.payment.common.controller;
 
-import com.system.payment.common.exception.ErrorCode;
+import com.system.payment.common.dto.response.ErrorCode;
 import com.system.payment.common.exception.PaymentServerBadRequestException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;

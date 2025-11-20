@@ -1,6 +1,6 @@
 package com.system.payment.user.service;
 
-import com.system.payment.common.exception.ErrorCode;
+import com.system.payment.common.dto.response.ErrorCode;
 import com.system.payment.common.exception.PaymentServerConflictException;
 import com.system.payment.user.domain.AesKey;
 import com.system.payment.user.domain.PaymentUser;

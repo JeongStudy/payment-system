@@ -1,6 +1,6 @@
 package com.system.payment.user.repository;
 
-import com.system.payment.common.exception.ErrorCode;
+import com.system.payment.common.dto.response.ErrorCode;
 import com.system.payment.common.exception.PaymentServerNotFoundException;
 import com.system.payment.user.domain.RsaKeyPair;
 import org.springframework.data.jpa.repository.JpaRepository;

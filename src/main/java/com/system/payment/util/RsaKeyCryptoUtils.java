@@ -1,7 +1,7 @@
 package com.system.payment.util;
 
 import com.system.payment.common.exception.CryptoException;
-import com.system.payment.common.exception.ErrorCode;
+import com.system.payment.common.dto.response.ErrorCode;
 
 import javax.crypto.Cipher;
 import java.nio.charset.StandardCharsets;

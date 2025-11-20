@@ -1,8 +1,8 @@
 package com.system.payment.common.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.system.payment.common.exception.ErrorCode;
-import com.system.payment.util.Response;
+import com.system.payment.common.dto.response.ErrorCode;
+import com.system.payment.common.dto.response.Response;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;

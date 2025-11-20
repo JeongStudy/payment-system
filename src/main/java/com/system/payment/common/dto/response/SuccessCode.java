@@ -1,4 +1,4 @@
-package com.system.payment.util;
+package com.system.payment.common.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
