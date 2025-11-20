@@ -76,7 +76,7 @@ class PaymentProcessServiceTest {
         PaymentRequestedMessageV1<InicisBillingApproval> msg = mockMessage(PAYMENT_ID, TX_ID);
 
         // when
-        when(paymentRepository.findById(PAYMENT_ID)).thenReturn(Optional.empty());
+        when(paymentRepository.findByIdForUpdate(PAYMENT_ID)).thenReturn(Optional.empty());
 
         // then
         assertThrows(PaymentValidationException.class, () -> paymentProcessService.process(msg));
@@ -91,7 +91,7 @@ class PaymentProcessServiceTest {
 
         // when
         when(payment.getPaymentResultCode()).thenReturn(PaymentResultCode.COMPLETED);
-        when(paymentRepository.findById(PAYMENT_ID)).thenReturn(Optional.of(payment));
+        when(paymentRepository.findByIdForUpdate(PAYMENT_ID)).thenReturn(Optional.of(payment));
 
         paymentProcessService.process(msg);
 
@@ -109,7 +109,7 @@ class PaymentProcessServiceTest {
 
         // when
         when(payment.getPaymentResultCode()).thenReturn(PaymentResultCode.FAILED);
-        when(paymentRepository.findById(PAYMENT_ID)).thenReturn(Optional.of(payment));
+        when(paymentRepository.findByIdForUpdate(PAYMENT_ID)).thenReturn(Optional.of(payment));
 
         paymentProcessService.process(msg);
 
@@ -129,7 +129,7 @@ class PaymentProcessServiceTest {
         // when
         when(payment.getPaymentResultCode()).thenReturn(PaymentResultCode.WAITING);
         when(payment.getDetails()).thenReturn(List.of(d1));
-        when(paymentRepository.findById(PAYMENT_ID)).thenReturn(Optional.of(payment));
+        when(paymentRepository.findByIdForUpdate(PAYMENT_ID)).thenReturn(Optional.of(payment));
 
         InicisBillingApproveResponse res = mock(InicisBillingApproveResponse.class);
         when(res.isSuccess()).thenReturn(false);
@@ -157,7 +157,7 @@ class PaymentProcessServiceTest {
         // when
         when(payment.getPaymentResultCode()).thenReturn(PaymentResultCode.REQUESTED);
         when(payment.getDetails()).thenReturn(List.of(d1, d2));
-        when(paymentRepository.findById(PAYMENT_ID)).thenReturn(Optional.of(payment));
+        when(paymentRepository.findByIdForUpdate(PAYMENT_ID)).thenReturn(Optional.of(payment));
 
         InicisBillingApproveResponse res = mock(InicisBillingApproveResponse.class);
         when(res.isSuccess()).thenReturn(false);
@@ -186,7 +186,7 @@ class PaymentProcessServiceTest {
         // when
         when(payment.getPaymentResultCode()).thenReturn(PaymentResultCode.WAITING);
         when(payment.getDetails()).thenReturn(List.of(d1, d2));
-        when(paymentRepository.findById(PAYMENT_ID)).thenReturn(Optional.of(payment));
+        when(paymentRepository.findByIdForUpdate(PAYMENT_ID)).thenReturn(Optional.of(payment));
 
         InicisBillingApproveResponse res = mock(InicisBillingApproveResponse.class);
         when(res.isSuccess()).thenReturn(true);
@@ -211,7 +211,7 @@ class PaymentProcessServiceTest {
         Payment payment = mock(Payment.class);
 
         when(payment.getPaymentResultCode()).thenReturn(PaymentResultCode.WAITING);
-        when(paymentRepository.findById(PAYMENT_ID)).thenReturn(Optional.of(payment));
+        when(paymentRepository.findByIdForUpdate(PAYMENT_ID)).thenReturn(Optional.of(payment));
         when(inicisPgClientService.approve(any())).thenThrow(new TransientPgException(ErrorCode.PG_TIMEOUT));
 
         assertThrows(TransientPgException.class, () -> paymentProcessService.process(msg));
