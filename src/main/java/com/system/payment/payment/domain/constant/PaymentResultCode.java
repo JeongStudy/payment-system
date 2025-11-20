@@ -1,4 +1,4 @@
-package com.system.payment.payment.domain;
+package com.system.payment.payment.domain.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

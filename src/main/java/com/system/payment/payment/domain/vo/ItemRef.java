@@ -1,5 +1,6 @@
-package com.system.payment.payment.domain;
+package com.system.payment.payment.domain.vo;
 
+import com.system.payment.payment.domain.constant.ItemType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;

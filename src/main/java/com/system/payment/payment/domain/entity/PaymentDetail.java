@@ -1,6 +1,8 @@
-package com.system.payment.payment.domain;
+package com.system.payment.payment.domain.entity;
 
 import com.system.payment.common.domain.entity.BaseEntity;
+import com.system.payment.payment.domain.vo.ItemRef;
+import com.system.payment.payment.domain.constant.PaymentResultCode;
 import com.system.payment.payment.domain.converter.PaymentResultCodeConverter;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
