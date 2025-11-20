@@ -5,7 +5,7 @@ import com.system.payment.pg.inicis.model.request.InicisBillingApproval;
 import com.system.payment.pg.inicis.model.response.InicisBillingApproveResponse;
 import com.system.payment.common.util.StringUtils;
 import com.system.payment.pg.inicis.client.InicisClient;
-import com.system.payment.pg.inicis.PgSimErrorTrigger;
+import com.system.payment.pg.inicis.domain.constant.PgSimErrorTrigger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
