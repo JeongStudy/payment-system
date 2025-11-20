@@ -1,7 +1,7 @@
 package com.system.payment.payment.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.system.payment.card.domain.PaymentUserCard;
+import com.system.payment.card.domain.entity.PaymentUserCard;
 import com.system.payment.card.repository.PaymentUserCardRepository;
 import com.system.payment.outbox.service.OutboxService;
 import com.system.payment.payment.domain.entity.Payment;

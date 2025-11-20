@@ -1,6 +1,6 @@
 package com.system.payment.payment.service;
 
-import com.system.payment.card.domain.PaymentUserCard;
+import com.system.payment.card.domain.entity.PaymentUserCard;
 import com.system.payment.card.repository.PaymentUserCardRepository;
 import com.system.payment.common.dto.response.ErrorCode;
 import com.system.payment.common.exception.PaymentServerConflictException;

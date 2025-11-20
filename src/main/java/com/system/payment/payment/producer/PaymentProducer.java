@@ -2,7 +2,7 @@ package com.system.payment.payment.producer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.system.payment.card.domain.PaymentUserCard;
+import com.system.payment.card.domain.entity.PaymentUserCard;
 import com.system.payment.payment.domain.entity.Payment;
 import com.system.payment.pg.inicis.model.request.InicisBillingApproval;
 import com.system.payment.payment.producer.message.PaymentRequestedMessageV1;
