@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-public class IdGeneratorUtil {
+public class IdGeneratorUtils {
     public static String oidGenerate() {
         return "DemoTest_" + System.currentTimeMillis();
     }

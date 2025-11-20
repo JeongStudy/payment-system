@@ -10,7 +10,7 @@ import com.system.payment.card.repository.PaymentUserCardRepository;
 import com.system.payment.exception.PaymentServerNotFoundException;
 import com.system.payment.pg.inicis.InicisClient;
 import com.system.payment.util.HashUtils;
-import com.system.payment.util.IdGeneratorUtil;
+import com.system.payment.util.IdGeneratorUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -79,8 +79,8 @@ class InicisServiceTest {
         set(req, "goodName", GOOD_NAME);
 
         // when
-        try (MockedStatic<IdGeneratorUtil> mocked = mockStatic(IdGeneratorUtil.class)) {
-            mocked.when(IdGeneratorUtil::timestampGenerate).thenReturn(TS);
+        try (MockedStatic<IdGeneratorUtils> mocked = mockStatic(IdGeneratorUtils.class)) {
+            mocked.when(IdGeneratorUtils::timestampGenerate).thenReturn(TS);
 
             InicisBillingAuthResponse res = inicisService.createBillingAuthParams(OID_SUCCESS, req);
 

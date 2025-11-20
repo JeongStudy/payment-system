@@ -3,9 +3,9 @@ package com.system.payment.payment.service;
 import com.system.payment.exception.PaymentValidationException;
 import com.system.payment.payment.model.dto.InicisBillingApproval;
 import com.system.payment.payment.model.dto.PaymentRequestedMessageV1;
-import com.system.payment.util.IdGeneratorUtil;
-import com.system.payment.util.KafkaUtil;
-import com.system.payment.util.StringUtil;
+import com.system.payment.util.IdGeneratorUtils;
+import com.system.payment.util.KafkaUtils;
+import com.system.payment.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -50,14 +50,14 @@ public class PaymentConsumer {
             @Headers Map<String, Object> headers
     ) {
         // 1) 헤더 추출(null/byte[] 안전)
-        String traceId = KafkaUtil.extractKafkaHeader(headers, HDR_TRACE_ID);
-        String spanId  = KafkaUtil.extractKafkaHeader(headers, HDR_SPAN_ID);
-        String corrId  = KafkaUtil.extractKafkaHeader(headers, HDR_CORR_ID);
+        String traceId = KafkaUtils.extractKafkaHeader(headers, HDR_TRACE_ID);
+        String spanId  = KafkaUtils.extractKafkaHeader(headers, HDR_SPAN_ID);
+        String corrId  = KafkaUtils.extractKafkaHeader(headers, HDR_CORR_ID);
 
         // 1-1) 기본값 보정
-        traceId = StringUtil.orDefault(traceId, IdGeneratorUtil.UUIDGenerate()); // 없으면 새 UUID 생성
-        spanId  = StringUtil.orDefault(spanId,  "span-" + IdGeneratorUtil.UUIDGenerate().substring(0, 8));
-        corrId  = StringUtil.orDefault(corrId,  "corr-" + IdGeneratorUtil.UUIDGenerate().substring(0, 8));
+        traceId = StringUtils.orDefault(traceId, IdGeneratorUtils.UUIDGenerate()); // 없으면 새 UUID 생성
+        spanId  = StringUtils.orDefault(spanId,  "span-" + IdGeneratorUtils.UUIDGenerate().substring(0, 8));
+        corrId  = StringUtils.orDefault(corrId,  "corr-" + IdGeneratorUtils.UUIDGenerate().substring(0, 8));
 
         // 2) 메시지 안전 파싱(null 안전)
         String idempotencyKey = Optional.ofNullable(msg).map(PaymentRequestedMessageV1::envelope)
@@ -85,13 +85,13 @@ public class PaymentConsumer {
             }
 
             log.info("[CONSUME] key={}, partition={}, offset={}, provider={}, mid={}",
-                    StringUtil.safe(key), partition, offset,
+                    StringUtils.safe(key), partition, offset,
                     external != null ? external.provider() : null,
                     approval != null ? approval.getMid() : null
             );
 
             // 5) 밸리데이션 (필수 필드 누락 시 재시도 무의미 → swallow)
-            KafkaUtil.validateMessagePayload(idempotencyKey, txId, external, approval);
+            KafkaUtils.validateMessagePayload(idempotencyKey, txId, external, approval);
 
             // 6) 멱등성 가드
             if (!idempotencyGuard.tryAcquire(idempotencyKey)) {

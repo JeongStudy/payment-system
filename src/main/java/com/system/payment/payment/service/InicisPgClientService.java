@@ -1,11 +1,10 @@
 package com.system.payment.payment.service;
 
-import com.system.payment.exception.ErrorCode;
 import com.system.payment.exception.TransientPgException;
 import com.system.payment.payment.model.dto.InicisBillingApproval;
 import com.system.payment.payment.model.dto.InicisBillingApproveResponse;
 import com.system.payment.pg.inicis.InicisClient;
-import com.system.payment.util.StringUtil;
+import com.system.payment.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -61,11 +60,11 @@ public class InicisPgClientService {
             );
         }
 
-        String authCode = StringUtil.randomDigits(6);
+        String authCode = StringUtils.randomDigits(6);
         var res = new InicisBillingApproveResponse(
                 "00", "Simulator: approval ok",
                 payDate, payTime, authCode,
-                "SIM-" + payDate + payTime + "-" + StringUtil.randomDigits(4),
+                "SIM-" + payDate + payTime + "-" + StringUtils.randomDigits(4),
                 price, "CC01", "00", "0", "1", "0", null, null, "0", "4040-****-****-1234"
         );
 

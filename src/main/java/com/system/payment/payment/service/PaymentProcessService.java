@@ -11,7 +11,7 @@ import com.system.payment.payment.model.dto.InicisBillingApproveResponse;
 import com.system.payment.payment.model.dto.PaymentRequestedMessageV1;
 import com.system.payment.payment.repository.PaymentHistoryRepository;
 import com.system.payment.payment.repository.PaymentRepository;
-import com.system.payment.util.StringUtil;
+import com.system.payment.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -80,7 +80,7 @@ public class PaymentProcessService {
             return;
         }
 
-        final String prevDataJson = StringUtil.toJsonSafe(payment);
+        final String prevDataJson = StringUtils.toJsonSafe(payment);
         final PaymentResultCode prevCode = payment.getPaymentResultCode();
 
         // 2) WAITING -> REQUESTED (최초 요청 흔적)

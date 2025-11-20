@@ -10,7 +10,7 @@ import com.system.payment.card.provider.BillingAuthProviderRegistry;
 import com.system.payment.card.repository.PaymentUserCardRepository;
 import com.system.payment.user.domain.PaymentUser;
 import com.system.payment.user.repository.PaymentUserRepository;
-import com.system.payment.util.IdGeneratorUtil;
+import com.system.payment.util.IdGeneratorUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -51,7 +51,7 @@ public class CardService {
     public PGAuthParamsResponse getBillingAuthParams(Integer userId,CardAuthRequest request) {
         PaymentUser user = paymentUserRepository.getReferenceById(userId);
         PgCompany pgCompany = PgCompany.from(request.getPgCompany());
-        String oid = IdGeneratorUtil.oidGenerate();
+        String oid = IdGeneratorUtils.oidGenerate();
 
         savePendingCard(user, oid, pgCompany);
 

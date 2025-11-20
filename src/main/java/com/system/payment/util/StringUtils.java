@@ -10,7 +10,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 @RequiredArgsConstructor
-public class StringUtil {
+public class StringUtils {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 

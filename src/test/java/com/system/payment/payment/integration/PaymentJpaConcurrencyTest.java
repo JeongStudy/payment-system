@@ -7,7 +7,7 @@ import com.system.payment.payment.repository.PaymentDetailRepository;
 import com.system.payment.payment.repository.PaymentIdempotencyRepository;
 import com.system.payment.payment.repository.PaymentRepository;
 import com.system.payment.payment.service.PaymentIdempotencyGuard;
-import com.system.payment.util.IdGeneratorUtil;
+import com.system.payment.util.IdGeneratorUtils;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -55,8 +55,8 @@ class PaymentJpaConcurrencyTest {
                 .paymentType(PaymentType.NORMAL)
                 .totalAmount(total)
                 .paymentResultCode(PaymentResultCode.WAITING)
-                .idempotencyKey("idem-" + IdGeneratorUtil.UUIDGenerate())
-                .transactionId("tx-" + IdGeneratorUtil.UUIDGenerate())
+                .idempotencyKey("idem-" + IdGeneratorUtils.UUIDGenerate())
+                .transactionId("tx-" + IdGeneratorUtils.UUIDGenerate())
                 .build();
         for (int amt : itemAmounts) {
             p.getDetails().add(PaymentDetail.create(ItemRef.of(ITEM_ID, ItemType.PRODUCT), amt));
@@ -156,7 +156,7 @@ class PaymentJpaConcurrencyTest {
     @DisplayName("IdempotencyGuard: 같은 키 동시 획득 시 정확히 1회만 true")
     void 멱등가드_동시획득_정확히한번성공() throws Exception {
         var guard = new PaymentIdempotencyGuard(paymentIdempotencyRepository);
-        String key = "idem-" + IdGeneratorUtil.UUIDGenerate();
+        String key = "idem-" + IdGeneratorUtils.UUIDGenerate();
 
         ExecutorService pool = Executors.newFixedThreadPool(4);
         Callable<Boolean> c = () -> guard.tryAcquire(key);

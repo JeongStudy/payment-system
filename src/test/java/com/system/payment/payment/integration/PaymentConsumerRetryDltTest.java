@@ -5,7 +5,7 @@ import com.system.payment.exception.TransientPgException;
 import com.system.payment.payment.service.PaymentIdempotencyGuard;
 import com.system.payment.payment.service.PaymentProcessService;
 import com.system.payment.util.KafkaIntegrationTestSupport;
-import com.system.payment.util.IdGeneratorUtil;
+import com.system.payment.util.IdGeneratorUtils;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -49,7 +49,7 @@ class PaymentConsumerRetryDltTest extends KafkaIntegrationTestSupport {
         when(idempotencyGuard.tryAcquire(any())).thenReturn(true); // 호출되면 안 되지만 안전망
 
         var idem = " "; // 공백 → validateMessagePayload에서 PaymentValidationException 터짐
-        var txId = "tx-" + IdGeneratorUtil.UUIDGenerate();
+        var txId = "tx-" + IdGeneratorUtils.UUIDGenerate();
 
         // when
         send(message(idem, txId, approval(SUCCESS_MOID)));
@@ -73,8 +73,8 @@ class PaymentConsumerRetryDltTest extends KafkaIntegrationTestSupport {
         doThrow(new TransientPgException(ErrorCode.PG_TIMEOUT))
                 .when(paymentProcessService).process(any());
 
-        var idem = "idem-" + IdGeneratorUtil.UUIDGenerate();
-        var txId = "tx-" + IdGeneratorUtil.UUIDGenerate();
+        var idem = "idem-" + IdGeneratorUtils.UUIDGenerate();
+        var txId = "tx-" + IdGeneratorUtils.UUIDGenerate();
 
         // when
         send(message(idem, txId, approval(SUCCESS_MOID)));

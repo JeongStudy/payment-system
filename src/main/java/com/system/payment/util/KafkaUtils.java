@@ -12,7 +12,7 @@ import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
-public class KafkaUtil {
+public class KafkaUtils {
 
     public static String extractKafkaHeader(Map<String, Object> headers, String key) {
         Object v = headers.get(key);
@@ -35,7 +35,7 @@ public class KafkaUtil {
                 || approval.getMid() == null || approval.getMid().isBlank()) {
 
             log.warn("[VALIDATION] invalid payload: idempotencyKey={}, txId={}, external={}, provider={}, approval={}, mid={}",
-                    StringUtil.safe(idempotencyKey), StringUtil.safe(txId),
+                    StringUtils.safe(idempotencyKey), StringUtils.safe(txId),
                     external != null, (external != null ? external.provider() : null),
                     (approval != null), (approval != null ? approval.getMid() : null));
 
