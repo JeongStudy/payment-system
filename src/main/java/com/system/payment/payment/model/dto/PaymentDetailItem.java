@@ -1,6 +1,6 @@
 package com.system.payment.payment.model.dto;
 
-import com.system.payment.payment.domain.ItemType;
+import com.system.payment.payment.domain.constant.ItemType;
 import lombok.Builder;
 import lombok.Getter;
 

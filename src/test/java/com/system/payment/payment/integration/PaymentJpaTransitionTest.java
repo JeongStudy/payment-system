@@ -1,10 +1,16 @@
 package com.system.payment.payment.integration;
 
-import com.system.payment.config.TestBootConfig;
-import com.system.payment.exception.PaymentStateTransitionException;
-import com.system.payment.payment.domain.*;
+import com.system.payment.common.config.TestBootConfig;
+import com.system.payment.common.exception.PaymentStateTransitionException;
+import com.system.payment.payment.domain.constant.*;
+import com.system.payment.payment.domain.entity.Payment;
+import com.system.payment.payment.domain.entity.PaymentDetail;
+import com.system.payment.payment.domain.vo.ItemRef;
+import com.system.payment.payment.domain.vo.PaymentMethodRef;
+import com.system.payment.payment.domain.vo.PaymentUserRef;
+import com.system.payment.payment.domain.vo.ReferenceRef;
 import com.system.payment.payment.repository.*;
-import com.system.payment.util.IdGeneratorUtil;
+import com.system.payment.common.util.IdGeneratorUtils;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -58,8 +64,8 @@ class PaymentJpaTransitionTest {
                 .paymentType(PaymentType.NORMAL)
                 .totalAmount(total)
                 .paymentResultCode(PaymentResultCode.WAITING)
-                .idempotencyKey("idem-" + IdGeneratorUtil.UUIDGenerate())
-                .transactionId("tx-" + IdGeneratorUtil.UUIDGenerate())
+                .idempotencyKey("idem-" + IdGeneratorUtils.UUIDGenerate())
+                .transactionId("tx-" + IdGeneratorUtils.UUIDGenerate())
                 .build();
 
         for (int amt : itemAmounts) {

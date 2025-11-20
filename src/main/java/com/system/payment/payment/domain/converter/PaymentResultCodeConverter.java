@@ -1,6 +1,6 @@
 package com.system.payment.payment.domain.converter;
 
-import com.system.payment.payment.domain.PaymentResultCode;
+import com.system.payment.payment.domain.constant.PaymentResultCode;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 

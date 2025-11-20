@@ -1,7 +1,7 @@
 package com.system.payment.card.repository;
 
-import com.system.payment.card.domain.BillingKeyStatus;
-import com.system.payment.card.domain.PaymentUserCard;
+import com.system.payment.card.domain.constant.BillingKeyStatus;
+import com.system.payment.card.domain.entity.PaymentUserCard;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;

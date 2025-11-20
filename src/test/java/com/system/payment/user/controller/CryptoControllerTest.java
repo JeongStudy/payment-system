@@ -1,7 +1,7 @@
 package com.system.payment.user.controller;
 
-import com.system.payment.payment.service.PaymentConsumer;
-import com.system.payment.payment.service.PaymentProducer;
+import com.system.payment.payment.consumner.PaymentConsumer;
+import com.system.payment.payment.producer.PaymentProducer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

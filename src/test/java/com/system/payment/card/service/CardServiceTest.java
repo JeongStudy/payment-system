@@ -1,17 +1,17 @@
 package com.system.payment.card.service;
 
-import com.system.payment.card.domain.BillingKeyStatus;
-import com.system.payment.card.domain.PaymentUserCard;
-import com.system.payment.card.domain.PgCompany;
+import com.system.payment.card.domain.constant.BillingKeyStatus;
+import com.system.payment.card.domain.entity.PaymentUserCard;
+import com.system.payment.pg.common.PgCompany;
 import com.system.payment.card.model.request.CardAuthRequest;
-import com.system.payment.card.model.response.PGAuthParamsResponse;
+import com.system.payment.pg.common.PGAuthParamsResponse;
 import com.system.payment.card.model.response.PaymentUserCardResponse;
-import com.system.payment.card.provider.BillingAuthProvider;
-import com.system.payment.card.provider.BillingAuthProviderRegistry;
+import com.system.payment.pg.common.BillingAuthProvider;
+import com.system.payment.pg.common.BillingAuthProviderRegistry;
 import com.system.payment.card.repository.PaymentUserCardRepository;
 import com.system.payment.user.domain.PaymentUser;
 import com.system.payment.user.repository.PaymentUserRepository;
-import com.system.payment.util.IdGeneratorUtil;
+import com.system.payment.common.util.IdGeneratorUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -95,8 +95,8 @@ class CardServiceTest {
         ArgumentCaptor<PaymentUserCard> cardCaptor = ArgumentCaptor.forClass(PaymentUserCard.class);
         when(paymentUserCardRepository.save(cardCaptor.capture())).thenAnswer(a -> a.getArgument(0));
 
-        try (MockedStatic<IdGeneratorUtil> mocked = mockStatic(IdGeneratorUtil.class)) {
-            mocked.when(IdGeneratorUtil::oidGenerate).thenReturn(OID);
+        try (MockedStatic<IdGeneratorUtils> mocked = mockStatic(IdGeneratorUtils.class)) {
+            mocked.when(IdGeneratorUtils::oidGenerate).thenReturn(OID);
 
             // when
             PGAuthParamsResponse response = cardService.getBillingAuthParams(USER_ID, req);
