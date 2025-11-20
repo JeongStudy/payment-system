@@ -1,4 +1,4 @@
-package com.system.payment.payment.partitioner;
+package com.system.payment.payment.producer.partitioner;
 
 import org.apache.kafka.clients.producer.Partitioner;
 import org.apache.kafka.common.Cluster;
