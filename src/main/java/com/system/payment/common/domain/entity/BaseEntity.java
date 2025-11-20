@@ -1,4 +1,4 @@
-package com.system.payment.common.domain;
+package com.system.payment.common.domain.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

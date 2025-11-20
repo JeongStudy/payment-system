@@ -1,6 +1,6 @@
 package com.system.payment.card.domain;
 
-import com.system.payment.common.domain.BaseEntity;
+import com.system.payment.common.domain.entity.BaseEntity;
 import com.system.payment.user.domain.PaymentUser;
 import jakarta.persistence.*;
 import lombok.*;

@@ -1,6 +1,6 @@
 package com.system.payment.user.domain;
 
-import com.system.payment.common.domain.BaseEntity;
+import com.system.payment.common.domain.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

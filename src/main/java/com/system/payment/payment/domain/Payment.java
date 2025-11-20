@@ -1,6 +1,6 @@
 package com.system.payment.payment.domain;
 
-import com.system.payment.common.domain.BaseEntity;
+import com.system.payment.common.domain.entity.BaseEntity;
 import com.system.payment.common.exception.ErrorCode;
 import com.system.payment.common.exception.PaymentServerBadRequestException;
 import com.system.payment.common.exception.PaymentStateTransitionException;
