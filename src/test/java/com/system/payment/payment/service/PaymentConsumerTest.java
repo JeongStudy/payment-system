@@ -1,7 +1,7 @@
 package com.system.payment.payment.service;
 
-import com.system.payment.exception.ErrorCode;
-import com.system.payment.exception.PaymentValidationException;
+import com.system.payment.common.exception.ErrorCode;
+import com.system.payment.common.exception.PaymentValidationException;
 import com.system.payment.payment.model.dto.InicisBillingApproval;
 import com.system.payment.payment.model.dto.PaymentRequestedMessageV1;
 import com.system.payment.util.KafkaUtils;
@@ -13,11 +13,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.kafka.test.EmbeddedKafkaBroker;
-import org.springframework.kafka.test.utils.ContainerTestUtils;
 
 import java.util.HashMap;
 import java.util.Map;

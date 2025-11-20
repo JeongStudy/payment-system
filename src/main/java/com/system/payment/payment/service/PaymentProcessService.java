@@ -1,8 +1,8 @@
 package com.system.payment.payment.service;
 
-import com.system.payment.exception.ErrorCode;
-import com.system.payment.exception.PaymentValidationException;
-import com.system.payment.exception.TransientPgException;
+import com.system.payment.common.exception.ErrorCode;
+import com.system.payment.common.exception.PaymentValidationException;
+import com.system.payment.common.exception.TransientPgException;
 import com.system.payment.payment.domain.Payment;
 import com.system.payment.payment.domain.PaymentDetail;
 import com.system.payment.payment.domain.PaymentResultCode;

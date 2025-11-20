@@ -1,6 +1,6 @@
 package com.system.payment.payment.service;
 
-import com.system.payment.exception.TransientPgException;
+import com.system.payment.common.exception.TransientPgException;
 import com.system.payment.payment.model.dto.InicisBillingApproval;
 import com.system.payment.payment.model.dto.InicisBillingApproveResponse;
 import com.system.payment.pg.inicis.InicisClient;

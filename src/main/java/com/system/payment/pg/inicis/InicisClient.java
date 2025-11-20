@@ -2,8 +2,8 @@ package com.system.payment.pg.inicis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.system.payment.card.model.response.InicisBillingKeyResponse;
-import com.system.payment.exception.ErrorCode;
-import com.system.payment.exception.PgResponseParseException;
+import com.system.payment.common.exception.ErrorCode;
+import com.system.payment.common.exception.PgResponseParseException;
 import com.system.payment.payment.model.dto.InicisBillingApproval;
 import com.system.payment.payment.model.dto.InicisBillingApproveResponse;
 import lombok.RequiredArgsConstructor;

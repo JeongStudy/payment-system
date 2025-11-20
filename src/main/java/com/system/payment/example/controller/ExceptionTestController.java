@@ -1,7 +1,7 @@
 package com.system.payment.example.controller;
 
-import com.system.payment.exception.ErrorCode;
-import com.system.payment.exception.PaymentServerBadRequestException;
+import com.system.payment.common.exception.ErrorCode;
+import com.system.payment.common.exception.PaymentServerBadRequestException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

@@ -1,7 +1,7 @@
 package com.system.payment.util;
 
-import com.system.payment.exception.ErrorCode;
-import com.system.payment.exception.PaymentValidationException;
+import com.system.payment.common.exception.ErrorCode;
+import com.system.payment.common.exception.PaymentValidationException;
 import com.system.payment.payment.model.dto.InicisBillingApproval;
 import com.system.payment.payment.model.dto.PaymentRequestedMessageV1;
 import lombok.RequiredArgsConstructor;

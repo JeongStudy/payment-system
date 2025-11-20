@@ -1,7 +1,7 @@
 package com.system.payment.user.service;
 
-import com.system.payment.exception.CryptoException;
-import com.system.payment.exception.ErrorCode;
+import com.system.payment.common.exception.CryptoException;
+import com.system.payment.common.exception.ErrorCode;
 import com.system.payment.user.domain.AesKey;
 import com.system.payment.user.domain.RsaKeyPair;
 import com.system.payment.user.model.reponse.AesKeyResponse;

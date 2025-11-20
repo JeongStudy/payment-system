@@ -1,12 +1,11 @@
 package com.system.payment.payment.integration;
 
-import com.system.payment.exception.ErrorCode;
-import com.system.payment.exception.TransientPgException;
+import com.system.payment.common.exception.ErrorCode;
+import com.system.payment.common.exception.TransientPgException;
 import com.system.payment.payment.service.PaymentIdempotencyGuard;
 import com.system.payment.payment.service.PaymentProcessService;
 import com.system.payment.util.KafkaIntegrationTestSupport;
 import com.system.payment.util.IdGeneratorUtils;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.test.context.EmbeddedKafka;
@@ -14,7 +13,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
