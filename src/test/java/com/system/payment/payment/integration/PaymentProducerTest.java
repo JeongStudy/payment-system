@@ -2,15 +2,15 @@ package com.system.payment.payment.integration;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.system.payment.common.util.AesKeyCryptoUtils;
+import com.system.payment.common.util.KafkaIntegrationTestSupport;
+import com.system.payment.common.util.RsaKeyCryptoUtils;
 import com.system.payment.outbox.domain.constant.EventType;
 import com.system.payment.outbox.domain.entity.OutboxEvent;
 import com.system.payment.outbox.repository.OutboxEventRepository;
 import com.system.payment.outbox.worker.OutboxPublishWorker;
-import com.system.payment.payment.consumner.PaymentConsumer;
-import com.system.payment.payment.producer.PaymentProducer;
+import com.system.payment.payment.producer.message.PaymentRequestedMessageV1;
 import com.system.payment.user.model.request.LoginRequest;
-import com.system.payment.common.util.AesKeyCryptoUtils;
-import com.system.payment.common.util.RsaKeyCryptoUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -31,11 +31,10 @@ import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.ContainerTestUtils;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
@@ -52,9 +51,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(properties = "spring.task.scheduling.enabled=false")
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
 @EmbeddedKafka(partitions = 2, topics = {"payment.requested.v1"})
-public class PaymentProducerTest {
+@ActiveProfiles("test")
+public class PaymentProducerTest extends KafkaIntegrationTestSupport {
+
+	@Override
+	protected String topic() {
+		return "payment.requested.v1";
+	}
 
 	@Autowired
 	MockMvc mockMvc;
@@ -80,12 +84,6 @@ public class PaymentProducerTest {
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 
-	@Autowired
-	public PaymentConsumer paymentConsumer;
-
-	@Autowired
-	public PaymentProducer paymentProducer;
-
 	@Value("${sql.init-sign-up-secret-sql}")
 	public String initSignUpSql;
 
@@ -96,41 +94,6 @@ public class PaymentProducerTest {
 	private String PAYMENT_REQUESTED_TOPIC;
 
 	private static final Logger logger = LoggerFactory.getLogger(PaymentProducerTest.class);
-
-	@DynamicPropertySource
-	static void kafkaProps(DynamicPropertyRegistry r) {
-		// 공통
-		r.add("spring.kafka.bootstrap-servers",
-				() -> System.getProperty("spring.embedded.kafka.brokers")); // ✅ 이 방식 사용
-
-		// Producer
-		r.add("spring.kafka.producer.key-serializer",
-				() -> "org.apache.kafka.common.serialization.StringSerializer");
-		r.add("spring.kafka.producer.value-serializer",
-				() -> "org.springframework.kafka.support.serializer.JsonSerializer");
-
-		// yml의 producer.properties.* 매핑
-		r.add("spring.kafka.producer.properties.partitioner.class",
-				() -> "com.system.payment.payment.partitioner.ConsistentHashPartitioner");
-		r.add("spring.kafka.producer.properties.enable.idempotence", () -> "true");
-		r.add("spring.kafka.producer.properties.acks", () -> "all");
-		r.add("spring.kafka.producer.properties.retries", () -> "3");
-		r.add("spring.kafka.producer.properties.max.in.flight.requests.per.connection", () -> "5");
-
-		// Consumer
-		r.add("spring.kafka.consumer.group-id", () -> "payment-consumer"); // ← 요구사항
-		r.add("spring.kafka.consumer.auto-offset-reset", () -> "latest");
-		r.add("spring.kafka.consumer.key-deserializer",
-				() -> "org.apache.kafka.common.serialization.StringDeserializer");
-		r.add("spring.kafka.consumer.value-deserializer",
-				() -> "org.springframework.kafka.support.serializer.JsonDeserializer");
-		r.add("spring.kafka.consumer.properties.spring.json.trusted.packages", () -> "*");
-
-		// yml의 consumer 타임아웃/폴링 관련은 Boot에서 properties.* 로 넘기는게 안전
-		r.add("spring.kafka.consumer.properties.heartbeat.interval.ms", () -> "3000");
-		r.add("spring.kafka.consumer.properties.session.timeout.ms", () -> "30000");
-		r.add("spring.kafka.consumer.properties.max.poll.interval.ms", () -> "300000");
-	}
 
 	private String email;
 	private String accessToken;
@@ -332,8 +295,13 @@ public class PaymentProducerTest {
 	// 테스트 싱크
 	@TestConfiguration
 	static class TestSink {
+		private final ObjectMapper objectMapper;
 		private CountDownLatch latch = new CountDownLatch(1);
 		volatile ConsumerRecord<String, Object> lastRecord;
+
+		public TestSink(ObjectMapper objectMapper) {
+			this.objectMapper = objectMapper;
+		}
 
 		void reset() {
 			lastRecord = null;
@@ -351,8 +319,17 @@ public class PaymentProducerTest {
 				properties = {"auto.offset.reset=latest",
 						"spring.json.trusted.packages=*"}
 		)
-		void onMsg(ConsumerRecord<String, Object> rec) {
+		void onMessage(ConsumerRecord<String, Object> rec) throws IOException {
 			lastRecord = rec;
+			byte[] bytes = (byte[]) rec.value();
+			String json = new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
+			logger.info("raw json = {}", json);
+
+			PaymentRequestedMessageV1<?> msg =
+					objectMapper.readValue(bytes, PaymentRequestedMessageV1.class);
+			logger.info("deserialized class = {}", msg.getClass());
+			logger.info("paymentId = {}", msg.identifiers().paymentId());
+			logger.info("userId = {}", msg.identifiers().userId());
 			latch.countDown();
 		}
 	}
