@@ -1,8 +1,5 @@
-package com.system.payment.runner;
+package com.system.payment.common.runner;
 
-import com.system.payment.user.repository.AesKeyRepository;
-import com.system.payment.user.service.AuthService;
-import com.system.payment.user.service.CryptoService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
