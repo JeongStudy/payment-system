@@ -1,4 +1,4 @@
-package com.system.payment.payment.controller;
+package com.system.payment.payment.integration;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -54,7 +54,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @EmbeddedKafka(partitions = 2, topics = {"payment.requested.v1"})
-public class PaymentRequestControllerTestKafkaTest {
+public class PaymentProducerTest {
 
 	@Autowired
 	MockMvc mockMvc;
@@ -95,7 +95,7 @@ public class PaymentRequestControllerTestKafkaTest {
 	@Value("${payment.request.topic}")
 	private String PAYMENT_REQUESTED_TOPIC;
 
-	private static final Logger logger = LoggerFactory.getLogger(PaymentRequestControllerTestKafkaTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(PaymentProducerTest.class);
 
 	@DynamicPropertySource
 	static void kafkaProps(DynamicPropertyRegistry r) {
