@@ -1,4 +1,4 @@
-package com.system.payment.provider;
+package com.system.payment.common.provider;
 
 import com.system.payment.common.exception.ErrorCode;
 import com.system.payment.common.exception.PaymentServerUnauthorizedException;
