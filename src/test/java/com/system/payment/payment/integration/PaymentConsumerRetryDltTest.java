@@ -4,7 +4,7 @@ import com.system.payment.common.dto.response.ErrorCode;
 import com.system.payment.common.exception.TransientPgException;
 import com.system.payment.payment.service.PaymentIdempotencyGuard;
 import com.system.payment.payment.service.PaymentProcessService;
-import com.system.payment.util.KafkaIntegrationTestSupport;
+import com.system.payment.common.util.KafkaIntegrationTestSupport;
 import com.system.payment.common.util.IdGeneratorUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
