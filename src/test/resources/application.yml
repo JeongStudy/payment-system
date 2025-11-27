@@ -1,6 +1,8 @@
+#src/test/resources/application.yml
+
 spring:
   datasource:
-    url: "jdbc:h2:mem:testdb;LOCK_TIMEOUT=5000;MODE=PostgreSQL;INIT=CREATE SCHEMA IF NOT EXISTS payment\\;SET SCHEMA payment"
+    url: "jdbc:h2:mem:testdb;LOCK_TIMEOUT=5000;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_UPPER=false;INIT=CREATE SCHEMA IF NOT EXISTS payment\\;SET SCHEMA payment"
     username: sa
     password:
     driver-class-name: org.h2.Driver
@@ -19,6 +21,9 @@ spring:
   kafka:
     bootstrap-servers: dummy:0  # 실제 broker 필요 없음
     jmx:
+      enabled: false
+  task:
+    scheduling:
       enabled: false
 
 logging:
